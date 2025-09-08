@@ -99,7 +99,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
 
       // Tab through form elements
       await page.keyboard.press('Tab'); // First tabbable element
-      
+
       // Should be able to tab to all form inputs
       const focusableElements = [
         'input[name="name"]',
@@ -111,12 +111,12 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
 
       for (let i = 0; i < focusableElements.length; i++) {
         const element = page.locator(focusableElements[i]);
-        
+
         // Tab to next element or check if already focused
         if (i > 0) {
           await page.keyboard.press('Tab');
         }
-        
+
         // Element should be focusable
         await element.focus();
         await expect(element).toBeFocused();
@@ -186,7 +186,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
         // Fill email field and press Enter
         await page.locator('input[name="email"]').fill(userData.email);
         await page.locator('input[name="password"]').fill(userData.password!);
-        
+
         // Press Enter from password field
         await page.locator('input[name="password"]').press('Enter');
 
@@ -230,7 +230,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
       const errorAlert = page.locator('[role="alert"]');
       if (await errorAlert.isVisible().catch(() => false)) {
         await expect(errorAlert).toBeVisible();
-        
+
         const errorText = await errorAlert.textContent();
         expect(errorText).toBeTruthy();
         expect(errorText!.length).toBeGreaterThan(0);
@@ -248,7 +248,6 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
     });
 
     test('should announce loading states to screen readers', async ({ page }) => {
-      const helpers = new TestHelpers(page);
       const dbIntegration = new DatabaseTestIntegration(page);
       await dbIntegration.setup();
 
@@ -298,7 +297,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
       }
     });
 
-    test('should trap focus in modals/dialogs', async ({ page }) => {
+    test('should trap focus in modals/dialogs', async () => {
       // This test would be relevant if you have modal dialogs in auth flow
       // Skip for now unless you have modal components
       test.skip();
@@ -310,7 +309,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
 
       // Focus on email input
       await page.locator('input[name="email"]').focus();
-      
+
       // Submit invalid form
       await page.keyboard.press('Enter');
       await page.waitForTimeout(1000);
@@ -338,7 +337,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
       const errorMessage = page.locator('[role="alert"], .text-red-500, .text-destructive');
       if (await errorMessage.isVisible().catch(() => false)) {
         await expect(errorMessage).toBeVisible();
-        
+
         // Basic visibility check (full contrast testing needs specialized tools)
         const styles = await errorMessage.evaluate(el => {
           const computed = window.getComputedStyle(el);
@@ -388,7 +387,7 @@ test.describe('Authentication Accessibility & Mobile Tests', () => {
         const element = page.locator(selector);
         if (await element.isVisible().catch(() => false)) {
           const boundingBox = await element.boundingBox();
-          
+
           // Touch targets should be at least 44x44 pixels (WCAG guidelines)
           expect(boundingBox?.width).toBeGreaterThanOrEqual(44);
           expect(boundingBox?.height).toBeGreaterThanOrEqual(44);
@@ -433,7 +432,7 @@ test.describe('Cross-Browser Accessibility', () => {
       // Test keyboard navigation
       await page.locator('input[name="email"]').focus();
       await expect(page.locator('input[name="email"]')).toBeFocused();
-      
+
       await page.keyboard.press('Tab');
       await expect(page.locator('input[name="password"]')).toBeFocused();
     });
