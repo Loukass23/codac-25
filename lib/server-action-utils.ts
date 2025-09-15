@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth/auth";
 // Generic server action result type
 export type ServerActionResult<T = unknown> =
   | { success: true; data: T }
-  | { success: false; error: string | z.ZodError["errors"]; validationErrors?: z.ZodError["errors"] };
+  | { success: false; error: string | z.ZodError["errors"] };
 
 // Common Prisma error handling
 export function handlePrismaError(
@@ -281,54 +281,58 @@ export async function checkPermission(
   }
 }
 
-// Helper function to create consistent return types
-export function createReturnType<T>(
-  success: boolean,
-  data: T | null,
-  message?: string
-): ServerActionResult<T> {
-  if (success) {
-    return { success: true, data: data as T };
-  } else {
-    return { success: false, error: message || 'An error occurred' };
-  }
-}
-
-// Standardized server action handler following CODAC patterns
+// Chat-specific server action handler that includes authentication
 export async function handleServerAction<TInput, TOutput>(
   schema: z.ZodSchema<TInput>,
   input: unknown,
-  handler: (context: { parsed: TInput; user: any }) => Promise<{ ok: boolean; data: TOutput }>
+  handler: (context: { parsed: TInput; user: any }) => Promise<TOutput>
 ): Promise<ServerActionResult<TOutput>> {
+  const startTime = Date.now();
+
   try {
     // Parse and validate input
     const parsed = schema.parse(input);
 
-    // Get current user from auth
+    // Get authenticated user from NextAuth
     const session = await auth();
     const user = session?.user;
 
-    // Execute the handler with context
+    if (!user) {
+      throw new Error("Authentication required");
+    }
+
+    // Call the handler with validated input and user
     const result = await handler({ parsed, user });
 
-    if (!result.ok) {
-      return { success: false, error: 'Operation failed' };
-    }
-
-    return { success: true, data: result.data };
-  } catch (error) {
-    logger.error('Server action error', error instanceof Error ? error : new Error(String(error)), {
-      metadata: { input }
+    logger.info("Server action completed successfully", {
+      metadata: {
+        duration: Date.now() - startTime,
+        success: true,
+        userId: user.id,
+      },
     });
 
-    if (error instanceof z.ZodError) {
-      return { success: false, error: 'Invalid input data', validationErrors: error.errors };
+    return { success: true, data: result };
+  } catch (error) {
+    logger.error(
+      "Server action error",
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        metadata: {
+          duration: Date.now() - startTime,
+        },
+      }
+    );
+
+    if (error instanceof Error && error.name === "ZodError") {
+      logger.logValidationError("server-action", (error as z.ZodError).errors);
+      return { success: false, error: handleValidationError(error) };
     }
 
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return { success: false, error: handlePrismaError(error) };
     }
 
-    return { success: false, error: 'An unexpected error occurred' };
+    return { success: false, error: "An unexpected error occurred" };
   }
 }

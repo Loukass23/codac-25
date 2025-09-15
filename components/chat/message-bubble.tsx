@@ -28,8 +28,11 @@ export function MessageBubble({
   showAvatar = true,
   showName = true,
 }: MessageBubbleProps) {
-  const formatTime = (date: Date | string) => {
+  const formatTime = (date: Date | string | null | undefined) => {
+    if (!date) return "";
     const messageDate = typeof date === "string" ? new Date(date) : date;
+    // Check if the date is valid
+    if (messageDate instanceof Date && isNaN(messageDate.getTime())) return "";
     return messageDate.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",

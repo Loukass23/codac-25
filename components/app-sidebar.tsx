@@ -1,21 +1,20 @@
 "use client";
 
 import {
-  FolderOpen,
   Users,
-  Briefcase,
-  FileText,
-  Pyramid,
-  UserCheck,
-  Code2,
-  Trophy,
   BookOpen,
   MessageCircle,
+  Home,
+  User as UserIcon,
+  GraduationCap,
+  Pyramid,
+  Folder,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { User } from "next-auth";
 import { useSession } from "next-auth/react";
+import type { User } from "next-auth";
+import { useTotalUnreadCount } from "@/hooks/use-total-unread-count";
 import * as React from "react";
 
 import {
@@ -31,100 +30,81 @@ import {
 import { NavTop } from "./nav-top";
 import { NavUser } from "./nav-user";
 
-const buildNavigationData = (role?: string) => {
-  const mentorshipItems = [];
+const buildNavigationData = (_userRole?: string, unreadCount?: number) => {
+  const baseNavigation = [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: UserIcon,
+    },
+  ];
 
-  if (role === "MENTOR" || role === "ADMIN") {
-    // Mentors and admins see sessions management
-    mentorshipItems.push({
-      title: "My Sessions",
-      url: "/mentorship/sessions",
-      icon: UserCheck,
-    });
-  } else {
-    // Students see find mentors and their sessions
-    mentorshipItems.push(
-      {
-        title: "Find Mentors",
-        url: "/mentorship/find",
-        icon: UserCheck,
-      },
-      {
-        title: "My Sessions",
-        url: "/mentorship/my-mentors",
-        icon: UserCheck,
-      }
-    );
-  }
+  const communityNavigation = [
+    {
+      title: "Community",
+      url: "/community",
+      icon: Users,
+    },
+    {
+      title: "Mentorship",
+      url: "/mentorship",
+      icon: BookOpen,
+    },
+    {
+      title: "Projects",
+      url: "/projects",
+      icon: Folder,
+    },
+  ];
+
+  const learningNavigation = [
+    {
+      title: "Learning",
+      url: "/learning",
+      icon: GraduationCap,
+    },
+    {
+      title: "Quizzes",
+      url: "/learning/quiz",
+      icon: Pyramid,
+    },
+    {
+      title: "Chat",
+      url: "/chat",
+      icon: MessageCircle,
+      badge:
+        unreadCount && unreadCount > 0 ? unreadCount.toString() : undefined,
+    },
+  ];
 
   return {
-    navTop: [
-      {
-        title: "My Projects",
-        url: "/projects/my",
-        icon: FolderOpen,
-      },
-      {
-        title: "Projects",
-        url: "/projects",
-        icon: Code2,
-      },
-      {
-        title: "Showcase",
-        url: "/showcase",
-        icon: Trophy,
-      },
-      {
-        title: "Community",
-        url: "/community",
-        icon: Users,
-      },
-      {
-        title: "Career",
-        url: "/career/jobs",
-        icon: Briefcase,
-      },
-      ...mentorshipItems,
-    ],
-    navSecondary: [
-      {
-        title: "Learning",
-        url: "/lms",
-        icon: BookOpen,
-      },
-      {
-        title: "Documents",
-        url: "/docs",
-        icon: FileText,
-      },
-      {
-        title: "Quizzes",
-        url: "/learning/quiz",
-        icon: Pyramid,
-      },
-      {
-        title: "Chat",
-        url: "/chat",
-        icon: MessageCircle,
-      },
-    ],
+    navTop: [...baseNavigation, ...communityNavigation, ...learningNavigation],
+    navSecondary: [],
     footer: [],
   };
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
+  const { totalUnreadCount } = useTotalUnreadCount();
   const [navData, setNavData] = React.useState(() =>
-    buildNavigationData(undefined)
+    buildNavigationData(undefined, 0)
   );
 
-  // Update navigation when user role is available
+  // Update navigation when user role or unread count changes
   React.useEffect(() => {
     if (session?.user) {
       const userData = session.user as User;
-      setNavData(buildNavigationData(userData.role));
+      setNavData(buildNavigationData(userData.role, totalUnreadCount));
+    } else {
+      setNavData(buildNavigationData(undefined, totalUnreadCount));
     }
-  }, [session]);
+  }, [session, totalUnreadCount]);
 
   return (
     <Sidebar collapsible="icon" {...props}>

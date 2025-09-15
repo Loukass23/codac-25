@@ -22,7 +22,7 @@ export async function createConversation(input: unknown) {
         }
 
         try {
-            const { type, name, description, participantIds } = parsed
+            const { type, name, participantIds } = parsed
 
             // Ensure the current user is included in participants
             const allParticipantIds = Array.from(new Set([user.id, ...participantIds]))
@@ -63,7 +63,7 @@ export async function createConversation(input: unknown) {
 
             // Check if direct conversation already exists
             if (type === 'DIRECT') {
-                const existingConversation = await (prisma as any).conversation.findFirst({
+                const existingConversation = await prisma.conversation.findFirst({
                     where: {
                         type: 'DIRECT',
                         participants: {
@@ -98,15 +98,13 @@ export async function createConversation(input: unknown) {
 
             // Create conversation with participants in a transaction
             const result = await prisma.$transaction(async (tx) => {
-                const conversation = await (tx as any).conversation.create({
+                const conversation = await tx.conversation.create({
                     data: {
                         type: type as any, // Using any for now until types are properly generated
                         name: name || (type === 'DIRECT' ? null : 'New Group'),
-                        description,
                         participants: {
                             create: allParticipantIds.map((userId) => ({
                                 userId,
-                                role: userId === user.id ? 'OWNER' : type === 'DIRECT' ? 'MEMBER' : 'MEMBER',
                             })),
                         },
                     },
@@ -114,7 +112,6 @@ export async function createConversation(input: unknown) {
                         id: true,
                         type: true,
                         name: true,
-                        description: true,
                         createdAt: true,
                     },
                 })

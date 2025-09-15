@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 import { createConversation } from "@/actions/chat/create-conversation";
-import { getUserConversations } from "@/data/chat/get-conversations";
+import { getUserConversationsAction } from "@/actions/chat/get-user-conversations";
 import { getAvailableUsers } from "@/actions/chat/get-available-users";
 
 interface ConversationTestClientProps {
@@ -101,8 +101,12 @@ export function ConversationTestClient({
   const loadConversations = async () => {
     setLoadingConversations(true);
     try {
-      const userConversations = await getUserConversations(currentUserId);
-      setConversations(userConversations);
+      const response = await getUserConversationsAction();
+      if (response.success) {
+        setConversations(response.data);
+      } else {
+        console.error("Failed to load conversations:", response.error);
+      }
     } catch (error) {
       console.error("Error loading conversations:", error);
     } finally {

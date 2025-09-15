@@ -10,6 +10,7 @@ import { seedLMSContent, cleanLMSContent } from './seeders/lms-content';
 import { seedQuizzes, seedQuizzesIncremental, cleanQuizzes } from './seeders/quizzes';
 import { seedJobs, cleanJobs } from './seeders/jobs';
 import { seedProjects, cleanProjects } from './seeders/projects';
+import { seedChatData, cleanChatData } from './seeders/chat';
 
 const prisma = new PrismaClient();
 
@@ -64,6 +65,13 @@ const seedOptions: SeedOption[] = [
         action: seedProjects,
         cleanAction: cleanProjects,
     },
+    {
+        id: 'chat-data',
+        name: 'Chat Data',
+        description: 'Import chat conversations, participants, and messages from exported data',
+        action: seedChatData,
+        cleanAction: cleanChatData,
+    },
 ];
 
 function displayMenu() {
@@ -87,12 +95,13 @@ async function seedAll() {
     logger.info('🌱 Starting complete database seeding...');
 
     try {
-        // Seed in order: courses -> users -> content -> quizzes -> jobs -> projects
+        // Seed in order: courses -> users -> content -> quizzes -> jobs -> projects -> chat
         await seedLMSContent();
         await seedAttackOnTitan();
         await seedQuizzes();
         await seedJobs();
         await seedProjects();
+        await seedChatData();
 
         logger.info('✅ Complete seeding finished successfully!');
 
@@ -105,6 +114,7 @@ async function seedAll() {
         console.log('  • Quiz questions and answers');
         console.log('  • Job postings');
         console.log('  • Demo project showcases');
+        console.log('  • Chat conversations and messages');
         console.log('\n🔐 Default login credentials:');
         console.log('  • Email: admin@codac.academy');
         console.log('  • Password: password123');
@@ -122,6 +132,7 @@ async function cleanAll() {
 
     try {
         // Clean in reverse order
+        await cleanChatData();
         await cleanProjects();
         await cleanJobs();
         await cleanQuizzes();

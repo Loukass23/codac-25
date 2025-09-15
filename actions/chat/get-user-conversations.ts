@@ -14,7 +14,7 @@ export async function getUserConversationsAction(input: unknown = {}) {
 
         try {
             const conversations = await getUserConversations(user.id)
-            return { ok: true, data: conversations }
+            return conversations
         } catch (error) {
             throw error
         }

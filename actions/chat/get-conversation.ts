@@ -16,7 +16,7 @@ export async function getConversationAction(input: unknown) {
 
         try {
             const conversation = await getConversation(parsed.conversationId, user.id)
-            return { ok: true, data: conversation }
+            return conversation
         } catch (error) {
             throw error
         }

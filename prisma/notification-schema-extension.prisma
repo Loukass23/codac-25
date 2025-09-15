@@ -1,0 +1,68 @@
+// Add these models to your existing schema.prisma
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  metadata  Json?    // Store additional context like messageId, conversationId, etc.
+  
+  // Recipient
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Optional: Link to specific entities
+  messageId       String?
+  conversationId  String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  readAt    DateTime?
+  
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Notification channels
+  inApp     Boolean @default(true)
+  email     Boolean @default(true)
+  push      Boolean @default(false)
+  
+  // Notification types
+  directMessages  Boolean @default(true)
+  groupMessages   Boolean @default(true)
+  channelMessages Boolean @default(true)
+  mentions        Boolean @default(true)
+  
+  // Timing preferences
+  quietHoursStart String? // Format: "22:00"
+  quietHoursEnd   String? // Format: "08:00"
+  timezone        String? // User's timezone
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId])
+  @@map("notification_preferences")
+}
+
+// Add this enum
+enum NotificationType {
+  DIRECT_MESSAGE
+  GROUP_MESSAGE
+  CHANNEL_MESSAGE
+  MENTION
+  CONVERSATION_INVITE
+  SYSTEM
+}
+
+// Add to existing User model:
+// notifications            Notification[]
+// notificationPreferences  NotificationPreference?

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -8,11 +8,12 @@ import { ConversationHeader } from "./conversation-header";
 import { MessageBubble } from "./message-bubble";
 import { MessageInput } from "./message-input";
 import { getConversationAction } from "@/actions/chat/get-conversation";
-import { sendConversationMessage } from "@/actions/chat/send-conversation-message";
+import { useRealtimeConversation } from "@/hooks/use-realtime-conversation";
 
 interface ConversationViewProps {
   conversationId: string;
   currentUserId: string;
+  currentUserName?: string;
 }
 
 interface ConversationData {
@@ -23,6 +24,9 @@ interface ConversationData {
   participants: Array<{
     id: string;
     role: string;
+    userId: string;
+    conversationId: string;
+    joinedAt: Date;
     user: {
       id: string;
       name: string | null;
@@ -48,14 +52,61 @@ interface ConversationData {
 export function ConversationView({
   conversationId,
   currentUserId,
+  currentUserName,
 }: ConversationViewProps) {
   const [conversation, setConversation] = useState<ConversationData | null>(
     null
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Use realtime hook for realtime updates only
+  const {
+    messages: realtimeMessages,
+    sendMessage,
+    isConnected,
+    isSending,
+    onlineUsers,
+    typingUsers,
+    startTyping,
+    stopTyping,
+  } = useRealtimeConversation({
+    conversationId,
+    currentUserId,
+    currentUserName,
+  });
+
+  // Combine conversation messages with realtime messages
+  const allMessages = useMemo(() => {
+    if (!conversation?.messages) return [];
+
+    // Get conversation message IDs for deduplication
+    const conversationMessageIds = new Set(
+      conversation.messages.map((m) => m.id)
+    );
+
+    // Filter realtime messages to only include new ones not in conversation
+    const newRealtimeMessages = realtimeMessages.filter(
+      (m) => !conversationMessageIds.has(m.id)
+    );
+
+    // Convert realtime messages to match conversation message structure
+    const convertedRealtimeMessages = newRealtimeMessages.map((msg) => ({
+      id: msg.id,
+      content: msg.content,
+      createdAt: msg.createdAt,
+      userName: msg.userName,
+      userId: msg.userId,
+      user: msg.user,
+    }));
+
+    // Combine and sort by creation date
+    return [...conversation.messages, ...convertedRealtimeMessages].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [conversation?.messages, realtimeMessages]);
 
   useEffect(() => {
     loadConversation();
@@ -63,7 +114,7 @@ export function ConversationView({
 
   useEffect(() => {
     scrollToBottom();
-  }, [conversation?.messages]);
+  }, [allMessages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -95,33 +146,27 @@ export function ConversationView({
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!conversation || sending) return;
+    if (!conversation) return;
 
-    setSending(true);
-    try {
-      const response = await sendConversationMessage({
-        conversationId: conversation.id,
-        content,
-      });
+    // Use the realtime hook's sendMessage function
+    const result = await sendMessage(content);
 
-      if (response.success) {
-        // Reload conversation to get the new message
-        await loadConversation();
-      } else {
-        console.error("Failed to send message:", response.error);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
-      setSending(false);
+    if (!result.success) {
+      console.error("Failed to send message:", result.error);
     }
+    // No need to manually reload - realtime will handle the update
   };
 
-  const groupMessagesByDate = (messages: ConversationData["messages"]) => {
-    const groups: { [date: string]: ConversationData["messages"] } = {};
+  const groupMessagesByDate = (messages: any[]) => {
+    const groups: { [date: string]: any[] } = {};
 
     messages.forEach((message) => {
-      const date = new Date(message.createdAt).toDateString();
+      // Ensure createdAt is a valid Date object
+      const messageDate =
+        message.createdAt instanceof Date
+          ? message.createdAt
+          : new Date(message.createdAt);
+      const date = messageDate.toDateString();
       if (!groups[date]) {
         groups[date] = [];
       }
@@ -180,8 +225,10 @@ export function ConversationView({
     );
   }
 
-  const messageGroups = groupMessagesByDate(conversation.messages);
-  const dates = Object.keys(messageGroups).sort();
+  const messageGroups = groupMessagesByDate(allMessages);
+  const dates = Object.keys(messageGroups).sort(
+    (a, b) => new Date(a).getTime() - new Date(b).getTime()
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -189,7 +236,17 @@ export function ConversationView({
       <ConversationHeader
         conversation={conversation}
         currentUserId={currentUserId}
+        onlineUsers={onlineUsers}
       />
+
+      {/* Connection Status */}
+      {!isConnected && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-2">
+          <p className="text-sm text-yellow-700">
+            Reconnecting to live chat...
+          </p>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -217,7 +274,7 @@ export function ConversationView({
 
                 return (
                   <MessageBubble
-                    key={message.id}
+                    key={message.id || `${date}-${index}`}
                     message={message}
                     isOwnMessage={message.userId === currentUserId}
                     showAvatar={shouldShowAvatar(message, nextMessage)}
@@ -230,7 +287,7 @@ export function ConversationView({
         ))}
 
         {/* Empty state */}
-        {conversation.messages.length === 0 && (
+        {allMessages.length === 0 && (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <p className="text-muted-foreground mb-2">No messages yet</p>
@@ -244,16 +301,28 @@ export function ConversationView({
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Typing indicators - Fixed at bottom */}
+      {typingUsers.length > 0 && (
+        <div className="px-4 py-2 text-sm text-muted-foreground italic bg-background/95 backdrop-blur animate-in slide-in-from-bottom-2 duration-200">
+          <div className="flex items-center gap-2">
+              {typingUsers.map((user) => user.username).join(", ")}{" "}
+              {typingUsers.length === 1 ? "is" : "are"} typing...
+          </div>
+        </div>
+      )}
+
       {/* Message Input */}
       <MessageInput
         onSendMessage={handleSendMessage}
-        disabled={sending}
+        disabled={isSending}
         placeholder={`Message ${
-          conversation.type === "DIRECT"
+          conversation?.type === "DIRECT"
             ? conversation.participants.find((p) => p.user.id !== currentUserId)
                 ?.user.name || "user"
-            : conversation.name || "conversation"
+            : conversation?.name || "conversation"
         }...`}
+        onStartTyping={startTyping}
+        onStopTyping={stopTyping}
       />
     </div>
   );

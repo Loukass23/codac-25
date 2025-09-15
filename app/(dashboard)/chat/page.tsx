@@ -11,5 +11,5 @@ export default async function ChatPage() {
     redirect("/auth/signin?callbackUrl=/chat");
   }
 
-  return <ChatLayout currentUserId={user.id} />;
+  return <ChatLayout currentUserId={user.id} currentUserName={user.name || undefined} />;
 }
