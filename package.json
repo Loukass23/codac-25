@@ -21,6 +21,7 @@
     "db:seed": "tsx prisma/seed/seed.ts",
     "db:seed:all": "tsx prisma/seed/seed.ts all",
     "db:seed:clean": "tsx prisma/seed/seed.ts clean",
+    "db:seed:clean-chat": "tsx prisma/seed/seed.ts --clean-chat",
     "db:seed:attack-on-titan": "tsx prisma/seed/seed.ts 1",
     "db:seed:lms": "tsx prisma/seed/seed.ts 3",
     "db:seed:quizzes": "tsx prisma/seed/seed.ts 4",

@@ -54,14 +54,14 @@ function NotificationItem({
   onClick: (notification: Notification) => void;
 }) {
   return (
-    <div
+    <DropdownMenuItem
       className={cn(
-        "flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer border-l-2 transition-colors",
+        "flex items-start gap-3 p-3 cursor-pointer border-l-2 transition-colors focus:bg-muted/50",
         notification.isRead
           ? "border-l-transparent"
           : "border-l-primary bg-muted/20"
       )}
-      onClick={() => onClick(notification)}
+      onSelect={() => onClick(notification)}
     >
       <div className="flex-shrink-0 mt-1">
         {getNotificationIcon(notification.type)}
@@ -109,7 +109,7 @@ function NotificationItem({
           </div>
         </div>
       </div>
-    </div>
+    </DropdownMenuItem>
   );
 }
 

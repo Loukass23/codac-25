@@ -242,12 +242,18 @@ async function main() {
 
         if (args.length > 0) {
             // Non-interactive mode
-            const command = args[0];
+            // Filter out npm/pnpm separator '--' if present
+            const cleanArgs = args.filter(arg => arg !== '--');
+            const command = cleanArgs[0];
 
             if (command === 'all') {
                 await seedAll();
             } else if (command === 'clean') {
                 await cleanAll();
+            } else if (command === '--clean-chat') {
+                logger.info('🧹 Cleaning chat data only...');
+                await cleanChatData();
+                console.log('✅ Chat data cleaned successfully!');
             } else {
                 // Try to process as selection
                 await processSelection(command);
