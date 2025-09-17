@@ -10,6 +10,9 @@ import {
   AtSign,
   UserPlus,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,11 +22,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications, type Notification } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+
 
 function getNotificationIcon(type: Notification["type"]) {
   switch (type) {

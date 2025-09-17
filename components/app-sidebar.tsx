@@ -12,9 +12,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import type { User } from "next-auth";
-import { useTotalUnreadCount } from "@/hooks/use-total-unread-count";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import {
@@ -26,6 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useTotalUnreadCount } from "@/hooks/use-total-unread-count";
 
 import { NavTop } from "./nav-top";
 import { NavUser } from "./nav-user";

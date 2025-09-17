@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
   message: {
@@ -33,9 +33,10 @@ export function MessageBubble({
     const messageDate = typeof date === "string" ? new Date(date) : date;
     // Check if the date is valid
     if (messageDate instanceof Date && isNaN(messageDate.getTime())) return "";
-    return messageDate.toLocaleTimeString([], {
+    return messageDate.toLocaleTimeString('en-US', {
       hour: "2-digit",
       minute: "2-digit",
+      hour12: true,
     });
   };
 

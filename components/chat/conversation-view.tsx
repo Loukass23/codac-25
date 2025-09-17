@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { toast } from "sonner";
+
+import { getConversationAction } from "@/actions/chat/get-conversation";
+import { markConversationReadAction } from "@/actions/chat/mark-conversation-read";
 import { Button } from "@/components/ui/button";
+import { useCrossSystemReadSync } from "@/hooks/use-cross-system-read-sync";
+import { useRealtimeConversation } from "@/hooks/use-realtime-conversation";
 
 import { ConversationHeader } from "./conversation-header";
 import { MessageBubble } from "./message-bubble";
 import { MessageInput } from "./message-input";
-import { getConversationAction } from "@/actions/chat/get-conversation";
-import { useRealtimeConversation } from "@/hooks/use-realtime-conversation";
 
 interface ConversationViewProps {
   conversationId: string;
@@ -59,7 +63,16 @@ export function ConversationView({
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
+  const [isWindowFocused, setIsWindowFocused] = useState(true);
+  const [lastReadMessageId, setLastReadMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const disconnectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const wasDisconnectedForLongRef = useRef(false);
+
+  // Cross-system read sync for notifications
+  const { syncConversationRead } = useCrossSystemReadSync();
 
   // Use realtime hook for realtime updates only
   const {
@@ -77,40 +90,202 @@ export function ConversationView({
     currentUserName,
   });
 
+  // Window focus detection for auto-read functionality
+  useEffect(() => {
+    const handleFocus = () => setIsWindowFocused(true);
+    const handleBlur = () => setIsWindowFocused(false);
+    const handleVisibilityChange = () => {
+      setIsWindowFocused(!document.hidden);
+    };
+
+    // Set initial focus state
+    setIsWindowFocused(!document.hidden && document.hasFocus());
+
+    // Listen for focus/blur events
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  // Auto-read functionality: mark conversation as read when focused and messages are present
+  const markConversationAsRead = useCallback(async () => {
+    if (!conversationId || !currentUserId || !isWindowFocused) {
+      return;
+    }
+
+    try {
+      await markConversationReadAction({ conversationId });
+      // Also sync notifications
+      syncConversationRead(conversationId);
+      console.log('📖 Auto-marked conversation as read:', conversationId);
+    } catch (error) {
+      console.error('Failed to mark conversation as read:', error);
+    }
+  }, [conversationId, currentUserId, isWindowFocused, syncConversationRead]);
+
   // Combine conversation messages with realtime messages
   const allMessages = useMemo(() => {
-    if (!conversation?.messages) return [];
+    if (!conversation?.messages) return realtimeMessages || [];
+
+    // Ensure realtimeMessages is an array
+    const safeRealtimeMessages = Array.isArray(realtimeMessages) ? realtimeMessages : [];
+    
+    // Debug what we're getting from realtime
+    console.log("🔄 Realtime messages received:", {
+      count: safeRealtimeMessages.length,
+      messages: safeRealtimeMessages.map(m => ({
+        id: m.id,
+        content: m.content?.substring(0, 20),
+        createdAt: m.createdAt,
+        isTemp: m.id?.startsWith('temp-'),
+        userId: m.userId
+      }))
+    });
 
     // Get conversation message IDs for deduplication
     const conversationMessageIds = new Set(
-      conversation.messages.map((m) => m.id)
+      conversation.messages.map((m) => m.id).filter(Boolean)
     );
 
     // Filter realtime messages to only include new ones not in conversation
-    const newRealtimeMessages = realtimeMessages.filter(
-      (m) => !conversationMessageIds.has(m.id)
+    const newRealtimeMessages = safeRealtimeMessages.filter(
+      (m) => m.id && !conversationMessageIds.has(m.id) && !m.id.startsWith('temp-')
+    );
+
+    // Get temporary messages, but only if no corresponding real message exists
+    const tempMessages = safeRealtimeMessages.filter(
+      (m) => {
+        if (!m.id || !m.id.startsWith('temp-')) return false;
+        
+        // Check if there's a real message with same content and user from the last 30 seconds
+        const hasRealEquivalent = [...conversation.messages, ...newRealtimeMessages].some(realMsg => 
+          realMsg.content === m.content && 
+          realMsg.userId === m.userId &&
+          Math.abs(new Date(realMsg.createdAt).getTime() - new Date(m.createdAt).getTime()) < 30000
+        );
+        
+        return !hasRealEquivalent;
+      }
     );
 
     // Convert realtime messages to match conversation message structure
     const convertedRealtimeMessages = newRealtimeMessages.map((msg) => ({
       id: msg.id,
       content: msg.content,
-      createdAt: msg.createdAt,
+      createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
       userName: msg.userName,
       userId: msg.userId,
       user: msg.user,
     }));
 
-    // Combine and sort by creation date
-    return [...conversation.messages, ...convertedRealtimeMessages].sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    const convertedTempMessages = tempMessages.map((msg) => ({
+      id: msg.id,
+      content: msg.content,
+      createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
+      userName: msg.userName,
+      userId: msg.userId,
+      user: msg.user,
+    }));
+
+    // Combine all messages and sort by creation date
+    const combined = [...conversation.messages, ...convertedRealtimeMessages, ...convertedTempMessages].sort(
+      (a, b) => {
+        // Ensure both dates are Date objects for proper comparison
+        const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+        const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+        return dateA.getTime() - dateB.getTime();
+      }
     );
+    
+    // Debug logging to see what messages we're actually displaying
+    console.log("🔍 AllMessages Debug:", {
+      conversationMessagesCount: conversation.messages.length,
+      realtimeMessagesCount: newRealtimeMessages.length,
+      tempMessagesCount: tempMessages.length,
+      totalCombined: combined.length,
+      lastFewMessages: combined.slice(-3).map(m => ({
+        id: m.id,
+        content: m.content.substring(0, 20),
+        createdAt: m.createdAt,
+        source: m.id.startsWith('temp-') ? 'optimistic' : 
+                 newRealtimeMessages.some(rm => rm.id === m.id) ? 'realtime' : 'database'
+      }))
+    });
+    
+    return combined;
   }, [conversation?.messages, realtimeMessages]);
+
+  // Auto-read when window regains focus
+  useEffect(() => {
+    if (isWindowFocused && allMessages.length > 0) {
+      // Small delay to ensure messages are loaded
+      const timeoutId = setTimeout(() => {
+        markConversationAsRead();
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+    return undefined; // Explicit return for when condition is false
+  }, [isWindowFocused, allMessages.length, markConversationAsRead]);
+
+  // Auto-read when new messages arrive (if window is focused)
+  useEffect(() => {
+    if (allMessages.length > 0 && isWindowFocused) {
+      const latestMessage = allMessages[allMessages.length - 1];
+      
+      // Only mark as read if this is a new message we haven't seen
+      if (latestMessage.id !== lastReadMessageId) {
+        setLastReadMessageId(latestMessage.id);
+        markConversationAsRead();
+      }
+    }
+  }, [allMessages, isWindowFocused, lastReadMessageId, markConversationAsRead]);
 
   useEffect(() => {
     loadConversation();
   }, [conversationId]);
+
+  // Handle connection state changes with better UX
+  useEffect(() => {
+    if (!isConnected) {
+      // Clear any existing timeout
+      if (disconnectionTimeoutRef.current) {
+        clearTimeout(disconnectionTimeoutRef.current);
+      }
+      
+      // Set flag after being disconnected for 3+ seconds
+      disconnectionTimeoutRef.current = setTimeout(() => {
+        wasDisconnectedForLongRef.current = true;
+      }, 3000);
+    } else if (isConnected && conversation) {
+      // Clear timeout if we reconnect quickly
+      if (disconnectionTimeoutRef.current) {
+        clearTimeout(disconnectionTimeoutRef.current);
+        disconnectionTimeoutRef.current = null;
+      }
+      
+      // Only show toast if we were genuinely disconnected for a meaningful period
+      if (wasDisconnectedForLongRef.current) {
+        const hasMessages = conversation && (conversation.messages?.length > 0 || allMessages.length > 0);
+        if (hasMessages) {
+          toast.success("Reconnected to live chat");
+        }
+        wasDisconnectedForLongRef.current = false;
+      }
+    }
+
+    return () => {
+      if (disconnectionTimeoutRef.current) {
+        clearTimeout(disconnectionTimeoutRef.current);
+      }
+    };
+  }, [isConnected, conversation, allMessages.length]);
 
   useEffect(() => {
     scrollToBottom();
@@ -120,9 +295,11 @@ export function ConversationView({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const loadConversation = async () => {
+  const loadConversation = async (currentRetryCount = 0) => {
     setLoading(true);
     setError(null);
+    setRetryCount(currentRetryCount);
+    
     try {
       const response = await getConversationAction({
         conversationId,
@@ -130,14 +307,33 @@ export function ConversationView({
 
       if (response.success) {
         setConversation(response.data);
+        setRetryCount(0); // Reset retry count on success
       } else {
         const errorMessage =
           typeof response.error === "string"
             ? response.error
             : "Failed to load conversation";
+        
+        // If conversation not found and we haven't retried too many times,
+        // wait a bit and retry (helps with newly created conversations)
+        if (errorMessage.includes('not found') && currentRetryCount < 3) {
+          setTimeout(() => {
+            loadConversation(currentRetryCount + 1);
+          }, 1000 * (currentRetryCount + 1)); // Exponential backoff
+          return;
+        }
+        
         setError(errorMessage);
       }
     } catch (err) {
+      // Retry logic for network errors as well
+      if (currentRetryCount < 3) {
+        setTimeout(() => {
+          loadConversation(currentRetryCount + 1);
+        }, 1000 * (currentRetryCount + 1));
+        return;
+      }
+      
       setError("Failed to load conversation");
       console.error("Error loading conversation:", err);
     } finally {
@@ -146,15 +342,31 @@ export function ConversationView({
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!conversation) return;
-
-    // Use the realtime hook's sendMessage function
-    const result = await sendMessage(content);
-
-    if (!result.success) {
-      console.error("Failed to send message:", result.error);
+    if (!conversationId || !currentUserId) {
+      console.warn('Cannot send message: missing conversationId or currentUserId');
+      return;
     }
-    // No need to manually reload - realtime will handle the update
+
+    try {
+      setLastFailedMessage(null); // Clear any previous failed message
+      
+      // Use the real-time sendMessage function which provides optimistic updates
+      const result = await sendMessage(content);
+      
+      if (!result.success) {
+        throw new Error(typeof result.error === 'string' ? result.error : 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setLastFailedMessage(content); // Store the failed message for retry
+      toast.error('Failed to send message. Please try again.');
+    }
+  };
+
+  const handleRetryMessage = async () => {
+    if (lastFailedMessage) {
+      await handleSendMessage(lastFailedMessage);
+    }
   };
 
   const groupMessagesByDate = (messages: any[]) => {
@@ -171,6 +383,15 @@ export function ConversationView({
         groups[date] = [];
       }
       groups[date].push(message);
+    });
+
+    // Sort messages within each date group by time
+    Object.keys(groups).forEach((date) => {
+      groups[date].sort((a, b) => {
+        const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+        const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+        return dateA.getTime() - dateB.getTime();
+      });
     });
 
     return groups;
@@ -197,7 +418,12 @@ export function ConversationView({
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading conversation...</p>
+          <p className="text-muted-foreground">
+            {retryCount > 0 
+              ? `Loading conversation... (attempt ${retryCount + 1})`
+              : "Loading conversation..."
+            }
+          </p>
         </div>
       </div>
     );
@@ -209,7 +435,7 @@ export function ConversationView({
         <div className="text-center">
           <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
           <p className="text-destructive mb-4">{error}</p>
-          <Button onClick={loadConversation} variant="outline">
+          <Button onClick={() => loadConversation(0)} variant="outline">
             Try Again
           </Button>
         </div>
@@ -241,9 +467,18 @@ export function ConversationView({
 
       {/* Connection Status */}
       {!isConnected && (
-        <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-2">
-          <p className="text-sm text-yellow-700">
-            Reconnecting to live chat...
+        <div className="bg-muted  px-4 py-2">
+          <p className="text-sm">
+            Reconnecting to live chat... Please wait...
+          </p>
+        </div>
+      )}
+      
+      {/* Sending Status */}
+      {isSending && (
+        <div className="bg-muted  px-4 py-2">
+          <p className="text-sm">
+           Sending message...
           </p>
         </div>
       )}
@@ -311,16 +546,53 @@ export function ConversationView({
         </div>
       )}
 
+      {/* Failed Message Retry */}
+      {lastFailedMessage && (
+        <div className="px-4 py-2 bg-destructive/10 border-t border-destructive/20">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1">
+              <p className="text-sm text-destructive">
+                Failed to send: <span className="font-medium">"{lastFailedMessage}"</span>
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleRetryMessage}
+                size="sm"
+                variant="outline"
+                className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                Retry
+              </Button>
+              <Button
+                onClick={() => setLastFailedMessage(null)}
+                size="sm"
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Message Input */}
       <MessageInput
         onSendMessage={handleSendMessage}
-        disabled={isSending}
-        placeholder={`Message ${
-          conversation?.type === "DIRECT"
-            ? conversation.participants.find((p) => p.user.id !== currentUserId)
-                ?.user.name || "user"
-            : conversation?.name || "conversation"
-        }...`}
+        disabled={isSending || !isConnected}
+        placeholder={
+          !isConnected 
+            ? "Connecting to chat..." 
+            : isSending 
+              ? "Sending..."
+              : `Message ${
+                  conversation?.type === "DIRECT"
+                    ? conversation.participants.find((p) => p.user.id !== currentUserId)
+                        ?.user.name || "user"
+                    : conversation?.name || "conversation"
+                }...`
+        }
         onStartTyping={startTyping}
         onStopTyping={stopTyping}
       />

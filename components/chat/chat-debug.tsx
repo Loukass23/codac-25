@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+
 import { getUserConversationsAction } from "@/actions/chat/get-user-conversations";
 import { createClient } from "@/lib/supabase/client";
 

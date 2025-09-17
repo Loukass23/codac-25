@@ -1,9 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useNotifications } from "@/hooks/use-notifications";
 import {
   Bell,
   MessageSquare,
@@ -12,6 +8,12 @@ import {
   AtSign,
   UserPlus,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
+
+import { useNotifications } from "@/hooks/use-notifications";
+
 
 function getNotificationIcon(type: string) {
   switch (type) {

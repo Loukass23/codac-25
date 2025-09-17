@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { MessageCircle, Users, Hash, Plus, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useRef, useEffect, useCallback } from "react";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+
 import { ConversationList } from "./conversation-list";
 import { ConversationView } from "./conversation-view";
 import { CreateConversationDialog } from "./create-conversation-dialog";
@@ -37,11 +39,43 @@ export function ChatLayout({ currentUserId, currentUserName }: ChatLayoutProps) 
   // Ref to access conversation list refresh function
   const refreshConversationsRef = useRef<(() => Promise<void>) | null>(null);
 
+  // State to store unread counts from ConversationList
+  const [unreadCounts, setUnreadCounts] = useState<{
+    all: number;
+    direct: number;
+    group: number;
+    channel: number;
+  }>({ all: 0, direct: 0, group: 0, channel: 0 });
+
+  // Function to get unread count for a tab
+  const getTotalUnreadCount = (tab: "all" | "direct" | "group" | "channel") => {
+    return unreadCounts[tab];
+  };
+
+  // Memoized callback to update unread counts
+  const handleUnreadCountsChange = useCallback((counts: {
+    all: number;
+    direct: number;
+    group: number;
+    channel: number;
+  }) => {
+    setUnreadCounts(counts);
+  }, []);
+
   // Check for conversation parameter in URL and auto-select it
   useEffect(() => {
     const conversationParam = searchParams.get("conversation");
     if (conversationParam && conversationParam !== selectedConversationId) {
+      console.log('🔗 Setting conversation from URL:', conversationParam);
       setSelectedConversationId(conversationParam);
+      
+      // Set as pending conversation to ensure it gets selected when available
+      setPendingConversationId(conversationParam);
+
+      // Trigger a conversation list refresh to ensure new conversation is loaded
+      if (refreshConversationsRef.current) {
+        refreshConversationsRef.current();
+      }
 
       // Clear the URL parameter after selecting the conversation
       // to keep the URL clean and prevent re-triggering on refresh
@@ -50,9 +84,6 @@ export function ChatLayout({ currentUserId, currentUserName }: ChatLayoutProps) 
       router.replace(newUrl.pathname, { scroll: false });
     }
   }, [searchParams, selectedConversationId, router]);
-
-  // Temporarily disable unread counts for debugging
-  const getTotalUnreadCount = (_tab: string) => 0;
 
   const handleConversationSelect = (conversationId: string) => {
     setSelectedConversationId(conversationId);
@@ -183,6 +214,7 @@ export function ChatLayout({ currentUserId, currentUserName }: ChatLayoutProps) 
               pendingConversationId={pendingConversationId}
               onPendingConversationHandled={handlePendingConversationHandled}
               activeTab={activeTab}
+              onUnreadCountsChange={handleUnreadCountsChange}
             />
           </div>
         </ResizablePanel>

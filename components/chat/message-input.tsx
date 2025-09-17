@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent, useEffect, useCallback } from "react";
 import { Send, Paperclip, Smile } from "lucide-react";
+import { useState, useRef, KeyboardEvent, useEffect, useCallback } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -84,6 +85,8 @@ export function MessageInput({
       }
     } catch (error) {
       console.error("Error sending message:", error);
+      // Keep the message in the input if sending failed
+      // so user can try again
     } finally {
       setSending(false);
     }

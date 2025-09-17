@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
 import { Users, User, Hash, MessageCircle, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { useEffect, useCallback, useMemo } from "react";
 
-import { useRealtimeConversationList } from "@/hooks/use-realtime-conversation-list";
 import { markConversationReadAction } from "@/actions/chat/mark-conversation-read";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { ConversationWithParticipants } from "@/data/chat/get-conversations";
+import { useRealtimeConversationList } from "@/hooks/use-realtime-conversation-list";
+import { cn } from "@/lib/utils";
 
 interface ConversationListProps {
   currentUserId: string;
@@ -18,6 +18,12 @@ interface ConversationListProps {
   pendingConversationId?: string | null;
   onPendingConversationHandled?: () => void;
   activeTab: "all" | "direct" | "group" | "channel";
+  onUnreadCountsChange?: (counts: {
+    all: number;
+    direct: number;
+    group: number;
+    channel: number;
+  }) => void;
 }
 
 export function ConversationList({
@@ -28,6 +34,7 @@ export function ConversationList({
   pendingConversationId,
   onPendingConversationHandled,
   activeTab,
+  onUnreadCountsChange,
 }: ConversationListProps) {
   const {
     loading,
@@ -74,6 +81,32 @@ export function ConversationList({
     }
   }, [selectedConversationId, markAsRead]);
 
+  // Calculate unread counts using useMemo to prevent infinite re-renders
+  const unreadCounts = useMemo(() => {
+    if (!conversations.length) {
+      return { all: 0, direct: 0, group: 0, channel: 0 };
+    }
+
+    // Calculate counts directly from conversations data without using unstable function references
+    const directConversations = conversations.filter(c => c.type === "DIRECT");
+    const groupConversations = conversations.filter(c => c.type === "GROUP");
+    const channelConversations = conversations.filter(c => c.type === "CHANNEL");
+
+    return {
+      all: conversations.reduce((total, conv) => total + (conv.unreadCount || 0), 0),
+      direct: directConversations.reduce((total, conv) => total + (conv.unreadCount || 0), 0),
+      group: groupConversations.reduce((total, conv) => total + (conv.unreadCount || 0), 0),
+      channel: channelConversations.reduce((total, conv) => total + (conv.unreadCount || 0), 0),
+    };
+  }, [conversations]); // Only depend on conversations array, not functions
+
+  // Send unread counts to parent when they change
+  useEffect(() => {
+    if (onUnreadCountsChange) {
+      onUnreadCountsChange(unreadCounts);
+    }
+  }, [unreadCounts, onUnreadCountsChange]);
+
   // Expose refresh function to parent
   useEffect(() => {
     if (refreshRef) {
@@ -84,13 +117,19 @@ export function ConversationList({
   // Handle pending conversation selection
   useEffect(() => {
     if (pendingConversationId && !loading) {
+      console.log('🔍 Checking for pending conversation:', pendingConversationId);
+      console.log('📝 Available conversations:', conversations.map(c => c.id));
+      
       // Check if the pending conversation is now available in the list
       const pendingConversation = conversations.find(
         (c) => c.id === pendingConversationId
       );
       if (pendingConversation) {
+        console.log('✅ Found pending conversation, selecting it');
         onConversationSelect(pendingConversationId);
         onPendingConversationHandled?.();
+      } else {
+        console.log('⏳ Pending conversation not yet available, waiting...');
       }
     }
   }, [

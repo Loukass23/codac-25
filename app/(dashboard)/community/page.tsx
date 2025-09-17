@@ -6,8 +6,13 @@ import { Grid, PageContainer, PageHeader, Section, SectionHeader, StatsGrid } fr
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCohorts } from '@/data/cohort/get-cohorts';
+import { auth } from '@/lib/auth/auth';
 
 export default async function CommunityPage() {
+    // Get current user
+    const session = await auth();
+    const currentUserId = session?.user?.id;
+    
     const result = await getCohorts();
 
     if (!result.success || !result.data) {
@@ -146,6 +151,7 @@ export default async function CommunityPage() {
                                 key={student.id}
                                 student={student}
                                 cohortName={student.cohortName}
+                                currentUserId={currentUserId}
                             />
                         ))}
                     </Grid>
