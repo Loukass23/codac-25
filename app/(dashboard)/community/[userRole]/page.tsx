@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { getUsers } from '@/data/user/get-users';
-import { auth } from '@/lib/auth/auth';
+import { requireServerAuth } from '@/lib/auth/auth-server';
 import { UserWithCounts } from '@/lib/server-action-utils';
 
 type Params = {
@@ -68,8 +68,8 @@ export default async function CommunityRolePage({ params }: { params: Promise<Pa
     const config = roleConfig[userRole as keyof typeof roleConfig];
 
     // Get current user
-    const session = await auth();
-    const currentUserId = session?.user?.id;
+    const user = await requireServerAuth();
+    const currentUserId = user.id;
 
     const queryParams: {
         limit: number;

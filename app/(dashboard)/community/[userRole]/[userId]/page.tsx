@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getUser } from '@/data/user/get-user';
-import { auth } from '@/lib/auth/auth';
+import { requireServerAuth } from '@/lib/auth/auth-server';
 
 type Params = {
     userRole: string;
@@ -97,8 +97,8 @@ export default async function UserDetailsPage({ params }: { params: Promise<Para
     const config = roleConfig[userRole as keyof typeof roleConfig];
 
     // Get current user to check if this is their own profile
-    const session = await auth();
-    const currentUserId = session?.user?.id;
+    const authUser = await requireServerAuth();
+    const currentUserId = authUser.id;
 
     const result = await getUser(userId);
 
@@ -359,7 +359,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<Para
                         <CardContent className="space-y-2">
                             {/* Only show chat button if not viewing own profile */}
                             {currentUserId && currentUserId !== user.id && (
-                                <ChatButton 
+                                <ChatButton
                                     userId={user.id}
                                     userName={user.name || undefined}
                                     variant="outline"

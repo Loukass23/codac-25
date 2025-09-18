@@ -1,18 +1,11 @@
-import { redirect } from "next/navigation";
-
 import { ChatDebugComponent } from "@/components/chat/chat-debug";
 import { ConversationTestClient } from "@/components/chat/conversation-test-client";
 import { MessageTestClient } from "@/components/chat/message-test-client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { auth } from "@/lib/auth/auth";
+import { requireServerAuth } from "@/lib/auth/auth-server";
 
 export default async function ConversationTestPage() {
-  const session = await auth();
-  const user = session?.user;
-
-  if (!user) {
-    redirect("/auth/signin?callbackUrl=/chat/test");
-  }
+  const user = await requireServerAuth();
 
   return (
     <div className="container mx-auto py-8">
