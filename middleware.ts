@@ -37,9 +37,17 @@ export async function middleware(req: NextRequest) {
   }
 
   // Get token without importing the full auth configuration
+  const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+
+  if (!authSecret) {
+    console.error("AUTH_SECRET environment variable is required for middleware authentication");
+    // Allow request to proceed if no secret is configured
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET
+    secret: authSecret
   });
 
   const isLoggedIn = !!token;
