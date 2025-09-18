@@ -1,9 +1,10 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { sendConversationMessage } from "@/actions/chat/send-conversation-message";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { sendConversationMessage } from "@/actions/chat/send-conversation-message";
+import { createClient } from "@/lib/supabase/client";
 
 interface ConversationMessage {
   id: string;
@@ -55,7 +56,10 @@ export function useRealtimeConversation({
   // Load initial messages when conversation changes
   useEffect(() => {
     // Clear messages when conversation changes - let ConversationView handle initial loading
-    setMessages([]);
+    // Only clear if conversationId actually changed to avoid clearing during reconnects
+    if (conversationId) {
+      setMessages([]);
+    }
   }, [conversationId]);
 
   // Cleanup stale optimistic messages periodically
@@ -68,7 +72,6 @@ export function useRealtimeConversation({
           if (msg.id.startsWith('temp-')) {
             const messageAge = now - new Date(msg.createdAt).getTime();
             if (messageAge > 10000) {
-              console.log("🧹 Removing stale optimistic message:", msg.id);
               return false;
             }
           }
@@ -90,7 +93,6 @@ export function useRealtimeConversation({
     if (!currentUserId) {
       return;
     }
-
     // Create channel for this conversation
     const channel = supabase.channel(`conversation:${conversationId}`, {
       config: {
@@ -114,12 +116,6 @@ export function useRealtimeConversation({
         let createdAt: Date;
         const rawCreatedAt = rawData.createdAt || rawData.created_at;
 
-        console.log("📅 Processing timestamp from WebSocket:", {
-          rawCreatedAt,
-          type: typeof rawCreatedAt,
-          isDate: rawCreatedAt instanceof Date
-        });
-
         if (rawCreatedAt instanceof Date) {
           createdAt = rawCreatedAt;
         } else if (typeof rawCreatedAt === "string") {
@@ -134,21 +130,7 @@ export function useRealtimeConversation({
           }
 
           createdAt = new Date(timeString);
-
-          console.log("📅 Converted string to Date:", {
-            original: rawCreatedAt,
-            processed: timeString,
-            converted: createdAt,
-            iso: createdAt.toISOString(),
-            display: createdAt.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true
-            }),
-            wasFixed: timeString !== rawCreatedAt
-          });
         } else {
-          console.warn("❌ No valid timestamp found, using fallback");
           createdAt = new Date(); // fallback
         }
 
@@ -179,10 +161,6 @@ export function useRealtimeConversation({
           );
 
           if (potentialOptimisticIndex !== -1) {
-            console.log("🔄 Replacing optimistic message with real WebSocket message:", {
-              optimisticId: prev[potentialOptimisticIndex].id,
-              realId: newMessage.id
-            });
             // Replace the optimistic message
             const updatedMessages = [...prev];
             updatedMessages[potentialOptimisticIndex] = newMessage;
@@ -217,6 +195,7 @@ export function useRealtimeConversation({
           // Filter for our conversation in JavaScript
           const messageConversationId =
             payload.new?.conversationId || payload.new?.conversation_id;
+
           if (messageConversationId === conversationId) {
             handleNewMessage(payload);
           }
@@ -240,8 +219,6 @@ export function useRealtimeConversation({
       // })
       // Listen for typing indicators
       .on("broadcast", { event: "typing" }, (payload) => {
-        console.log("⌨️ Typing event received:", payload);
-
         if (payload.payload) {
           const { userId, username, isTyping: typing } = payload.payload;
 
@@ -312,7 +289,7 @@ export function useRealtimeConversation({
     return () => {
       channel.unsubscribe();
     };
-  }, [conversationId, currentUserId, supabase]);
+  }, [conversationId, currentUserId, currentUserName]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -351,38 +328,14 @@ export function useRealtimeConversation({
         },
       };
 
-      console.log("📝 Created optimistic message:", {
-        id: optimisticMessage.id,
-        createdAt: optimisticMessage.createdAt,
-        iso: optimisticMessage.createdAt.toISOString(),
-        display: optimisticMessage.createdAt.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        })
-      });
 
       try {
-        console.log("📤 Sending message to conversation:", conversationId);
-
         // Add optimistic message immediately for the sender
         setMessages((prev) => [...prev, optimisticMessage]);
 
         const result = await sendConversationMessage({
           conversationId,
           content,
-        });
-
-        console.log("📤 Server response structure:", {
-          result,
-          success: result.success,
-          hasData: result.success ? !!result.data : false,
-          dataType: result.success ? typeof result.data : 'error response',
-          dataKeys: result.success && result.data ? Object.keys(result.data) : 'no data',
-          hasOk: result.success && result.data ? 'ok' in result.data : false,
-          // okValue: result.success && result.data ? result.data.ok : undefined,
-          hasDataData: result.success && result.data && result.data ? 'data nested' : 'no nested data',
-          dataDataKeys: result.success && result.data && result.data ? Object.keys(result.data) : 'no nested keys'
         });
 
         if (!result.success) {
@@ -398,43 +351,14 @@ export function useRealtimeConversation({
           return result;
         }
 
-        console.log("✅ Message sent successfully:", result.success && result.data?.id);
-
         // Replace optimistic message with real message
-        console.log("🔍 Checking replacement conditions:", {
-          success: result.success,
-          hasData: !!result.data,
-          hasDataData: !!result.data,
-          hasId: !!result.data?.id,
-          fullCondition: result.success && !!result.data?.id
-        });
-
         if (result.success && result.data?.id) {
-          console.log("🎯 REPLACEMENT CONDITIONS MET - Starting replacement");
           const realMessage = result.data;
-
-          console.log("📝 Replacing optimistic message:", {
-            optimisticId: optimisticMessage.id,
-            realId: realMessage.id,
-            optimisticTime: optimisticMessage.createdAt,
-            realTime: realMessage.createdAt
-          });
 
           // GUARANTEED REPLACEMENT: Always remove the specific optimistic message
           // This ensures we don't have stale optimistic messages lingering
           setMessages((prev) => {
-            console.log("🔄 Current messages before replacement:", prev.length);
-            console.log("🔍 Looking for optimistic message to remove:", optimisticMessage.id);
-
-            const withoutOptimistic = prev.filter((m) => {
-              const shouldRemove = m.id === optimisticMessage.id;
-              if (shouldRemove) {
-                console.log("✂️ Removing optimistic message:", m.id);
-              }
-              return !shouldRemove;
-            });
-
-            console.log("🔄 Messages after optimistic removal:", withoutOptimistic.length);
+            const withoutOptimistic = prev.filter((m) => m.id !== optimisticMessage.id);
 
             const realMessageData = {
               id: realMessage.id,
@@ -450,10 +374,8 @@ export function useRealtimeConversation({
             const realMessageExists = withoutOptimistic.some(m => m.id === realMessage.id);
 
             if (realMessageExists) {
-              console.log("✅ Real message already exists from WebSocket, just removing optimistic");
               return withoutOptimistic;
             } else {
-              console.log("➕ Adding real message from server response");
               const updatedMessages = [...withoutOptimistic, realMessageData];
               return updatedMessages.sort((a, b) => {
                 const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
@@ -469,15 +391,6 @@ export function useRealtimeConversation({
             type: "broadcast",
             event: "new_message",
             payload: realMessage,
-          });
-        } else {
-          console.error("❌ REPLACEMENT CONDITIONS NOT MET - Optimistic message will remain!", {
-            success: result.success,
-            hasData: !!result.data,
-
-            hasDataData: !!result.data,
-            hasId: result.data?.id,
-            optimisticMessageId: optimisticMessage.id
           });
         }
 
@@ -495,7 +408,7 @@ export function useRealtimeConversation({
         setIsSending(false);
       }
     },
-    [conversationId, currentUserId, isConnected, isSending, isTyping, supabase]
+    [conversationId, currentUserId, currentUserName, isConnected, isSending, isTyping, supabase]
   );
 
   const startTyping = useCallback(() => {
@@ -508,7 +421,7 @@ export function useRealtimeConversation({
         payload: { userId: currentUserId, username: currentUserName, isTyping: true },
       });
     }
-  }, [conversationId, currentUserId, isTyping, isConnected, supabase]);
+  }, [isTyping, isConnected, supabase, conversationId, currentUserId, currentUserName]);
 
   const stopTyping = useCallback(() => {
     if (isTyping && isConnected) {
@@ -520,7 +433,8 @@ export function useRealtimeConversation({
         payload: { userId: currentUserId, username: currentUserName, isTyping: false },
       });
     }
-  }, [conversationId, currentUserId, isTyping, isConnected, supabase]);
+  }, [isTyping, isConnected, supabase, conversationId, currentUserId, currentUserName]);
+
 
   return {
     messages,

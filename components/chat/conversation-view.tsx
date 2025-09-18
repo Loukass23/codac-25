@@ -90,6 +90,7 @@ export function ConversationView({
     currentUserName,
   });
 
+
   // Window focus detection for auto-read functionality
   useEffect(() => {
     const handleFocus = () => setIsWindowFocused(true);
@@ -123,7 +124,6 @@ export function ConversationView({
       await markConversationReadAction({ conversationId });
       // Also sync notifications
       syncConversationRead(conversationId);
-      console.log('📖 Auto-marked conversation as read:', conversationId);
     } catch (error) {
       console.error('Failed to mark conversation as read:', error);
     }
@@ -131,95 +131,50 @@ export function ConversationView({
 
   // Combine conversation messages with realtime messages
   const allMessages = useMemo(() => {
-    if (!conversation?.messages) return realtimeMessages || [];
+    // If no conversation loaded yet, return realtime messages only
+    if (!conversation?.messages) {
+      const safeRealtimeMessages = Array.isArray(realtimeMessages) ? realtimeMessages : [];
+      return safeRealtimeMessages;
+    }
 
     // Ensure realtimeMessages is an array
     const safeRealtimeMessages = Array.isArray(realtimeMessages) ? realtimeMessages : [];
 
-    // Debug what we're getting from realtime
-    console.log("🔄 Realtime messages received:", {
-      count: safeRealtimeMessages.length,
-      messages: safeRealtimeMessages.map(m => ({
-        id: m.id,
-        content: m.content?.substring(0, 20),
-        createdAt: m.createdAt,
-        isTemp: m.id?.startsWith('temp-'),
-        userId: m.userId
-      }))
+    // Simple deduplication: create a Map with message ID as key
+    const messageMap = new Map();
+
+    // Add conversation messages first (these are authoritative)
+    conversation.messages.forEach(msg => {
+      if (msg.id) {
+        messageMap.set(msg.id, {
+          ...msg,
+          createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
+        });
+      }
     });
 
-    // Get conversation message IDs for deduplication
-    const conversationMessageIds = new Set(
-      conversation.messages.map((m) => m.id).filter(Boolean)
-    );
-
-    // Filter realtime messages to only include new ones not in conversation
-    const newRealtimeMessages = safeRealtimeMessages.filter(
-      (m) => m.id && !conversationMessageIds.has(m.id) && !m.id.startsWith('temp-')
-    );
-
-    // Get temporary messages, but only if no corresponding real message exists
-    const tempMessages = safeRealtimeMessages.filter(
-      (m) => {
-        if (!m.id || !m.id.startsWith('temp-')) return false;
-
-        // Check if there's a real message with same content and user from the last 30 seconds
-        const hasRealEquivalent = [...conversation.messages, ...newRealtimeMessages].some(realMsg =>
-          realMsg.content === m.content &&
-          realMsg.userId === m.userId &&
-          Math.abs(new Date(realMsg.createdAt).getTime() - new Date(m.createdAt).getTime()) < 30000
-        );
-
-        return !hasRealEquivalent;
+    // Add realtime messages, but only if they don't already exist
+    safeRealtimeMessages.forEach(msg => {
+      if (msg.id && !messageMap.has(msg.id)) {
+        messageMap.set(msg.id, {
+          id: msg.id,
+          content: msg.content,
+          createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
+          userName: msg.userName,
+          userId: msg.userId,
+          user: msg.user,
+        });
       }
-    );
+    });
 
-    // Convert realtime messages to match conversation message structure
-    const convertedRealtimeMessages = newRealtimeMessages.map((msg) => ({
-      id: msg.id,
-      content: msg.content,
-      createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
-      userName: msg.userName,
-      userId: msg.userId,
-      user: msg.user,
-    }));
-
-    const convertedTempMessages = tempMessages.map((msg) => ({
-      id: msg.id,
-      content: msg.content,
-      createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
-      userName: msg.userName,
-      userId: msg.userId,
-      user: msg.user,
-    }));
-
-    // Combine all messages and sort by creation date
-    const combined = [...conversation.messages, ...convertedRealtimeMessages, ...convertedTempMessages].sort(
-      (a, b) => {
-        // Ensure both dates are Date objects for proper comparison
-        const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
-        const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
-        return dateA.getTime() - dateB.getTime();
-      }
-    );
-
-    // Debug logging to see what messages we're actually displaying
-    console.log("🔍 AllMessages Debug:", {
-      conversationMessagesCount: conversation.messages.length,
-      realtimeMessagesCount: newRealtimeMessages.length,
-      tempMessagesCount: tempMessages.length,
-      totalCombined: combined.length,
-      lastFewMessages: combined.slice(-3).map(m => ({
-        id: m.id,
-        content: m.content.substring(0, 20),
-        createdAt: m.createdAt,
-        source: m.id.startsWith('temp-') ? 'optimistic' :
-          newRealtimeMessages.some(rm => rm.id === m.id) ? 'realtime' : 'database'
-      }))
+    // Convert to array and sort by creation date
+    const combined = Array.from(messageMap.values()).sort((a, b) => {
+      return a.createdAt.getTime() - b.createdAt.getTime();
     });
 
     return combined;
   }, [conversation?.messages, realtimeMessages]);
+
 
   // Auto-read when window regains focus
   useEffect(() => {
@@ -456,6 +411,7 @@ export function ConversationView({
     (a, b) => new Date(a).getTime() - new Date(b).getTime()
   );
 
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -519,7 +475,8 @@ export function ConversationView({
               })}
             </div>
           </div>
-        ))}
+        )
+        )}
 
         {/* Empty state */}
         {allMessages.length === 0 && (
