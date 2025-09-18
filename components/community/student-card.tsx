@@ -1,4 +1,4 @@
-import { Github, Linkedin, ExternalLink, Briefcase, Calendar, Trophy, FileText, MessageSquare, BookOpen } from 'lucide-react';
+import { Github, Linkedin, ExternalLink, Briefcase, Calendar, Trophy, MessageSquare, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 import { ChatButton } from '@/components/chat/chat-button';
@@ -124,21 +124,16 @@ export function StudentCard({ student, cohortName, currentUserId }: StudentCardP
                 )}
 
                 {/* Graduation date */}
-                {student.graduationDate && (
+                {student.endDate && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                         <Trophy className="h-4 w-4" />
-                        <span>Graduated {formatDate(student.graduationDate)}</span>
+                        <span>Graduated {formatDate(student.endDate)}</span>
                     </div>
                 )}
 
                 {/* Activity stats */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                            {student._count.documents} doc{student._count.documents !== 1 ? 's' : ''}
-                        </span>
-                    </div>
+
                     <div className="flex items-center gap-2 text-sm">
                         <BookOpen className="h-4 w-4 text-muted-foreground" />
                         <span className="text-muted-foreground">

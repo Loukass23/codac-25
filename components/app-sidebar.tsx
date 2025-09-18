@@ -2,13 +2,16 @@
 
 import {
   Users,
-  BookOpen,
-  MessageCircle,
-  Home,
-  User as UserIcon,
+  Briefcase,
+  Code2,
+  LayoutDashboard,
   GraduationCap,
-  Pyramid,
-  Folder,
+  HandHeart,
+  MessageCircle,
+  User2,
+  BookOpen,
+  Lock,
+  ClipboardCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,87 +30,167 @@ import {
 } from "@/components/ui/sidebar";
 import { useTotalUnreadCount } from "@/hooks/use-total-unread-count";
 
-import { NavTop } from "./nav-top";
+import { NavSecondary } from "./nav-secondary";
+import { NavTop, NavigationGroup } from "./nav-top";
 import { NavUser } from "./nav-user";
 
-const buildNavigationData = (_userRole?: string, unreadCount?: number) => {
-  const baseNavigation = [
+const buildNavigationData = (role?: string): NavigationGroup[] => {
+  // Build mentorship items based on role
+  const mentorshipItems = [];
+  if (role === "MENTOR" || role === "ADMIN") {
+    mentorshipItems.push({
+      title: "My Sessions",
+      url: "/mentorship/sessions",
+    });
+  } else {
+    mentorshipItems.push(
+      {
+        title: "Find Mentors",
+        url: "/mentorship/find",
+      },
+      {
+        title: "My Sessions",
+        url: "/mentorship/my-mentors",
+      }
+    );
+  }
+
+  // Build career items based on role
+  const careerItems = [
     {
-      title: "Dashboard",
-      url: "/",
-      icon: Home,
+      title: "Jobs",
+      url: "/career/jobs",
     },
     {
-      title: "Profile",
-      url: "/profile",
-      icon: UserIcon,
+      title: "Upload Duck",
+      url: "/career/ducks/upload",
     },
   ];
 
-  const communityNavigation = [
+  // Add career admin items for authorized roles
+  if (role === "ADMIN" || role === "MENTOR") {
+    careerItems.push({
+      title: "Post Job",
+      url: "/career/jobs/post",
+    });
+  }
+
+  // Build learning items based on role
+  const learningItems = [
     {
-      title: "Community",
-      url: "/community",
-      icon: Users,
-    },
-    {
-      title: "Mentorship",
-      url: "/mentorship",
+      title: "Learning",
+      url: "/lms",
       icon: BookOpen,
+    },
+  ];
+
+  if (role === "ADMIN") {
+    learningItems.push({
+      title: "LMS Admin",
+      url: "/lms/admin",
+      icon: Lock
+    });
+
+    if (role === "ADMIN") {
+      learningItems.push({
+        title: "Attendance",
+        url: "/attendance",
+        icon: ClipboardCheck,
+      });
+    }
+  }
+
+  return [
+    {
+      title: "Overview",
+      icon: LayoutDashboard,
+      items: [
+        {
+          title: "Dashboard",
+          url: "/",
+        },
+      ],
     },
     {
       title: "Projects",
-      url: "/projects",
-      icon: Folder,
+      icon: Code2,
+      items: [
+        {
+          title: "My Projects",
+          url: "/projects/my",
+        },
+        {
+          title: "Browse Projects",
+          url: "/projects",
+        },
+        {
+          title: "Showcase",
+          url: "/showcase",
+        },
+      ],
     },
-  ];
-
-  const learningNavigation = [
+    {
+      title: "Community",
+      icon: Users,
+      items: [
+        {
+          title: "Community",
+          url: "/community",
+        },
+        {
+          title: "Cohorts",
+          url: "/community/cohorts",
+        },
+      ],
+    },
+    {
+      title: "Career",
+      icon: Briefcase,
+      items: careerItems,
+    },
+    {
+      title: "Mentorship",
+      icon: HandHeart,
+      items: mentorshipItems,
+    },
     {
       title: "Learning",
-      url: "/learning",
       icon: GraduationCap,
+      items: learningItems,
     },
-    {
-      title: "Quizzes",
-      url: "/learning/quiz",
-      icon: Pyramid,
-    },
-    {
-      title: "Chat",
-      url: "/chat",
-      icon: MessageCircle,
-      badge:
-        unreadCount && unreadCount > 0 ? unreadCount.toString() : undefined,
-    },
-  ];
 
-  return {
-    navTop: [...baseNavigation, ...communityNavigation, ...learningNavigation],
-    navSecondary: [],
-    footer: [],
-  };
+  ];
 };
+
+const navSecondaryItems = [
+  {
+    title: "Chat",
+    url: "/chat",
+    icon: MessageCircle,
+  },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: User2,
+  },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
-  const { totalUnreadCount } = useTotalUnreadCount();
-  const [navData, setNavData] = React.useState(() =>
-    buildNavigationData(undefined, 0)
+  const [navGroups, setNavGroups] = React.useState(() =>
+    buildNavigationData(undefined)
   );
 
   // Update navigation when user role or unread count changes
   React.useEffect(() => {
     if (session?.user) {
       const userData = session.user as User;
-      setNavData(buildNavigationData(userData.role, totalUnreadCount));
-    } else {
-      setNavData(buildNavigationData(undefined, totalUnreadCount));
+      setNavGroups(buildNavigationData(userData.role));
     }
   }, [session, totalUnreadCount]);
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar variant="sidebar" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -133,8 +216,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="px-0">
-        <NavTop items={[...navData.navTop, ...navData.navSecondary]} />
+      <SidebarContent className="px-0 flex flex-col">
+        <div className="flex-1">
+          <NavTop groups={navGroups} />
+        </div>
+        <div className="mt-auto">
+          <NavSecondary items={navSecondaryItems} />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

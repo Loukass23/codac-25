@@ -219,8 +219,8 @@ export function CreateConversationDialog({
         const errorMessage = result.success
           ? "Failed to create conversation"
           : typeof result.error === "string"
-          ? result.error
-          : "Failed to create conversation";
+            ? result.error
+            : "Failed to create conversation";
         console.error("Failed to create conversation:", errorMessage);
         setError(errorMessage);
       }
@@ -453,10 +453,9 @@ export function CreateConversationDialog({
                   {type === "DIRECT" ? "Checking..." : "Creating..."}
                 </>
               ) : (
-                `Create ${
-                  type === "DIRECT"
-                    ? "Conversation"
-                    : type.charAt(0) + type.slice(1).toLowerCase()
+                `Create ${type === "DIRECT"
+                  ? "Conversation"
+                  : type.charAt(0) + type.slice(1).toLowerCase()
                 }`
               )}
             </Button>

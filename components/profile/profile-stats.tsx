@@ -1,8 +1,6 @@
 'use client';
 
 import {
-    FileText,
-    Heart,
     MessageSquare,
     Trophy,
     BookOpen,
@@ -21,20 +19,7 @@ type ProfileStatsProps = {
 
 export function ProfileStats({ user }: ProfileStatsProps) {
     const stats = [
-        {
-            label: 'Documents',
-            value: user._count.documents,
-            icon: FileText,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-100'
-        },
-        {
-            label: 'Favorites',
-            value: user._count.favorites,
-            icon: Heart,
-            color: 'text-red-600',
-            bgColor: 'bg-red-100'
-        },
+
         {
             label: 'Comments',
             value: user._count.comments,
@@ -138,14 +123,14 @@ export function ProfileStats({ user }: ProfileStatsProps) {
                         </div>
                     )}
 
-                    {user.status === 'GRADUATED' && user.graduationDate && (
+                    {user.status === 'GRADUATED' && user.endDate && (
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Trophy className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm">Graduated</span>
                             </div>
                             <span className="text-sm font-medium">
-                                {new Date(user.graduationDate).toLocaleDateString('en-US', {
+                                {new Date(user.endDate).toLocaleDateString('en-US', {
                                     month: 'short',
                                     year: 'numeric'
                                 })}

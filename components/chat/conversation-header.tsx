@@ -91,22 +91,22 @@ export function ConversationHeader({
       const otherParticipant = conversation.participants.find(
         (p: any) => p.user.id !== currentUserId
       );
-      
+
       // Check if the other user is online
       const isOnline = onlineUsers.some(user => user.userId === otherParticipant?.user.id);
-      
+
       if (isOnline) {
         return "Online";
       }
-      
+
       return otherParticipant?.user.email || "Direct message";
     }
 
     // For group conversations, show online count
-    const onlineCount = onlineUsers.filter(user => 
+    const onlineCount = onlineUsers.filter(user =>
       conversation.participants.some(p => p.user.id === user.userId)
     ).length;
-    
+
     if (onlineCount > 0) {
       return `${conversation.participants.length} participants • ${onlineCount} online`;
     }
@@ -150,7 +150,7 @@ export function ConversationHeader({
                 (p: any) => p.user.id !== currentUserId
               );
               const isOnline = onlineUsers.some(user => user.userId === otherParticipant?.user.id);
-              
+
               return isOnline ? (
                 <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-background rounded-full" />
               ) : null;

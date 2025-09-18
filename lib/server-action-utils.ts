@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 // Generic server action result type
 export type ServerActionResult<T = unknown> =
   | { success: true; data: T }
-  | { success: false; error: string | z.ZodError["errors"] };
+  | { success: false; error: string | z.ZodError["errors"]; validationErrors?: z.ZodError["errors"] };
 
 // Common Prisma error handling
 export function handlePrismaError(
@@ -131,7 +131,8 @@ export const commonSelects = {
         slug: true,
       },
     },
-    graduationDate: true,
+    startDate: true,
+    endDate: true,
     linkedinUrl: true,
     githubUrl: true,
     portfolioUrl: true,
@@ -154,7 +155,8 @@ export const commonSelects = {
         slug: true,
       },
     },
-    graduationDate: true,
+    startDate: true,
+    endDate: true,
     linkedinUrl: true,
     githubUrl: true,
     portfolioUrl: true,
@@ -167,17 +169,6 @@ export const commonSelects = {
     id: true,
     name: true,
     email: true,
-  },
-  document: {
-    id: true,
-    title: true,
-    content: true,
-    createdAt: true,
-    updatedAt: true,
-    isPublished: true,
-    isArchived: true,
-    parentId: true,
-    type: true,
   },
 } as const;
 
@@ -195,12 +186,10 @@ export type UserWithCounts = Prisma.UserGetPayload<{
   include: {
     _count: {
       select: {
-        documents: true;
         enrollments: true;
         posts: true;
         comments: true;
         achievements: true;
-        favorites: true;
       };
     };
   };
@@ -208,28 +197,6 @@ export type UserWithCounts = Prisma.UserGetPayload<{
   specialty?: string;
 };
 
-// Type helper for document with author
-export type DocumentWithAuthor = Prisma.DocumentGetPayload<{
-  include: {
-    author: {
-      select: typeof commonSelects.author;
-    };
-  };
-}>;
-
-// Type helper for document with full relations
-export type DocumentWithRelations = Prisma.DocumentGetPayload<{
-  include: {
-    author: {
-      select: typeof commonSelects.author;
-    };
-    children: true;
-    parent: true;
-    favorites: true;
-    comments: true;
-    suggestions: true;
-  };
-}>;
 
 // Permission checking logic is implemented in lib/permissions.ts
 export async function checkPermission(
@@ -281,58 +248,54 @@ export async function checkPermission(
   }
 }
 
-// Chat-specific server action handler that includes authentication
+// Helper function to create consistent return types
+export function createReturnType<T>(
+  success: boolean,
+  data: T | null,
+  message?: string
+): ServerActionResult<T> {
+  if (success) {
+    return { success: true, data: data as T };
+  } else {
+    return { success: false, error: message || 'An error occurred' };
+  }
+}
+
+// Standardized server action handler following CODAC patterns
 export async function handleServerAction<TInput, TOutput>(
   schema: z.ZodSchema<TInput>,
   input: unknown,
-  handler: (context: { parsed: TInput; user: any }) => Promise<TOutput>
+  handler: (context: { parsed: TInput; user: any }) => Promise<{ ok: boolean; data: TOutput }>
 ): Promise<ServerActionResult<TOutput>> {
-  const startTime = Date.now();
-
   try {
     // Parse and validate input
     const parsed = schema.parse(input);
 
-    // Get authenticated user from NextAuth
+    // Get current user from auth
     const session = await auth();
     const user = session?.user;
 
-    if (!user) {
-      throw new Error("Authentication required");
-    }
-
-    // Call the handler with validated input and user
+    // Execute the handler with context
     const result = await handler({ parsed, user });
 
-    logger.info("Server action completed successfully", {
-      metadata: {
-        duration: Date.now() - startTime,
-        success: true,
-        userId: user.id,
-      },
+    if (!result.ok) {
+      return { success: false, error: 'Operation failed' };
+    }
+
+    return { success: true, data: result.data };
+  } catch (error) {
+    logger.error('Server action error', error instanceof Error ? error : new Error(String(error)), {
+      metadata: { input }
     });
 
-    return { success: true, data: result };
-  } catch (error) {
-    logger.error(
-      "Server action error",
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        metadata: {
-          duration: Date.now() - startTime,
-        },
-      }
-    );
-
-    if (error instanceof Error && error.name === "ZodError") {
-      logger.logValidationError("server-action", (error as z.ZodError).errors);
-      return { success: false, error: handleValidationError(error) };
+    if (error instanceof z.ZodError) {
+      return { success: false, error: 'Invalid input data', validationErrors: error.errors };
     }
 
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return { success: false, error: handlePrismaError(error) };
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
     }
 
-    return { success: false, error: "An unexpected error occurred" };
+    return { success: false, error: 'An unexpected error occurred' };
   }
 }

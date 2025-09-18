@@ -68,7 +68,7 @@ export function ChatLayout({ currentUserId, currentUserName }: ChatLayoutProps) 
     if (conversationParam && conversationParam !== selectedConversationId) {
       console.log('🔗 Setting conversation from URL:', conversationParam);
       setSelectedConversationId(conversationParam);
-      
+
       // Set as pending conversation to ensure it gets selected when available
       setPendingConversationId(conversationParam);
 

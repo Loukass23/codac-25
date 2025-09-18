@@ -20,7 +20,7 @@ export class AuthHelpers {
 
     // Wait for form to be fully loaded
     await this.page.waitForSelector('input[type="email"]', { timeout: 10000 });
-    
+
     // Use robust selectors that match the actual form structure
     const emailInput = this.page.locator('input[type="email"]');
     const passwordInput = this.page.locator('input[type="password"]');
@@ -54,7 +54,7 @@ export class AuthHelpers {
     await this.page.goto('/auth/signin');
     await this.page.waitForLoadState('networkidle');
     await this.page.waitForSelector('input[type="email"]', { timeout: 10000 });
-    
+
     await this.page.locator('input[type="email"]').fill(email);
     const magicLinkButton = this.page.getByRole('button', { name: /Send Magic Link/i });
     await magicLinkButton.click();
@@ -70,7 +70,7 @@ export class AuthHelpers {
   }) {
     await this.page.goto('/auth/signup');
     await this.page.waitForLoadState('networkidle');
-    
+
     // Wait for form to be fully loaded
     await this.page.waitForSelector('input[name="name"]', { timeout: 10000 });
 
@@ -104,7 +104,7 @@ export class AuthHelpers {
     // Try to find link to signup from signin page, or navigate directly
     await this.page.goto('/auth/signin');
     await this.page.waitForLoadState('networkidle');
-    
+
     const signUpLink = this.page.getByRole('link', { name: /sign up/i });
     if (await signUpLink.isVisible().catch(() => false)) {
       await signUpLink.click();
@@ -168,7 +168,7 @@ export class AuthHelpers {
     try {
       await this.page.waitForFunction(() => {
         return !window.location.pathname.startsWith('/auth/signin') &&
-        !window.location.pathname.startsWith('/auth/error');
+          !window.location.pathname.startsWith('/auth/error');
       }, { timeout: 15000 });
     } catch (error) {
       // If timeout, check if we're on an error page
@@ -257,29 +257,67 @@ export class AuthHelpers {
     name: 'Test User'
   }) {
     await this.page.addInitScript((userData) => {
-      // Mock NextAuth session data
-      window.localStorage.setItem('nextauth.session-token', 'mock-session-token');
-      window.localStorage.setItem('user-data', JSON.stringify(userData));
+      try {
+        // Mock NextAuth session data only if localStorage is available
+        if (typeof Storage !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem('nextauth.session-token', 'mock-session-token');
+          window.localStorage.setItem('user-data', JSON.stringify(userData));
+        }
+      } catch (error) {
+        console.warn('Failed to set mock auth state in localStorage:', error);
+      }
     }, userData);
   }
 
   async clearAuthState() {
-    await this.page.evaluate(() => {
-      // Clear all auth-related localStorage and sessionStorage
-      const keys = Object.keys(localStorage);
-      keys.forEach(key => {
-        if (key.includes('nextauth') || key.includes('auth') || key.includes('user')) {
-          localStorage.removeItem(key);
-        }
-      });
+    try {
+      // Ensure page is loaded and accessible before clearing storage
+      await this.page.waitForLoadState('domcontentloaded');
 
-      const sessionKeys = Object.keys(sessionStorage);
-      sessionKeys.forEach(key => {
-        if (key.includes('nextauth') || key.includes('auth') || key.includes('user')) {
-          sessionStorage.removeItem(key);
+      // Navigate to a safe page first to ensure we have proper context
+      await this.page.goto('/');
+      await this.page.waitForLoadState('networkidle');
+
+      await this.page.evaluate(() => {
+        try {
+          // Clear all auth-related localStorage
+          if (typeof Storage !== 'undefined' && window.localStorage) {
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+              if (key.includes('nextauth') || key.includes('auth') || key.includes('user')) {
+                try {
+                  localStorage.removeItem(key);
+                } catch (e) {
+                  // Ignore individual key removal errors
+                  console.warn('Failed to remove localStorage key:', key, e);
+                }
+              }
+            });
+          }
+
+          // Clear all auth-related sessionStorage
+          if (typeof Storage !== 'undefined' && window.sessionStorage) {
+            const sessionKeys = Object.keys(sessionStorage);
+            sessionKeys.forEach(key => {
+              if (key.includes('nextauth') || key.includes('auth') || key.includes('user')) {
+                try {
+                  sessionStorage.removeItem(key);
+                } catch (e) {
+                  // Ignore individual key removal errors
+                  console.warn('Failed to remove sessionStorage key:', key, e);
+                }
+              }
+            });
+          }
+        } catch (error) {
+          // Storage not available or other error
+          console.warn('Storage access denied or not available:', error);
         }
       });
-    });
+    } catch (error) {
+      // If clearing fails, continue with tests - don't fail the entire test
+      console.warn('Failed to clear auth state:', error);
+    }
   }
 
   // === OAUTH SIMULATION HELPERS ===
@@ -467,11 +505,12 @@ export class MockHelpers {
  * Test data factory
  */
 export class TestDataFactory {
-  static createUser(overrides: Partial<{ email: string; name: string; id: string }> = {}) {
+  static createUser(overrides: Partial<{ email: string; name: string; id: string; password: string }> = {}) {
     return {
       id: 'test-user-' + Math.random().toString(36).substr(2, 9),
       email: 'test@example.com',
       name: 'Test User',
+      password: 'password123',
       ...overrides
     };
   }

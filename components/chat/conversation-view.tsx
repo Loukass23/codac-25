@@ -135,7 +135,7 @@ export function ConversationView({
 
     // Ensure realtimeMessages is an array
     const safeRealtimeMessages = Array.isArray(realtimeMessages) ? realtimeMessages : [];
-    
+
     // Debug what we're getting from realtime
     console.log("🔄 Realtime messages received:", {
       count: safeRealtimeMessages.length,
@@ -162,14 +162,14 @@ export function ConversationView({
     const tempMessages = safeRealtimeMessages.filter(
       (m) => {
         if (!m.id || !m.id.startsWith('temp-')) return false;
-        
+
         // Check if there's a real message with same content and user from the last 30 seconds
-        const hasRealEquivalent = [...conversation.messages, ...newRealtimeMessages].some(realMsg => 
-          realMsg.content === m.content && 
+        const hasRealEquivalent = [...conversation.messages, ...newRealtimeMessages].some(realMsg =>
+          realMsg.content === m.content &&
           realMsg.userId === m.userId &&
           Math.abs(new Date(realMsg.createdAt).getTime() - new Date(m.createdAt).getTime()) < 30000
         );
-        
+
         return !hasRealEquivalent;
       }
     );
@@ -202,7 +202,7 @@ export function ConversationView({
         return dateA.getTime() - dateB.getTime();
       }
     );
-    
+
     // Debug logging to see what messages we're actually displaying
     console.log("🔍 AllMessages Debug:", {
       conversationMessagesCount: conversation.messages.length,
@@ -213,11 +213,11 @@ export function ConversationView({
         id: m.id,
         content: m.content.substring(0, 20),
         createdAt: m.createdAt,
-        source: m.id.startsWith('temp-') ? 'optimistic' : 
-                 newRealtimeMessages.some(rm => rm.id === m.id) ? 'realtime' : 'database'
+        source: m.id.startsWith('temp-') ? 'optimistic' :
+          newRealtimeMessages.some(rm => rm.id === m.id) ? 'realtime' : 'database'
       }))
     });
-    
+
     return combined;
   }, [conversation?.messages, realtimeMessages]);
 
@@ -238,7 +238,7 @@ export function ConversationView({
   useEffect(() => {
     if (allMessages.length > 0 && isWindowFocused) {
       const latestMessage = allMessages[allMessages.length - 1];
-      
+
       // Only mark as read if this is a new message we haven't seen
       if (latestMessage.id !== lastReadMessageId) {
         setLastReadMessageId(latestMessage.id);
@@ -258,7 +258,7 @@ export function ConversationView({
       if (disconnectionTimeoutRef.current) {
         clearTimeout(disconnectionTimeoutRef.current);
       }
-      
+
       // Set flag after being disconnected for 3+ seconds
       disconnectionTimeoutRef.current = setTimeout(() => {
         wasDisconnectedForLongRef.current = true;
@@ -269,7 +269,7 @@ export function ConversationView({
         clearTimeout(disconnectionTimeoutRef.current);
         disconnectionTimeoutRef.current = null;
       }
-      
+
       // Only show toast if we were genuinely disconnected for a meaningful period
       if (wasDisconnectedForLongRef.current) {
         const hasMessages = conversation && (conversation.messages?.length > 0 || allMessages.length > 0);
@@ -299,7 +299,7 @@ export function ConversationView({
     setLoading(true);
     setError(null);
     setRetryCount(currentRetryCount);
-    
+
     try {
       const response = await getConversationAction({
         conversationId,
@@ -313,7 +313,7 @@ export function ConversationView({
           typeof response.error === "string"
             ? response.error
             : "Failed to load conversation";
-        
+
         // If conversation not found and we haven't retried too many times,
         // wait a bit and retry (helps with newly created conversations)
         if (errorMessage.includes('not found') && currentRetryCount < 3) {
@@ -322,7 +322,7 @@ export function ConversationView({
           }, 1000 * (currentRetryCount + 1)); // Exponential backoff
           return;
         }
-        
+
         setError(errorMessage);
       }
     } catch (err) {
@@ -333,7 +333,7 @@ export function ConversationView({
         }, 1000 * (currentRetryCount + 1));
         return;
       }
-      
+
       setError("Failed to load conversation");
       console.error("Error loading conversation:", err);
     } finally {
@@ -349,10 +349,10 @@ export function ConversationView({
 
     try {
       setLastFailedMessage(null); // Clear any previous failed message
-      
+
       // Use the real-time sendMessage function which provides optimistic updates
       const result = await sendMessage(content);
-      
+
       if (!result.success) {
         throw new Error(typeof result.error === 'string' ? result.error : 'Failed to send message');
       }
@@ -419,7 +419,7 @@ export function ConversationView({
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">
-            {retryCount > 0 
+            {retryCount > 0
               ? `Loading conversation... (attempt ${retryCount + 1})`
               : "Loading conversation..."
             }
@@ -473,12 +473,12 @@ export function ConversationView({
           </p>
         </div>
       )}
-      
+
       {/* Sending Status */}
       {isSending && (
         <div className="bg-muted  px-4 py-2">
           <p className="text-sm">
-           Sending message...
+            Sending message...
           </p>
         </div>
       )}
@@ -540,8 +540,8 @@ export function ConversationView({
       {typingUsers.length > 0 && (
         <div className="px-4 py-2 text-sm text-muted-foreground italic bg-background/95 backdrop-blur animate-in slide-in-from-bottom-2 duration-200">
           <div className="flex items-center gap-2">
-              {typingUsers.map((user) => user.username).join(", ")}{" "}
-              {typingUsers.length === 1 ? "is" : "are"} typing...
+            {typingUsers.map((user) => user.username).join(", ")}{" "}
+            {typingUsers.length === 1 ? "is" : "are"} typing...
           </div>
         </div>
       )}
@@ -582,16 +582,15 @@ export function ConversationView({
         onSendMessage={handleSendMessage}
         disabled={isSending || !isConnected}
         placeholder={
-          !isConnected 
-            ? "Connecting to chat..." 
-            : isSending 
+          !isConnected
+            ? "Connecting to chat..."
+            : isSending
               ? "Sending..."
-              : `Message ${
-                  conversation?.type === "DIRECT"
-                    ? conversation.participants.find((p) => p.user.id !== currentUserId)
-                        ?.user.name || "user"
-                    : conversation?.name || "conversation"
-                }...`
+              : `Message ${conversation?.type === "DIRECT"
+                ? conversation.participants.find((p) => p.user.id !== currentUserId)
+                  ?.user.name || "user"
+                : conversation?.name || "conversation"
+              }...`
         }
         onStartTyping={startTyping}
         onStopTyping={stopTyping}

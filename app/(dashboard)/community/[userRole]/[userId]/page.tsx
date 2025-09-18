@@ -9,11 +9,9 @@ import {
     ExternalLink,
     Mail,
     Trophy,
-    FileText,
     MessageSquare,
     BookOpen,
     Heart,
-    Star
 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -200,10 +198,10 @@ export default async function UserDetailsPage({ params }: { params: Promise<Para
                                     )}
 
                                     {/* Graduation Date */}
-                                    {user.graduationDate && (
+                                    {user.endDate && (
                                         <div className="flex items-center gap-2 text-muted-foreground mb-2">
                                             <GraduationCap className="h-4 w-4" />
-                                            <span>Graduated {formatDate(user.graduationDate)}</span>
+                                            <span>Graduated {formatDate(user.endDate)}</span>
                                         </div>
                                     )}
 
@@ -233,13 +231,6 @@ export default async function UserDetailsPage({ params }: { params: Promise<Para
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                <div className="text-center">
-                                    <div className="flex items-center justify-center mb-2">
-                                        <FileText className="h-5 w-5 text-blue-500" />
-                                    </div>
-                                    <div className="text-2xl font-bold">{user._count.documents}</div>
-                                    <div className="text-sm text-muted-foreground">Documents</div>
-                                </div>
 
                                 <div className="text-center">
                                     <div className="flex items-center justify-center mb-2">
@@ -265,23 +256,8 @@ export default async function UserDetailsPage({ params }: { params: Promise<Para
                                     <div className="text-sm text-muted-foreground">Achievements</div>
                                 </div>
 
-                                <div className="text-center">
-                                    <div className="flex items-center justify-center mb-2">
-                                        <Heart className="h-5 w-5 text-red-500" />
-                                    </div>
-                                    <div className="text-2xl font-bold">{user._count.favorites}</div>
-                                    <div className="text-sm text-muted-foreground">Favorites</div>
-                                </div>
 
-                                <div className="text-center">
-                                    <div className="flex items-center justify-center mb-2">
-                                        <Star className="h-5 w-5 text-orange-500" />
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                        {user._count.documents + user._count.posts + user._count.comments + user._count.achievements}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">Total Activity</div>
-                                </div>
+
                             </div>
                         </CardContent>
                     </Card>

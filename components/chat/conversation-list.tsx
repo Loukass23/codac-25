@@ -119,7 +119,7 @@ export function ConversationList({
     if (pendingConversationId && !loading) {
       console.log('🔍 Checking for pending conversation:', pendingConversationId);
       console.log('📝 Available conversations:', conversations.map(c => c.id));
-      
+
       // Check if the pending conversation is now available in the list
       const pendingConversation = conversations.find(
         (c) => c.id === pendingConversationId
@@ -257,8 +257,8 @@ export function ConversationList({
                 "w-full h-auto p-3 justify-start flex-col items-start gap-2 transition-colors",
                 selectedConversationId === conversation.id && "bg-muted",
                 hasUnread &&
-                  selectedConversationId !== conversation.id &&
-                  "bg-blue-50 hover:bg-blue-100 border-l-2 border-l-blue-500"
+                selectedConversationId !== conversation.id &&
+                "bg-blue-50 hover:bg-blue-100 border-l-2 border-l-blue-500"
               )}
               onClick={() => onConversationSelect(conversation.id)}
             >
