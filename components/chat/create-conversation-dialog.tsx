@@ -198,8 +198,8 @@ export function CreateConversationDialog({
         participantIds: selectedUserIds,
       });
 
-      if (result.success && (result.data as any)?.data?.conversationId) {
-        const conversationId = (result.data as any).data.conversationId;
+      if (result.success) {
+        const { conversationId } = result.data;
         onConversationCreated?.(conversationId);
 
         // Reset form
