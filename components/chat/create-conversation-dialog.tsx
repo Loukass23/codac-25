@@ -198,14 +198,9 @@ export function CreateConversationDialog({
         participantIds: selectedUserIds,
       });
 
-      if (result.success && result.data?.ok) {
-        const conversationId = result.data?.data?.conversationId || "";
-
-        if (conversationId) {
-          onConversationCreated?.(conversationId);
-        } else {
-          setError("Failed to get conversation ID");
-        }
+      if (result.success && (result.data as any)?.data?.conversationId) {
+        const conversationId = (result.data as any).data.conversationId;
+        onConversationCreated?.(conversationId);
 
         // Reset form
         setOpen(false);
@@ -216,11 +211,9 @@ export function CreateConversationDialog({
         setType("DIRECT");
         setError(null);
       } else {
-        const errorMessage = result.success
-          ? "Failed to create conversation"
-          : typeof result.error === "string"
-            ? result.error
-            : "Failed to create conversation";
+        const errorMessage = !result.success && typeof (result as { error?: string }).error === "string"
+          ? (result as { error: string }).error
+          : "Failed to create conversation";
         console.error("Failed to create conversation:", errorMessage);
         setError(errorMessage);
       }
@@ -270,7 +263,7 @@ export function CreateConversationDialog({
 
           <div>
             <Label htmlFor="type">Conversation Type</Label>
-            <Select value={type} onValueChange={(value: any) => setType(value)}>
+            <Select value={type} onValueChange={(value: "DIRECT" | "GROUP" | "CHANNEL") => setType(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select conversation type" />
               </SelectTrigger>

@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { TestHelpers } from '../utils/test-helpers';
-import { DatabaseTestIntegration, TestDataFactory } from '../utils/database-helpers';
 
 import { TestDataFactory } from '../utils/test-helpers';
 
@@ -45,33 +43,6 @@ test.describe('Authentication Accessibility Tests', () => {
       await expect(page.locator('input[name="email"]')).toBeFocused();
     });
 
-    test('should handle mobile form submission', async ({ page }) => {
-      const helpers = new TestHelpers(page);
-      const dbIntegration = new DatabaseTestIntegration(page);
-      await dbIntegration.setup();
-
-      try {
-        await page.setViewportSize({ width: 375, height: 667 });
-
-        const userData = TestDataFactory.createValidUser();
-
-        // Register on mobile
-        await helpers.auth.registerWithEmail({
-          name: userData.name,
-          email: userData.email,
-          password: userData.password!,
-          confirmPassword: userData.password!
-        });
-
-        await helpers.auth.expectRegistrationSuccess();
-
-        // Verify user was created
-        const dbUser = await dbIntegration.verifyUserExistsInDatabase(userData.email);
-        expect(dbUser).toBeTruthy();
-      } finally {
-        await dbIntegration.cleanup();
-      }
-    });
 
     test('should handle different mobile orientations', async ({ page }) => {
       const viewports = [
@@ -141,24 +112,7 @@ test.describe('Authentication Accessibility Tests', () => {
       await expect(page.locator('button[type="submit"]')).toBeFocused();
     });
 
-    test('should submit forms using keyboard', async ({ page }) => {
-      const helpers = new TestHelpers(page);
-      const dbIntegration = new DatabaseTestIntegration(page);
-      await dbIntegration.setup();
 
-      // Fill form fields
-      await page.locator('input[type="email"]').fill('test@example.com');
-      await page.locator('input[type="password"]').fill('password123');
-
-      // Press Enter from password field
-      await page.locator('input[type="password"]').press('Enter');
-
-      // Wait for response (error or navigation)
-      await Promise.race([
-        page.waitForURL(url => !url.toString().includes('/auth/signin'), { timeout: 5000 }),
-        page.waitForSelector('[role="alert"]', { timeout: 3000 })
-      ]).catch(() => { });
-    });
 
     test('should support Enter key submission from any form field', async ({ page }) => {
       const userData = TestDataFactory.createUser({

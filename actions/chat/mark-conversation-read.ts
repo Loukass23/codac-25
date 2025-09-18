@@ -17,36 +17,31 @@ export async function markConversationReadAction(input: unknown) {
 
         const { conversationId } = parsed
 
-        try {
-            logger.info('Marking conversation as read', {
-                metadata: {
-                    conversationId,
-                    userId: user.id,
-                },
-            })
+        logger.info('Marking conversation as read', {
+            metadata: {
+                conversationId,
+                userId: user.id,
+            },
+        })
 
-            // Update the user's lastSeenAt timestamp for this conversation
-            await prisma.conversationParticipant.updateMany({
-                where: {
-                    conversationId,
-                    userId: user.id,
-                },
-                data: {
-                    lastSeenAt: new Date(),
-                },
-            })
+        // Update the user's lastSeenAt timestamp for this conversation
+        await prisma.conversationParticipant.updateMany({
+            where: {
+                conversationId,
+                userId: user.id,
+            },
+            data: {
+                lastSeenAt: new Date(),
+            },
+        })
 
-            logger.info('Conversation marked as read successfully', {
-                metadata: {
-                    conversationId,
-                    userId: user.id,
-                },
-            })
+        logger.info('Conversation marked as read successfully', {
+            metadata: {
+                conversationId,
+                userId: user.id,
+            },
+        })
 
-            return { success: true }
-        } catch (error) {
-            logger.error('Error marking conversation as read', error instanceof Error ? error : new Error(String(error)))
-            throw error
-        }
+        return { ok: true, data: { success: true } }
     })
 }

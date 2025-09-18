@@ -35,7 +35,7 @@ export async function startDirectMessage(participantId: string) {
 
         // First, check if a direct conversation already exists
         const existingResult = await findExistingDirectConversation(participantId)
-        
+
         if (!existingResult.success) {
             return {
                 success: false,
@@ -65,11 +65,11 @@ export async function startDirectMessage(participantId: string) {
                 }
             }
 
-            conversationId = createResult.data.data.conversationId
+            conversationId = createResult.data.conversationId
             logger.info('Created new conversation', {
                 metadata: { conversationId, participantId }
             })
-            
+
             // Small delay to ensure database transaction is committed
             // This helps prevent race conditions when immediately navigating to the chat
             await new Promise(resolve => setTimeout(resolve, 100))
@@ -79,7 +79,7 @@ export async function startDirectMessage(participantId: string) {
             success: true,
             data: { conversationId }
         }
-        
+
     } catch (error) {
         logger.error('Error starting direct message', error instanceof Error ? error : new Error(String(error)))
         return {

@@ -177,6 +177,7 @@ const navSecondaryItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
+  const { totalUnreadCount } = useTotalUnreadCount();
   const [navGroups, setNavGroups] = React.useState(() =>
     buildNavigationData(undefined)
   );
