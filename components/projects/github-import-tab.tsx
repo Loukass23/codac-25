@@ -4,6 +4,7 @@ import { GitBranch, Loader2, AlertCircle, Search, Github, User, Globe } from 'lu
 import { useState, useTransition } from 'react'
 
 import { fetchRepository } from '@/actions/github/fetch-repository'
+import { RepositorySelector } from '@/components/github/repository-selector'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,8 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { GitHubImportPreview, GitHubImportOptions, CreateProjectData } from '@/types/portfolio'
 
-import { RepositoryPreviewCard } from './repository-preview-card'
-import { RepositorySelector } from '@/components/github/repository-selector'
+import { RepositoryPreviewCard } from '@/components/projects/repository-preview-card'
 
 interface GitHubImportTabProps {
   onImport: (data: Partial<CreateProjectData>) => void
@@ -190,7 +190,7 @@ export function GitHubImportTab({ onImport, onError }: GitHubImportTabProps) {
   const handleCreateProjectFromRepo = async (repository: any) => {
     // Convert to CreateProjectData format and import directly
     const projectData: Partial<CreateProjectData> = {
-      title: repository.name.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      title: repository.name.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
       description: repository.description || `A ${repository.language || 'software'} project`,
       shortDesc: repository.description ?
         (repository.description.length > 150 ?

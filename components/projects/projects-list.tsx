@@ -1,9 +1,9 @@
+
 'use client'
 
-import type { ProjectStatus } from '@prisma/client'
 import { Search, Grid, List } from 'lucide-react'
 import { Filter } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 
 import { Grid as LayoutGrid, Section } from '@/components/layout'
 import { ProjectCard } from '@/components/projects/project-card'
@@ -13,63 +13,24 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
+import { useUrlFilters, type FilterState } from '@/lib/url-utils'
 import { PROJECT_STATUSES, SKILL_CATEGORIES, type ProjectShowcaseWithStats } from '@/types/portfolio'
 
-
 interface ProjectsClientProps {
-  initialProjects: ProjectShowcaseWithStats[]
+  projects: ProjectShowcaseWithStats[]
+  initialFilters: FilterState
 }
 
-type ViewMode = 'grid' | 'list'
-
-export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTech, setSelectedTech] = useState<string[]>([])
-  const [selectedStatus, setSelectedStatus] = useState<ProjectStatus[]>([])
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false)
+export function ProjectsList({ projects }: ProjectsClientProps) {
+  const { updateFilters, clearAllFilters, getCurrentFilters } = useUrlFilters()
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<ViewMode>('grid')
 
-  const filteredProjects = useMemo(() => {
-    return initialProjects.filter((project) => {
-      // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase()
-        const matchesSearch =
-          project.title.toLowerCase().includes(query) ||
-          project.description?.toLowerCase().includes(query) ||
-          project.shortDesc?.toLowerCase().includes(query)
+  // Get current filter state from URL
+  const currentFilters = getCurrentFilters()
+  const { search: searchQuery, tech: selectedTech, status: selectedStatus, featured: showFeaturedOnly, view: viewMode } = currentFilters
 
-        if (!matchesSearch) return false
-      }
-
-      // Tech stack filter
-      if (selectedTech.length > 0) {
-        const projectTech = project.techStack as string[]
-        const hasMatchingTech = selectedTech.some(tech =>
-          projectTech.some(pt => pt.toLowerCase().includes(tech.toLowerCase()))
-        )
-        if (!hasMatchingTech) return false
-      }
-
-      // Status filter
-      if (selectedStatus.length > 0) {
-        if (!selectedStatus.includes(project.status)) return false
-      }
-
-      // Featured filter
-      if (showFeaturedOnly && !project.isFeatured) return false
-
-      return true
-    })
-  }, [initialProjects, searchQuery, selectedTech, selectedStatus, showFeaturedOnly])
-
-  const clearAllFilters = () => {
-    setSearchQuery('')
-    setSelectedTech([])
-    setSelectedStatus([])
-    setShowFeaturedOnly(false)
-  }
+  // Projects are already filtered on the server side, so we use them directly
+  const filteredProjects = projects
 
   const hasActiveFilters = searchQuery || selectedTech.length > 0 || selectedStatus.length > 0 || showFeaturedOnly
   const activeFilterCount = selectedTech.length + selectedStatus.length + (showFeaturedOnly ? 1 : 0)
@@ -85,7 +46,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                 placeholder="Search projects..."
                 className="pl-10"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => updateFilters({ search: e.target.value })}
               />
             </div>
           </div>
@@ -123,7 +84,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                       <Checkbox
                         id="featured"
                         checked={showFeaturedOnly}
-                        onCheckedChange={(checked) => setShowFeaturedOnly(!!checked)}
+                        onCheckedChange={(checked) => updateFilters({ featured: !!checked })}
                       />
                       <label htmlFor="featured" className="text-sm">
                         Show only featured projects
@@ -146,7 +107,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                               const newStatus = checked
                                 ? [...selectedStatus, status.value]
                                 : selectedStatus.filter(s => s !== status.value)
-                              setSelectedStatus(newStatus)
+                              updateFilters({ status: newStatus })
                             }}
                           />
                           <label htmlFor={`status-${status.value}`} className="text-sm">
@@ -172,7 +133,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                               const newTech = checked
                                 ? [...selectedTech, category]
                                 : selectedTech.filter(t => t !== category)
-                              setSelectedTech(newTech)
+                              updateFilters({ tech: newTech })
                             }}
                           />
                           <label htmlFor={`tech-${category}`} className="text-sm">
@@ -187,19 +148,19 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
             </Popover>
 
             <div className="flex items-center rounded-md border p-1">
-              <Button 
-                variant={viewMode === 'grid' ? 'default' : 'ghost'} 
-                size="sm" 
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
                 className="h-7 w-7 p-0"
-                onClick={() => setViewMode('grid')}
+                onClick={() => updateFilters({ view: 'grid' })}
               >
                 <Grid className="h-4 w-4" />
               </Button>
-              <Button 
-                variant={viewMode === 'list' ? 'default' : 'ghost'} 
-                size="sm" 
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
                 className="h-7 w-7 p-0"
-                onClick={() => setViewMode('list')}
+                onClick={() => updateFilters({ view: 'list' })}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -214,7 +175,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
               <Badge variant="secondary" className="gap-1">
                 Search: &quot;{searchQuery}&quot;
                 <button
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => updateFilters({ search: '' })}
                   className="ml-1 text-xs hover:text-destructive"
                 >
                   ×
@@ -225,7 +186,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
               <Badge key={tech} variant="secondary" className="gap-1">
                 {tech}
                 <button
-                  onClick={() => setSelectedTech(prev => prev.filter(t => t !== tech))}
+                  onClick={() => updateFilters({ tech: selectedTech.filter(t => t !== tech) })}
                   className="ml-1 text-xs hover:text-destructive"
                 >
                   ×
@@ -236,7 +197,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
               <Badge key={status} variant="secondary" className="gap-1">
                 {PROJECT_STATUSES.find(s => s.value === status)?.label || status}
                 <button
-                  onClick={() => setSelectedStatus(prev => prev.filter(s => s !== status))}
+                  onClick={() => updateFilters({ status: selectedStatus.filter(s => s !== status) })}
                   className="ml-1 text-xs hover:text-destructive"
                 >
                   ×
@@ -247,7 +208,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
               <Badge variant="secondary" className="gap-1">
                 Featured Only
                 <button
-                  onClick={() => setShowFeaturedOnly(false)}
+                  onClick={() => updateFilters({ featured: false })}
                   className="ml-1 text-xs hover:text-destructive"
                 >
                   ×
@@ -276,7 +237,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
         ) : (
           <>
             <div className="mb-4 text-sm text-muted-foreground">
-              Showing {filteredProjects.length} of {initialProjects.length} projects
+              Showing {filteredProjects.length} of {projects.length} projects
             </div>
             {viewMode === 'grid' ? (
               <LayoutGrid cols="3">

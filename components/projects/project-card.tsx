@@ -1,4 +1,3 @@
-'use client'
 
 import { ExternalLink, Github, MessageSquare, MoreHorizontal, Edit, User } from 'lucide-react'
 import Image from 'next/image'

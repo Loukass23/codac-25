@@ -1,13 +1,42 @@
+import type { ProjectStatus } from '@prisma/client'
+
 import { PageContainer, PageHeader } from '@/components/layout'
-import { ProjectsClient } from '@/components/projects/projects-client'
+import { ProjectsList } from '@/components/projects/projects-list'
 import { getAllProjects } from '@/data/projects/get-projects'
+import type { ProjectFilter } from '@/types/portfolio'
 
 // Dynamic rendering to support user-specific like states
 export const dynamic = 'force-dynamic'
 
-export default async function ProjectsPage() {
-  // Load all projects with user-specific like status
-  const projects = await getAllProjects({})
+interface ProjectsPageProps {
+  searchParams: {
+    search?: string
+    tech?: string | string[]
+    status?: string | string[]
+    featured?: string
+    view?: 'grid' | 'list'
+  }
+}
+
+export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
+  // Parse search parameters into filter object
+  const filter: ProjectFilter = {
+    search: searchParams.search,
+    techStack: Array.isArray(searchParams.tech)
+      ? searchParams.tech
+      : searchParams.tech
+        ? [searchParams.tech]
+        : undefined,
+    status: Array.isArray(searchParams.status)
+      ? searchParams.status as ProjectStatus[]
+      : searchParams.status
+        ? [searchParams.status] as ProjectStatus[]
+        : undefined,
+    featured: searchParams.featured === 'true' ? true : undefined,
+  }
+
+  // Load projects with applied filters
+  const projects = await getAllProjects(filter)
 
   return (
     <PageContainer>
@@ -17,7 +46,24 @@ export default async function ProjectsPage() {
         size="lg"
       />
 
-      <ProjectsClient initialProjects={projects} />
+      <ProjectsList
+        projects={projects}
+        initialFilters={{
+          search: searchParams.search || '',
+          tech: Array.isArray(searchParams.tech)
+            ? searchParams.tech
+            : searchParams.tech
+              ? [searchParams.tech]
+              : [],
+          status: Array.isArray(searchParams.status)
+            ? searchParams.status as ProjectStatus[]
+            : searchParams.status
+              ? [searchParams.status] as ProjectStatus[]
+              : [],
+          featured: searchParams.featured === 'true',
+          view: searchParams.view || 'grid'
+        }}
+      />
     </PageContainer>
   )
 }

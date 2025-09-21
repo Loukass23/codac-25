@@ -8,7 +8,7 @@ interface UserProfileAvatarProps {
     user: {
         id: string;
         name?: string;
-        email: string;
+        email?: string;
         avatar?: string;
     };
 }
@@ -33,7 +33,7 @@ export function UserProfileAvatar({ user }: UserProfileAvatarProps) {
 
             <div className="text-center">
                 <h3 className="text-lg font-semibold">{user.name || 'User'}</h3>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="text-sm text-muted-foreground">{user.email || ''}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                     Click avatar to update
                 </p>
