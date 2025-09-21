@@ -33,7 +33,7 @@ export function ProjectActions({ projectId }: ProjectActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href={`/projects/${projectId}/edit`}>
+          <Link href={`/projects/${projectId}`}>
             <Edit className="h-4 w-4 mr-2" />
             Edit Project
           </Link>

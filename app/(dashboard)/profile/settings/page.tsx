@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import { GitHubIntegrationCard } from '@/components/profile/github-integration-card';
 import { ProfileSettingsForm } from '@/components/profile/profile-settings-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,8 +50,9 @@ export default async function ProfileSettingsPage() {
                         <ProfileSettingsForm user={fullUser} />
                     </div>
 
-                    {/* Account Information */}
-                    <div className="lg:col-span-1">
+                    {/* Sidebar */}
+                    <div className="lg:col-span-1 space-y-6">
+                        {/* Account Information */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Account Information</CardTitle>
@@ -94,6 +96,9 @@ export default async function ProfileSettingsPage() {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {/* GitHub Integration */}
+                        <GitHubIntegrationCard />
                     </div>
                 </div>
             </div>

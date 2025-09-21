@@ -51,6 +51,7 @@ export function SignInForm({
   const [password, setPassword] = useState("")
   const [isCredentialsLoading, setIsCredentialsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false)
   const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false)
 
   // Get parameters from URL
@@ -118,6 +119,19 @@ export function SignInForm({
     }
   };
 
+  const handleGitHubSignIn = async () => {
+    setIsGitHubLoading(true);
+    setError(undefined);
+
+    try {
+      await signIn("github", { callbackUrl });
+    } catch {
+      setError("An error occurred during GitHub sign in.");
+    } finally {
+      setIsGitHubLoading(false);
+    }
+  };
+
   const handleMagicLinkSignIn = async () => {
     if (!email) {
       setError("Please enter your email address");
@@ -144,7 +158,7 @@ export function SignInForm({
     }
   };
 
-  const isAnyLoading = isCredentialsLoading || isGoogleLoading || isMagicLinkLoading;
+  const isAnyLoading = isCredentialsLoading || isGoogleLoading || isGitHubLoading || isMagicLinkLoading;
 
   // Show loading while checking authentication status
   if (status === "loading") {
@@ -216,6 +230,17 @@ export function SignInForm({
           {isGoogleLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
           <Icons.google className="mr-2 h-4 w-4" />
           Google
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleGitHubSignIn}
+          disabled={isAnyLoading}
+        >
+          {isGitHubLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+          <Icons.gitHub className="mr-2 h-4 w-4" />
+          GitHub
         </Button>
 
         <Button

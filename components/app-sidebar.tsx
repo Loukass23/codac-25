@@ -72,6 +72,9 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
         {
           title: "Dashboard",
           url: "/home",
+        }, {
+          title: "Showcase",
+          url: "/showcase",
         },
       ],
     },
@@ -87,10 +90,7 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
           title: "Browse Projects",
           url: "/projects",
         },
-        {
-          title: "Showcase",
-          url: "/showcase",
-        },
+
       ],
     },
     {
@@ -159,16 +159,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-2"
+              className="data-[slot=sidebar-menu-button]:!p-1 group-data-[collapsible=icon]:!justify-center"
             >
-              <Link href="/">
-
+              <Link href="/" className="flex items-center justify-center group-data-[collapsible=icon]:w-full">
                 <CodacLogo
                   size="sm"
-
+                  className="group-data-[collapsible=icon]:scale-70"
                 />
-                <div className="flex-1 text-left leading-tight group-data-[collapsible=icon]:group-data-[state=collapsed]:hidden">
-                  <span className="font-codac-brand text-2xl uppercase tracking-wider text-codac-pink">
+                <div className="flex-1 group-data-[collapsible=icon]:group-data-[state=collapsed]:hidden">
+                  <span className="animate-in fade-in duration-300 font-codac-brand text-4xl uppercase tracking-wider text-secondary-foreground/80">
                     codac
                   </span>
                 </div>

@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { useUserAvatar } from '@/hooks/use-user-avatar';
 
 interface AvatarUploadProps {
     userId: string;
@@ -37,6 +38,7 @@ export function AvatarUpload({
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { refreshAvatar } = useUserAvatar();
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -73,6 +75,8 @@ export function AvatarUpload({
             if (result.success) {
                 toast.success('Avatar updated successfully');
                 onAvatarUpdate?.(previewImage);
+                // Refresh the header avatar to keep it in sync
+                refreshAvatar();
                 setIsDialogOpen(false);
                 setPreviewImage(null);
             } else {

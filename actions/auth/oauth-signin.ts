@@ -9,7 +9,7 @@ export async function oAuthSignIn(
   callbackUrl: string
 ) {
   try {
-    await signIn(provider, { redirectTo: callbackUrl, redirect: true });
+    await signIn(provider, { callbackUrl, redirect: true });
   } catch (error) {
     if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
       // This is an expected error when redirecting, so we can ignore it.

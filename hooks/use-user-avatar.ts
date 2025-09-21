@@ -1,48 +1,65 @@
-import { useState, useEffect } from 'react';
+'use client';
+
 import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
-interface UseUserAvatarReturn {
-    avatar: string | null;
-    isLoading: boolean;
-    error: string | null;
-}
+import { getUser } from '@/data/user/get-user';
 
-export function useUserAvatar(): UseUserAvatarReturn {
+export function useUserAvatar() {
     const { data: session } = useSession();
-    const [avatar, setAvatar] = useState<string | null>(null);
+    const user = session?.user;
+    const [userAvatar, setUserAvatar] = useState<string | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
+    // Fetch user avatar from database to ensure consistency with profile
     useEffect(() => {
-        if (!session?.user?.id) {
-            setAvatar(null);
-            setIsLoading(false);
-            return;
-        }
-
-        setIsLoading(true);
-        setError(null);
-
-        // Fetch avatar from API
-        fetch(`/api/user/avatar/${session.user.id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch avatar');
+        const fetchUserAvatar = async () => {
+            if (user?.id) {
+                setIsLoading(true);
+                try {
+                    const result = await getUser(user.id);
+                    if (result.success && result.data?.avatar) {
+                        setUserAvatar(result.data.avatar);
+                    } else {
+                        setUserAvatar(undefined);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch user avatar:', error);
+                    setUserAvatar(undefined);
+                } finally {
+                    setIsLoading(false);
                 }
-                return response.json();
-            })
-            .then(data => {
-                setAvatar(data.avatar || null);
-            })
-            .catch(err => {
-                console.error('Error fetching avatar:', err);
-                setError(err.message);
-                setAvatar(null);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    }, [session?.user?.id]);
+            } else {
+                setUserAvatar(undefined);
+            }
+        };
 
-    return { avatar, isLoading, error };
-} 
+        fetchUserAvatar();
+    }, [user?.id]);
+
+    const refreshAvatar = async () => {
+        if (user?.id) {
+            setIsLoading(true);
+            try {
+                const result = await getUser(user.id);
+                if (result.success && result.data?.avatar) {
+                    setUserAvatar(result.data.avatar);
+                } else {
+                    setUserAvatar(undefined);
+                }
+            } catch (error) {
+                console.error('Failed to refresh user avatar:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    };
+
+    return {
+        userAvatar,
+        isLoading,
+        refreshAvatar,
+        // Fallback to session image if no database avatar
+        displayAvatar: userAvatar || user?.image || undefined
+    };
+}

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createProject } from '@/actions/projects/create-project'
 import { DndWrapper } from '@/components/dnd/dnd-wrapper'
 import { PageContainer, PageHeader } from '@/components/layout'
-import { ProjectFormWithSummary } from '@/components/projects/project-form-with-summary'
+import { ProjectFormFocused } from '@/components/projects/project-form-focused'
 import type { CreateProjectData } from '@/types/portfolio'
 
 export default async function CreateProjectPage() {
@@ -39,7 +39,7 @@ export default async function CreateProjectPage() {
           size="lg"
         />
 
-        <ProjectFormWithSummary
+        <ProjectFormFocused
           onSubmit={handleCreateProject}
           isLoading={false}
         />

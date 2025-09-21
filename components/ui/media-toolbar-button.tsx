@@ -1,8 +1,10 @@
 'use client';
 
+import * as React from 'react';
+
+import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 
 import { PlaceholderPlugin } from '@platejs/media/react';
-import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 import {
   AudioLinesIcon,
   FileUpIcon,
@@ -12,7 +14,6 @@ import {
 } from 'lucide-react';
 import { isUrl, KEYS } from 'platejs';
 import { useEditorRef } from 'platejs/react';
-import * as React from 'react';
 import { toast } from 'sonner';
 import { useFilePicker } from 'use-file-picker';
 
@@ -172,10 +173,7 @@ function MediaUrlDialogContent({
   const [url, setUrl] = React.useState('');
 
   const embedMedia = React.useCallback(() => {
-    if (!isUrl(url)) {
-      toast.error('Invalid URL');
-      return;
-    }
+    if (!isUrl(url)) return toast.error('Invalid URL');
 
     setOpen(false);
     editor.tf.insertNodes({

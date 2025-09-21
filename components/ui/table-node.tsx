@@ -1,6 +1,8 @@
 'use client';
 
+import * as React from 'react';
 
+import type * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 
 import { useDraggable, useDropLine } from '@platejs/dnd';
 import {
@@ -17,7 +19,6 @@ import {
   useTableElement,
   useTableMergeState,
 } from '@platejs/table/react';
-import type * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { PopoverAnchor } from '@radix-ui/react-popover';
 import { cva } from 'class-variance-authority';
 import {
@@ -50,7 +51,7 @@ import {
   useEditorRef,
   useEditorSelector,
   useElement,
-  useFocused,
+  useFocusedLast,
   usePluginOption,
   useReadOnly,
   useRemoveNodeButton,
@@ -58,7 +59,6 @@ import {
   withHOC,
 } from 'platejs/react';
 import { useElementSelector } from 'platejs/react';
-import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -160,13 +160,13 @@ function TableFloatingToolbar({
     (editor) => selected && editor.api.isCollapsed(),
     [selected]
   );
-  const isFocused = useFocused();
+  const isFocusedLast = useFocusedLast();
 
   const { canMerge, canSplit } = useTableMergeState();
 
   return (
     <Popover
-      open={isFocused && (canMerge || canSplit || collapsedInside)}
+      open={isFocusedLast && (canMerge || canSplit || collapsedInside)}
       modal={false}
     >
       <PopoverAnchor asChild>{children}</PopoverAnchor>

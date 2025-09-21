@@ -17,6 +17,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useUserAvatar } from '@/hooks/use-user-avatar';
 
 interface AppHeaderProps {
     showSidebarTrigger?: boolean;
@@ -27,6 +28,7 @@ export function AppHeader({
 }: AppHeaderProps) {
     const { data: session } = useSession();
     const user = session?.user;
+    const { displayAvatar } = useUserAvatar();
 
     return (
         <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
@@ -40,14 +42,14 @@ export function AppHeader({
             <div className="flex items-center gap-2">
                 <ThemePicker variant="dropdown" align="end" />
                 {user && <NotificationDropdown />}
-                
+
                 {user && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage
-                                        src={user.image || ''}
+                                        src={displayAvatar || ''}
                                         alt={user.name || 'User'}
                                     />
                                     <AvatarFallback>

@@ -1,5 +1,8 @@
 'use client';
 
+import * as React from 'react';
+
+import type { WithRequiredKey } from 'platejs';
 
 import {
   FloatingMedia as FloatingMediaPrimitive,
@@ -9,17 +12,15 @@ import {
 } from '@platejs/media/react';
 import { cva } from 'class-variance-authority';
 import { Link, Trash2Icon } from 'lucide-react';
-import type { WithRequiredKey } from 'platejs';
 import {
   useEditorRef,
   useEditorSelector,
   useElement,
-  useFocused,
+  useFocusedLast,
   useReadOnly,
   useRemoveNodeButton,
   useSelected,
 } from 'platejs/react';
-import * as React from 'react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -45,14 +46,14 @@ export function MediaToolbar({
   const editor = useEditorRef();
   const readOnly = useReadOnly();
   const selected = useSelected();
-  const isFocused = useFocused();
+  const isFocusedLast = useFocusedLast();
   const selectionCollapsed = useEditorSelector(
     (editor) => !editor.api.isExpanded(),
     []
   );
   const isImagePreviewOpen = useImagePreviewValue('isOpen', editor.id);
   const open =
-    isFocused &&
+    isFocusedLast &&
     !readOnly &&
     selected &&
     selectionCollapsed &&

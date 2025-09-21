@@ -3,6 +3,7 @@ import { UserRole, UserStatus } from "@prisma/client"
 import bcrypt from "bcryptjs"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import Resend from "next-auth/providers/resend"
 
@@ -19,6 +20,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   providers: [
     Google,
+    GitHub({
+      authorization: {
+        params: {
+          scope: "read:user user:email repo",
+        },
+      },
+    }),
     // Use Resend instead of Nodemailer for Edge Runtime compatibility
     Resend({
       from: process.env.EMAIL_FROM || "auth@example.com",

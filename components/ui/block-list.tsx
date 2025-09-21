@@ -1,17 +1,19 @@
 'use client';
 
+import React from 'react';
+
+import type { TListElement } from 'platejs';
+
 import { isOrderedList } from '@platejs/list';
 import {
   useTodoListElement,
   useTodoListElementState,
 } from '@platejs/list/react';
-import type { TListElement } from 'platejs';
 import {
   type PlateElementProps,
   type RenderNodeWrapper,
   useReadOnly,
 } from 'platejs/react';
-import React from 'react';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -32,10 +34,7 @@ const config: Record<
 export const BlockList: RenderNodeWrapper = (props) => {
   if (!props.element.listStyleType) return;
 
-  const ListComponent = (props: PlateElementProps) => <List {...props} />;
-  ListComponent.displayName = 'ListComponent';
-
-  return ListComponent;
+  return (props) => <List {...props} />;
 };
 
 function List(props: PlateElementProps) {
@@ -79,7 +78,7 @@ function TodoLi(props: PlateElementProps) {
       className={cn(
         'list-none',
         (props.element.checked as boolean) &&
-        'text-muted-foreground line-through'
+          'text-muted-foreground line-through'
       )}
     >
       {props.children}

@@ -64,7 +64,7 @@ export function ProjectCard({ project, showEditActions = false, variant = 'card'
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                      <Link href={`/projects/${project.id}/edit`}>
+                      <Link href={`/projects/${project.id}`}>
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Project
                       </Link>
@@ -199,7 +199,7 @@ export function ProjectCard({ project, showEditActions = false, variant = 'card'
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href={`/projects/${project.id}/edit`}>
+                  <Link href={`/projects/${project.id}`}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Project
                   </Link>

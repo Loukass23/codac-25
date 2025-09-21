@@ -34,6 +34,13 @@ const nextConfig: NextConfig = {
     return config;
   },
 
+  // Turbopack configuration (mirrors webpack config)
+  turbopack: {
+    resolveAlias: {
+      jsdom: require.resolve('jsdom'),
+    },
+  },
+
   // Headers configuration to handle large cookies/headers
   async headers() {
     return [

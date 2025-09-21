@@ -1,11 +1,11 @@
 'use client';
 
+import * as React from 'react';
 
 import * as ToolbarPrimitive from '@radix-ui/react-toolbar';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { type VariantProps, cva } from 'class-variance-authority';
-import { ChevronDownIcon } from 'lucide-react';
-import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
 
 import {
   DropdownMenuLabel,
@@ -150,7 +150,7 @@ export const ToolbarButton = withTooltip(function ToolbarButton({
               {children}
             </div>
             <div>
-              <ChevronDownIcon
+              <ChevronDown
                 className="size-3.5 text-muted-foreground"
                 data-icon
               />
@@ -242,7 +242,7 @@ export function ToolbarSplitButtonSecondary({
       role="button"
       {...props}
     >
-      <ChevronDownIcon className="size-3.5 text-muted-foreground" data-icon />
+      <ChevronDown className="size-3.5 text-muted-foreground" data-icon />
     </span>
   );
 }

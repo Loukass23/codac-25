@@ -146,7 +146,13 @@ export function SignUpForm({ callbackUrl = "/" }: SignUpFormProps) {
             variant="outline"
             onClick={async () => {
               setIsLoading(true);
-              await oAuthSignIn("github", callbackUrl);
+              setError(undefined);
+              try {
+                await oAuthSignIn("github", callbackUrl);
+              } catch (err) {
+                setError("GitHub sign-up failed. Please try again.");
+                setIsLoading(false);
+              }
             }}
             disabled={isLoading}
           >
@@ -161,7 +167,13 @@ export function SignUpForm({ callbackUrl = "/" }: SignUpFormProps) {
             variant="outline"
             onClick={async () => {
               setIsLoading(true);
-              await oAuthSignIn("google", callbackUrl);
+              setError(undefined);
+              try {
+                await oAuthSignIn("google", callbackUrl);
+              } catch (err) {
+                setError("Google sign-up failed. Please try again.");
+                setIsLoading(false);
+              }
             }}
             disabled={isLoading}
           >

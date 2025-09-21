@@ -1,14 +1,14 @@
 'use client';
 
+import * as React from 'react';
 
+import type { TImageElement } from 'platejs';
+import type { PlateElementProps } from 'platejs/react';
 
 import { useDraggable } from '@platejs/dnd';
 import { Image, ImagePlugin, useMediaState } from '@platejs/media/react';
 import { ResizableProvider, useResizableValue } from '@platejs/resizable';
-import type { TImageElement } from 'platejs';
-import type { PlateElementProps } from 'platejs/react';
 import { PlateElement, withHOC } from 'platejs/react';
-import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -53,7 +53,7 @@ export const ImageElement = withHOC(
                   focused && selected && 'ring-2 ring-ring ring-offset-2',
                   isDragging && 'opacity-50'
                 )}
-                alt={(props.attributes as any).alt as string | undefined}
+                alt={props.attributes.alt as string | undefined}
               />
               <ResizeHandle
                 className={mediaResizeHandleVariants({
