@@ -6,8 +6,8 @@ import { auth } from '@/lib/auth/auth';
 const contentAssetsDir = path.join(process.cwd(), 'content/assets');
 
 export async function GET(
-    request: NextRequest,
-    { params }: { params: { path: string[] } }
+    _request: NextRequest,
+    { params }: { params: Promise<{ path: string[] }> }
 ) {
     try {
         // Check if user is authenticated
@@ -17,7 +17,8 @@ export async function GET(
         }
 
         // Construct the file path
-        const filePath = path.join(contentAssetsDir, ...params.path);
+        const resolvedParams = await params;
+        const filePath = path.join(contentAssetsDir, ...resolvedParams.path);
 
         // Security check: ensure the path is within the assets directory
         const resolvedPath = path.resolve(filePath);

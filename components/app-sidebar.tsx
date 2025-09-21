@@ -8,10 +8,6 @@ import {
   GraduationCap,
   MessageCircle,
   User2,
-  BookOpen,
-  Database,
-  TrendingUp,
-  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import type { User } from "next-auth";
@@ -58,7 +54,7 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
       url: "/lms",
     },
     {
-      title: "Welcome",
+      title: "LMS",
       url: "/lms/welcome",
     },
   ];
@@ -125,52 +121,8 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
       items: learningItems,
     }] : []),
 
-    // Separate LMS groups for better organization
-    ...(role === "ADMIN" || role === "MENTOR" || role === "STUDENT" ? [
-      {
-        title: "Web Development",
-        icon: BookOpen,
-        items: [
-          { title: "Overview", url: "/lms/web" },
-          { title: "Module 1", url: "/lms/web/Module-1" },
-          { title: "Module 2", url: "/lms/web/Module-2" },
-          { title: "Module 3", url: "/lms/web/Module-3" },
-        ],
-      },
-      {
-        title: "Data Science",
-        icon: Database,
-        items: [
-          { title: "Overview", url: "/lms/data" },
-          { title: "Module 1", url: "/lms/data/Module-1" },
-          { title: "Module 2", url: "/lms/data/Module-2" },
-          { title: "Module 3", url: "/lms/data/Module-3" },
-          { title: "ML Fundamentals", url: "/lms/data/Machine-Learning-Fundamentals" },
-          { title: "Tableau", url: "/lms/data/Tableau" },
-        ],
-      },
-      {
-        title: "Career Services",
-        icon: TrendingUp,
-        items: [
-          { title: "Overview", url: "/lms/career" },
-          { title: "Step 1", url: "/lms/career/Step-1" },
-          { title: "Step 2", url: "/lms/career/Step-2" },
-          { title: "Step 3", url: "/lms/career/Step-3" },
-        ],
-      },
-    ] : []),
 
-    // Admin-only content
-    ...(role === "ADMIN" ? [
-      {
-        title: "Admin",
-        icon: Settings,
-        items: [
-          { title: "Guidelines", url: "/lms/guidelines" },
-        ],
-      },
-    ] : []),
+
 
   ];
 };

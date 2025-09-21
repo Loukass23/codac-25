@@ -1,9 +1,10 @@
 'use server';
 
+import { UserRole } from '@prisma/client';
+
+import { getAttendanceAuthContext } from '@/lib/auth/attendance-auth';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-import { getAttendanceAuthContext } from '@/lib/auth/attendance-auth';
-import { UserRole } from '@prisma/client';
 
 /**
  * Security validation utilities for attendance operations
@@ -42,13 +43,13 @@ export function sanitizeAttendanceInput(input: any): any {
                 if (typeof record !== 'object' || record === null) {
                     return null;
                 }
-                
+
                 const sanitizedRecord: any = {};
-                
+
                 if (record.studentId && typeof record.studentId === 'string') {
                     sanitizedRecord.studentId = record.studentId.trim().slice(0, 100);
                 }
-                
+
                 if (record.status && typeof record.status === 'string') {
                     // Validate against known status values
                     const validStatuses = ['PRESENT', 'ABSENT_SICK', 'ABSENT_EXCUSED', 'ABSENT_UNEXCUSED'];
@@ -56,7 +57,7 @@ export function sanitizeAttendanceInput(input: any): any {
                         sanitizedRecord.status = record.status;
                     }
                 }
-                
+
                 return sanitizedRecord.studentId && sanitizedRecord.status ? sanitizedRecord : null;
             })
             .filter(Boolean);
@@ -74,7 +75,7 @@ export async function validateAttendanceOperation(
 
     try {
         const authContext = await getAttendanceAuthContext();
-        
+
         if (!authContext) {
             errors.push('Authentication required');
             return { valid: false, errors };
@@ -132,7 +133,7 @@ export async function validateAttendanceOperation(
                 // Validate student IDs if provided
                 if (data.attendanceRecords && Array.isArray(data.attendanceRecords)) {
                     const studentIds = data.attendanceRecords.map((r: any) => r.studentId).filter(Boolean);
-                    
+
                     if (studentIds.length > 0) {
                         const validStudents = await prisma.user.findMany({
                             where: {
@@ -146,7 +147,7 @@ export async function validateAttendanceOperation(
 
                         const validStudentIds = new Set(validStudents.map(s => s.id));
                         const invalidStudentIds = studentIds.filter((id: string) => !validStudentIds.has(id));
-                        
+
                         if (invalidStudentIds.length > 0) {
                             errors.push(`Invalid student IDs: ${invalidStudentIds.join(', ')}`);
                         }
@@ -183,14 +184,14 @@ export async function checkRateLimit(
 ): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
     const key = `${userId}:${operation}`;
     const now = Date.now();
-    
+
     let bucket = rateLimitStorage.get(key);
-    
+
     if (!bucket || now > bucket.resetTime) {
         bucket = { count: 0, resetTime: now + windowMs };
         rateLimitStorage.set(key, bucket);
     }
-    
+
     if (bucket.count >= maxRequests) {
         return {
             allowed: false,
@@ -198,9 +199,9 @@ export async function checkRateLimit(
             resetTime: bucket.resetTime
         };
     }
-    
+
     bucket.count++;
-    
+
     return {
         allowed: true,
         remaining: maxRequests - bucket.count,
@@ -214,7 +215,7 @@ export async function logSecurityEvent(
     details: Record<string, any>
 ): Promise<void> {
     const authContext = await getAttendanceAuthContext();
-    
+
     logger.warn(`Security event: ${eventType}`, {
         action: 'security_event',
         resource: 'attendance',
@@ -226,7 +227,7 @@ export async function logSecurityEvent(
             ...details
         }
     });
-    
+
     // In production, consider sending alerts for critical security events
     if (eventType === 'unauthorized_access' || eventType === 'suspicious_activity') {
         // Could integrate with external monitoring service here
@@ -240,7 +241,7 @@ export async function validateDataIntegrity(cohortId: string, date: Date): Promi
     issues: string[];
 }> {
     const issues: string[] = [];
-    
+
     try {
         // Check for duplicate attendance records
         const duplicates = await prisma.attendance.groupBy({
@@ -280,7 +281,7 @@ export async function validateDataIntegrity(cohortId: string, date: Date): Promi
 
             const existingStudentIds = new Set(existingStudents.map(s => s.id));
             const orphanedRecords = studentIds.filter(id => !existingStudentIds.has(id));
-            
+
             if (orphanedRecords.length > 0) {
                 issues.push(`Found ${orphanedRecords.length} attendance records for non-existent students`);
             }

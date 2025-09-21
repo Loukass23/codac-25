@@ -1,14 +1,14 @@
 import { redirect, notFound } from "next/navigation";
 
-import { MarkdownContent } from "@/components/lms/markdown-content";
+import { LMSLayout } from "@/components/lms/lms-layout";
 import { auth } from "@/lib/auth/auth";
 import { parseMarkdownFile } from "@/lib/markdown-parser";
 
 
 interface LMSContentPageProps {
-    params: {
+    params: Promise<{
         slug: string[];
-    };
+    }>;
 }
 
 export async function generateStaticParams() {
@@ -23,7 +23,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: LMSContentPageProps) {
     try {
-        const filePath = params.slug.join('/') + '.md';
+        const resolvedParams = await params;
+        const filePath = resolvedParams.slug.join('/') + '.md';
         const parsedMarkdown = await parseMarkdownFile(filePath);
 
         return {
@@ -45,7 +46,8 @@ export default async function LMSContentPage({ params }: LMSContentPageProps) {
     }
 
     try {
-        const filePath = params.slug.join('/') + '.md';
+        const resolvedParams = await params;
+        const filePath = resolvedParams.slug.join('/') + '.md';
         const parsedMarkdown = await parseMarkdownFile(filePath);
 
         // Check access permissions
@@ -76,7 +78,7 @@ export default async function LMSContentPage({ params }: LMSContentPageProps) {
         }
 
         return (
-            <MarkdownContent
+            <LMSLayout
                 parsedMarkdown={parsedMarkdown}
                 currentPath={filePath}
             />

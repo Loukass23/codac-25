@@ -2,12 +2,13 @@
  * Security validation and sanitization utilities for attendance system
  */
 
-import { z } from 'zod';
 import { AttendanceStatus, UserRole } from '@prisma/client';
-import { 
-  AttendanceValidationError, 
+import { z } from 'zod';
+
+import {
+  AttendanceValidationError,
   AttendancePermissionError,
-  AttendanceBusinessRuleError 
+  AttendanceBusinessRuleError
 } from '@/lib/errors/attendance-errors';
 
 /**
@@ -31,7 +32,7 @@ export function sanitizeString(input: string, maxLength: number = 255): string {
 
 export function sanitizeNotes(notes: string): string {
   if (!notes) return '';
-  
+
   return notes
     .trim()
     .replace(/[<>'"&]/g, '') // Remove HTML/script injection risks
@@ -43,14 +44,14 @@ export function sanitizeNotes(notes: string): string {
 export function sanitizeEmail(email: string): string {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const sanitized = sanitizeString(email.toLowerCase(), 254);
-  
+
   if (!emailRegex.test(sanitized)) {
     throw new AttendanceValidationError(
       'Invalid email format',
       [{ field: 'email', message: 'Please provide a valid email address' }]
     );
   }
-  
+
   return sanitized;
 }
 
@@ -237,7 +238,7 @@ export function validateAttendanceBusinessSecurity(
   if (['update', 'delete'].includes(operation) && data.date) {
     const recordDate = new Date(data.date);
     const daysDiff = Math.floor((Date.now() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (daysDiff > 30 && context.userRole !== UserRole.ADMIN) {
       throw new AttendanceBusinessRuleError(
         'Cannot modify attendance records older than 30 days',
@@ -250,7 +251,7 @@ export function validateAttendanceBusinessSecurity(
   if (['create', 'update'].includes(operation) && data.date) {
     const date = new Date(data.date);
     const dayOfWeek = date.getDay();
-    
+
     if ((dayOfWeek === 0 || dayOfWeek === 6) && context.userRole !== UserRole.ADMIN) {
       throw new AttendanceBusinessRuleError(
         'Weekend attendance can only be modified by administrators',
@@ -266,7 +267,7 @@ export function validateAttendanceBusinessSecurity(
       const startDate = new Date(dateRange.startDate);
       const endDate = new Date(dateRange.endDate);
       const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      
+
       if (daysDiff > 365 && context.userRole !== UserRole.ADMIN) {
         throw new AttendanceBusinessRuleError(
           'Export date range cannot exceed 365 days for non-admin users',
@@ -351,7 +352,7 @@ export function maskSensitiveData(data: any, fieldsToMask: string[] = []): any {
   ];
 
   const masked = { ...data };
-  
+
   for (const field of sensitiveFields) {
     if (masked[field]) {
       if (typeof masked[field] === 'string') {
@@ -376,7 +377,7 @@ export function validateRequestIntegrity(
   // Basic integrity check - in production, implement proper HMAC validation
   const contentLength = headers['content-length'];
   const bodyString = JSON.stringify(body);
-  
+
   if (contentLength && parseInt(contentLength) !== bodyString.length) {
     return false;
   }

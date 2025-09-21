@@ -1,4 +1,4 @@
-# CODAC - Modern Learning Management Platform
+# codac - Code Academy Berlin community
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.3.3-000000?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -10,30 +10,35 @@ A comprehensive, production-ready learning management system built with Next.js 
 ## ✨ Key Features
 
 ### 📚 **Learning Management System**
+
 - **Course Management**: Create and organize multi-module courses with lessons and projects
 - **Progress Tracking**: Monitor student progress through comprehensive analytics
 - **Enrollment System**: Flexible enrollment management with role-based access
 - **Quiz System**: Interactive quizzes with multiple difficulty levels and automated scoring
 
 ### 📝 **Advanced Content Editor**
+
 - **Unified Editor**: Plate.js-powered rich text editor with auto-save functionality
 - **Media Support**: Image, video, and file upload integration via Supabase Storage
 - **Collaborative Features**: Real-time editing with comments and suggestions
 - **Export Options**: Multiple format exports including Markdown and DOCX
 
 ### 👥 **Community & Collaboration**
+
 - **Student Cohorts**: Organize learners into cohorts with dedicated spaces
 - **Mentorship Program**: Connect students with mentors and schedule sessions
 - **Discussion System**: Built-in commenting and discussion features
 - **User Profiles**: Comprehensive user profiles with avatar management
 
 ### 💼 **Career Services**
+
 - **Job Board**: Integrated job posting and application system
 - **Career Tracking**: Monitor job applications and career progress
 - **Resume Builder**: Tools for creating and managing professional profiles
 - **Networking**: Connect with alumni and industry professionals
 
 ### 🔐 **Security & Authentication**
+
 - **NextAuth.js Integration**: Secure authentication with multiple providers (Google, GitHub)
 - **Role-Based Access**: Granular permissions for STUDENT, MENTOR, ADMIN, ALUMNI roles
 - **Data Protection**: Comprehensive validation using Zod schemas
@@ -42,29 +47,34 @@ A comprehensive, production-ready learning management system built with Next.js 
 ## 🛠️ Technology Stack
 
 ### **Core Framework**
+
 - **[Next.js 15](https://nextjs.org/)** - React framework with App Router and Server Components
 - **[TypeScript 5](https://www.typescriptlang.org/)** - Type-safe JavaScript with strict mode enabled
 - **[React 19](https://react.dev/)** - Latest React with concurrent features
 
 ### **Database & Backend**
+
 - **[PostgreSQL 13+](https://www.postgresql.org/)** - Robust relational database
 - **[Prisma 6.9](https://www.prisma.io/)** - Type-safe database client and ORM
 - **[NextAuth.js v5](https://authjs.dev/)** - Comprehensive authentication solution
 - **Server Actions** - Modern data mutations without API routes
 
 ### **UI & Design System**
+
 - **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[Shadcn/UI](https://ui.shadcn.com/)** - High-quality component library
 - **[Radix UI](https://www.radix-ui.com/)** - Low-level UI primitives
 - **[Lucide Icons](https://lucide.dev/)** - Beautiful open-source icons
 
 ### **Content & Editor**
+
 - **[Plate.js 49](https://platejs.org/)** - Rich text editor with plugins
 - **[Supabase Storage](https://supabase.com/docs/guides/storage)** - File upload and management
 - **Auto-save System** - Real-time content persistence
 - **Media Support** - Images, videos, and documents
 
 ### **Development & Quality**
+
 - **[Vitest](https://vitest.dev/)** - Fast unit testing framework
 - **[React Testing Library](https://testing-library.com/react)** - Component testing utilities
 - **[Playwright](https://playwright.dev/)** - End-to-end testing framework
@@ -73,6 +83,7 @@ A comprehensive, production-ready learning management system built with Next.js 
 - **[pnpm](https://pnpm.io/)** - Fast, efficient package manager
 
 ### **AI & Integrations**
+
 - **[Vercel AI SDK](https://sdk.vercel.ai/)** - AI integration toolkit
 - **OpenAI API** - AI-powered features and content generation
 - **[Resend](https://resend.com/)** - Transactional email service
@@ -174,7 +185,6 @@ codac-25/
 └── prisma/                # Database schema and migrations
 ```
 
-
 ### Authentication & Authorization
 
 - Role-based access control (STUDENT, MENTOR, ADMIN, ALUMNI)
@@ -187,30 +197,31 @@ codac-25/
 - Comprehensive schema covering users, courses, documents, and community features
 - Efficient queries with proper indexing and relations
 
-
-
 ## 🧪 Testing & Quality Assurance
 
 CODAC includes comprehensive testing infrastructure to ensure reliability and code quality.
 
 ### **Testing Stack**
+
 - **[Vitest](https://vitest.dev/)**: Fast unit testing with TypeScript support
 - **[React Testing Library](https://testing-library.com/react)**: Component testing utilities
 - **[Playwright](https://playwright.dev/)**: End-to-end testing with cross-browser support
 - **[ESLint](https://eslint.org/)**: Code linting with Next.js and TypeScript rules
 
 ### **Test Types**
+
 - **Unit Tests**: Functions, components, and server actions (`*.test.ts/tsx`)
 - **Integration Tests**: Multi-component workflows and forms
 - **E2E Tests**: Complete user journeys and accessibility (`tests/e2e/`)
 
 ### **Running Tests**
+
 ```bash
 # Unit Tests
 pnpm test:unit        # Run all unit tests
 pnpm test:unit:watch  # Watch mode for development
 
-# E2E Tests  
+# E2E Tests
 pnpm test             # Run Playwright E2E tests
 pnpm test:ui          # Interactive E2E debugging
 
@@ -220,24 +231,26 @@ pnpm test:report         # E2E test reports
 ```
 
 ### **Development Workflow**
+
 1. **Code Quality**: Always run `pnpm lint` and `pnpm ts:check` before committing
 2. **Unit Testing**: Write tests for new components and functions (`pnpm test:unit:watch`)
 3. **Database Updates**: Use `pnpm db:generate` after schema changes
 4. **Testing**: Run relevant tests for your changes
 5. **Build Verification**: Use `pnpm build` to ensure production compatibility
 
-
 ## 🔧 Environment Configuration
 
 Create a `.env` file in the root directory with the following variables:
 
 ### **Database Configuration**
+
 ```env
 # PostgreSQL Connection (Required)
 DATABASE_URL=
 ```
 
 ### **Authentication Setup**
+
 ```env
 # NextAuth Configuration (Required)
 AUTH_SECRET="your-very-secure-secret-key-minimum-32-characters"

@@ -24,6 +24,11 @@ export function MarkdownContent({
 
     // Generate table of contents from HTML content
     const tableOfContents = useMemo(() => {
+        // Only run on client side
+        if (typeof window === 'undefined') {
+            return [];
+        }
+
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = htmlContent;
         const headings = tempDiv.querySelectorAll('h2, h3, h4');
@@ -36,6 +41,10 @@ export function MarkdownContent({
     }, [htmlContent]);
 
     const scrollToHeading = (headingId: string) => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
         const element = document.getElementById(headingId);
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
@@ -45,14 +54,14 @@ export function MarkdownContent({
     return (
         <div className={cn("max-w-4xl mx-auto ", className)}>
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-6">
                 <h1 className="text-4xl font-bold mb-2">{metadata.title}</h1>
                 {metadata.metaDescription && (
                     <p className="text-lg text-muted-foreground">{metadata.metaDescription}</p>
                 )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Main Content */}
                 <div className="lg:col-span-3">
                     <Card>
@@ -81,7 +90,7 @@ export function MarkdownContent({
 
                     {/* Navigation */}
                     {(metadata.prev || metadata.next) && (
-                        <div className="mt-8 flex justify-between">
+                        <div className="mt-6 flex justify-between">
                             {metadata.prev && (
                                 <Button variant="outline" asChild>
                                     <Link href={`/lms/${metadata.prev}`}>

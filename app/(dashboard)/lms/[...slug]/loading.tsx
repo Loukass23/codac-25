@@ -1,5 +1,5 @@
 import { LMSSkeleton } from "@/components/lms/lms-skeleton";
 
-export default function LMSLoading() {
+export default function LMSSlugLoading() {
     return <LMSSkeleton />;
 }
