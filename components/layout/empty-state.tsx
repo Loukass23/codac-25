@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {
   icon?: React.ComponentType<{ className?: string }>;

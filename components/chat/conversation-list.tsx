@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ConversationWithParticipants } from "@/data/chat/get-conversations";
 import { useRealtimeConversationList } from "@/hooks/use-realtime-conversation-list";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 interface ConversationListProps {
   currentUserId: string;

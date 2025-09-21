@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState, useCallback, useMemo } from "react";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 interface NavigationItem {
     title: string;

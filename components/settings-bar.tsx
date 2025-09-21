@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 type SettingsBarItemProperties = {
   readonly title: string;

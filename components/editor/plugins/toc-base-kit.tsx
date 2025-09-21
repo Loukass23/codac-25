@@ -1,5 +1,20 @@
-import { BaseTocPlugin } from '@platejs/toc';
+import {
+    BaseTableCellHeaderPlugin,
+    BaseTableCellPlugin,
+    BaseTablePlugin,
+    BaseTableRowPlugin,
+} from '@platejs/table';
 
-import { TocElementStatic } from '@/components/ui/toc-node-static';
+import {
+    TableCellElementStatic,
+    TableCellHeaderElementStatic,
+    TableElementStatic,
+    TableRowElementStatic,
+} from '@/components/ui/table-node-static';
 
-export const BaseTocKit = [BaseTocPlugin.withComponent(TocElementStatic)];
+export const BaseTableKit = [
+    BaseTablePlugin.withComponent(TableElementStatic),
+    BaseTableRowPlugin.withComponent(TableRowElementStatic),
+    BaseTableCellPlugin.withComponent(TableCellElementStatic),
+    BaseTableCellHeaderPlugin.withComponent(TableCellHeaderElementStatic),
+];

@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { likeProject } from '@/actions/projects/like-project'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface ProjectLikeButtonProps {
   projectId: string

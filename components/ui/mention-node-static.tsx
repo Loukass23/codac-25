@@ -1,21 +1,38 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type { SlateElementProps, TMentionElement } from 'platejs';
 
-import { SlateElement } from 'platejs';
+import { KEYS, SlateElement } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
-export function MentionElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'inline-flex items-center rounded-md bg-blue-100 px-2 py-1 text-sm font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-200',
-                props.className
-            )}
-        >
-            @{props.children}
-        </SlateElement>
-    );
+export function MentionElementStatic(
+  props: SlateElementProps<TMentionElement> & {
+    prefix?: string;
+  }
+) {
+  const { prefix } = props;
+  const element = props.element;
+
+  return (
+    <SlateElement
+      {...props}
+      className={cn(
+        'inline-block rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm font-medium',
+        element.children[0][KEYS.bold] === true && 'font-bold',
+        element.children[0][KEYS.italic] === true && 'italic',
+        element.children[0][KEYS.underline] === true && 'underline'
+      )}
+      attributes={{
+        ...props.attributes,
+        'data-slate-value': element.value,
+      }}
+    >
+      <React.Fragment>
+        {props.children}
+        {prefix}
+        {element.value}
+      </React.Fragment>
+    </SlateElement>
+  );
 }

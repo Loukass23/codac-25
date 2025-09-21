@@ -1,35 +1,36 @@
 import * as React from 'react';
 
-import type { SlateElementProps, SlateLeafProps } from 'platejs';
+import type { SlateLeafProps, TSuggestionText } from 'platejs';
 
-import { SlateElement, SlateLeaf } from 'platejs';
+import { BaseSuggestionPlugin } from '@platejs/suggestion';
+import { SlateLeaf } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
-export function SuggestionElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-sm font-medium text-green-800 dark:bg-green-900/20 dark:text-green-200',
-                props.className
-            )}
-        >
-            {props.children}
-        </SlateElement>
-    );
-}
+export function SuggestionLeafStatic(props: SlateLeafProps<TSuggestionText>) {
+  const { editor, leaf } = props;
 
-export function SuggestionLeafStatic(props: SlateLeafProps) {
-    return (
-        <SlateLeaf
-            {...props}
-            className={cn(
-                'inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-sm font-medium text-green-800 dark:bg-green-900/20 dark:text-green-200',
-                props.className
-            )}
-        >
-            {props.children}
-        </SlateLeaf>
-    );
+  const dataList = editor
+    .getApi(BaseSuggestionPlugin)
+    .suggestion.dataList(leaf);
+  const hasRemove = dataList.some((data) => data.type === 'remove');
+  const diffOperation = { type: hasRemove ? 'delete' : 'insert' } as const;
+
+  const Component = ({ delete: 'del', insert: 'ins', update: 'span' } as const)[
+    diffOperation.type
+  ];
+
+  return (
+    <SlateLeaf
+      {...props}
+      as={Component}
+      className={cn(
+        'border-b-2 border-b-brand/[.24] bg-brand/[.08] text-brand/80 no-underline transition-colors duration-200',
+        hasRemove &&
+          'border-b-gray-300 bg-gray-300/25 text-gray-400 line-through'
+      )}
+    >
+      {props.children}
+    </SlateLeaf>
+  );
 }

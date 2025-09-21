@@ -1,21 +1,46 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type { SlateElementProps, TDateElement } from 'platejs';
 
 import { SlateElement } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
+export function DateElementStatic(props: SlateElementProps<TDateElement>) {
+  const { element } = props;
 
-export function DateElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-                props.className
-            )}
-        >
-            {props.children}
-        </SlateElement>
-    );
+  return (
+    <SlateElement className="inline-block" {...props}>
+      <span className="w-fit rounded-sm bg-muted px-1 text-muted-foreground">
+        {element.date ? (
+          (() => {
+            const today = new Date();
+            const elementDate = new Date(element.date);
+            const isToday =
+              elementDate.getDate() === today.getDate() &&
+              elementDate.getMonth() === today.getMonth() &&
+              elementDate.getFullYear() === today.getFullYear();
+
+            const isYesterday =
+              new Date(today.setDate(today.getDate() - 1)).toDateString() ===
+              elementDate.toDateString();
+            const isTomorrow =
+              new Date(today.setDate(today.getDate() + 2)).toDateString() ===
+              elementDate.toDateString();
+
+            if (isToday) return 'Today';
+            if (isYesterday) return 'Yesterday';
+            if (isTomorrow) return 'Tomorrow';
+
+            return elementDate.toLocaleDateString(undefined, {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            });
+          })()
+        ) : (
+          <span>Pick a date</span>
+        )}
+      </span>
+      {props.children}
+    </SlateElement>
+  );
 }

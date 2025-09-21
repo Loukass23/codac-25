@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import { startDirectMessage } from '@/actions/chat/start-direct-message'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface ChatButtonProps {
     userId: string

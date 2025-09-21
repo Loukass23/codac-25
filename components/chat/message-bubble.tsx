@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
   message: {

@@ -1,26 +1,44 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type {
+  SlateElementProps,
+  TCaptionProps,
+  TImageElement,
+  TResizableProps,
+} from 'platejs';
 
-import { SlateElement } from 'platejs';
+import { NodeApi, SlateElement } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
-export function ImageElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'my-4 rounded-lg border border-gray-200 dark:border-gray-700',
-                props.className
-            )}
+export function ImageElementStatic(
+  props: SlateElementProps<TImageElement & TCaptionProps & TResizableProps>
+) {
+  const { align = 'center', caption, url, width } = props.element;
+
+  return (
+    <SlateElement {...props} className="py-2.5">
+      <figure className="group relative m-0 inline-block" style={{ width }}>
+        <div
+          className="relative max-w-full min-w-[92px]"
+          style={{ textAlign: align }}
         >
-            <div className="flex items-center justify-center p-8">
-                <div className="h-32 w-32 rounded-lg bg-gray-100 flex items-center justify-center dark:bg-gray-800">
-                    <span className="text-gray-500">🖼️</span>
-                </div>
-            </div>
-            {props.children}
-        </SlateElement>
-    );
+          <img
+            className={cn(
+              'w-full max-w-full cursor-default object-cover px-0',
+              'rounded-sm'
+            )}
+            alt={(props.attributes as any).alt}
+            src={url}
+          />
+          {caption && (
+            <figcaption className="mx-auto mt-2 h-[24px] max-w-full">
+              {NodeApi.string(caption[0])}
+            </figcaption>
+          )}
+        </div>
+      </figure>
+      {props.children}
+    </SlateElement>
+  );
 }

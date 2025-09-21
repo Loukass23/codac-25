@@ -1,32 +1,30 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type { SlateElementProps, TColumnElement } from 'platejs';
 
 import { SlateElement } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
+export function ColumnElementStatic(props: SlateElementProps<TColumnElement>) {
+  const { width } = props.element;
 
-export function ColumnGroupElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'my-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3',
-                props.className
-            )}
-        >
-            {props.children}
-        </SlateElement>
-    );
+  return (
+    <div className="group/column relative" style={{ width: width ?? '100%' }}>
+      <SlateElement
+        className="h-full px-2 pt-2 group-first/column:pl-0 group-last/column:pr-0"
+        {...props}
+      >
+        <div className="relative h-full border border-transparent p-1.5">
+          {props.children}
+        </div>
+      </SlateElement>
+    </div>
+  );
 }
 
-export function ColumnElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn('space-y-2', props.className)}
-        >
-            {props.children}
-        </SlateElement>
-    );
+export function ColumnGroupElementStatic(props: SlateElementProps) {
+  return (
+    <SlateElement className="mb-2" {...props}>
+      <div className="flex size-full rounded">{props.children}</div>
+    </SlateElement>
+  );
 }

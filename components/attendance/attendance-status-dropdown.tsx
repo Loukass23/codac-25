@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check, Clock } from 'lucide-react';
 import { AttendanceStatus } from '@prisma/client';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 import {
     Select,

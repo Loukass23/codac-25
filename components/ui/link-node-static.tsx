@@ -1,21 +1,22 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type { SlateElementProps, TLinkElement } from 'platejs';
 
+import { getLinkAttributes } from '@platejs/link';
 import { SlateElement } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
-
-export function LinkElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300',
-                props.className
-            )}
-        >
-            {props.children}
-        </SlateElement>
-    );
+export function LinkElementStatic(props: SlateElementProps<TLinkElement>) {
+  return (
+    <SlateElement
+      {...props}
+      as="a"
+      className="font-medium text-primary underline decoration-primary underline-offset-4"
+      attributes={{
+        ...props.attributes,
+        ...getLinkAttributes(props.editor, props.element),
+      }}
+    >
+      {props.children}
+    </SlateElement>
+  );
 }

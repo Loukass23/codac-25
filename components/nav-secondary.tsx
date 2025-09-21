@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 export function NavSecondary({
   items,

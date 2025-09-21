@@ -1,26 +1,35 @@
 import * as React from 'react';
 
-import type { SlateElementProps } from 'platejs';
+import type {
+  SlateElementProps,
+  TCaptionElement,
+  TResizableProps,
+  TVideoElement,
+} from 'platejs';
 
-import { SlateElement } from 'platejs';
+import { NodeApi, SlateElement } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
+export function VideoElementStatic(
+  props: SlateElementProps<TVideoElement & TCaptionElement & TResizableProps>
+) {
+  const { align = 'center', caption, url, width } = props.element;
 
-export function VideoElementStatic(props: SlateElementProps) {
-    return (
-        <SlateElement
-            {...props}
-            className={cn(
-                'my-4 rounded-lg border border-gray-200 dark:border-gray-700',
-                props.className
-            )}
+  return (
+    <SlateElement className="py-2.5" {...props}>
+      <div style={{ textAlign: align }}>
+        <figure
+          className="group relative m-0 inline-block cursor-default"
+          style={{ width }}
         >
-            <div className="flex items-center justify-center p-8">
-                <div className="h-32 w-32 rounded-lg bg-gray-100 flex items-center justify-center dark:bg-gray-800">
-                    <span className="text-gray-500">🎥</span>
-                </div>
-            </div>
-            {props.children}
-        </SlateElement>
-    );
+          <video
+            className="w-full max-w-full rounded-sm object-cover px-0"
+            src={url}
+            controls
+          />
+          {caption && <figcaption>{NodeApi.string(caption[0])}</figcaption>}
+        </figure>
+      </div>
+      {props.children}
+    </SlateElement>
+  );
 }

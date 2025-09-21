@@ -19,7 +19,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 
 export interface NavigationItem {
   title: string;

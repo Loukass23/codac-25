@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/popover';
 import { useMounted } from '@/hooks/use-mounted';
 import { colorSchemes, getStoredColorScheme, applyColorScheme, type ColorScheme } from '@/lib/utils/theme-utils';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 const themes = [
     {

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { User, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { AttendanceProgressBar, createAttendanceSegments } from './attendance-progress-bar';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 interface StudentAttendanceData {
     id: string;

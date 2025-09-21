@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { cn } from './utils'
+import { cn } from '../utils'
 
 describe('CN Utility Function', () => {
   it('should merge classes correctly', () => {

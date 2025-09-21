@@ -4,18 +4,14 @@ import type { SlateLeafProps } from 'platejs';
 
 import { SlateLeaf } from 'platejs';
 
-import { cn } from '@/lib/utils/utils';
-
 export function CodeLeafStatic(props: SlateLeafProps) {
-    return (
-        <SlateLeaf
-            {...props}
-            className={cn(
-                'rounded bg-muted px-1.5 py-0.5 font-mono text-sm font-medium',
-                props.className
-            )}
-        >
-            {props.children}
-        </SlateLeaf>
-    );
+  return (
+    <SlateLeaf
+      {...props}
+      as="code"
+      className="rounded-md bg-muted px-[0.3em] py-[0.2em] font-mono text-sm whitespace-pre-wrap"
+    >
+      {props.children}
+    </SlateLeaf>
+  );
 }
