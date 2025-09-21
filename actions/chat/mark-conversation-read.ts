@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { prisma } from '@/lib/db/prisma'
-import { handleServerAction } from '@/lib/server-action-utils'
+import { handleServerAction } from '@/lib/utils/server-action-utils'
 import { logger } from '@/lib/logger'
 
 const markConversationReadSchema = z.object({

@@ -6,15 +6,15 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { auth } from '@/lib/auth/auth';
-import { 
-    updateAttendanceSchema, 
+import {
+    updateAttendanceSchema,
     type UpdateAttendanceInput,
     editAttendanceDateSchema
 } from '@/lib/validation/attendance';
-import { 
-    type ServerActionResult, 
-    handlePrismaError 
-} from '@/lib/server-action-utils';
+import {
+    type ServerActionResult,
+    handlePrismaError
+} from '@/lib/utils/server-action-utils';
 
 
 // Define return type with Prisma's generated types
@@ -44,7 +44,7 @@ export async function updateAttendance(data: UpdateAttendanceInput): Promise<Upd
 
     try {
         logger.logServerAction('update', 'attendance', {
-            metadata: { 
+            metadata: {
                 attendanceId: data.id,
                 newStatus: data.status
             }
@@ -78,9 +78,9 @@ export async function updateAttendance(data: UpdateAttendanceInput): Promise<Upd
         // Get existing attendance record to check date restrictions
         const existingAttendance = await prisma.attendance.findUnique({
             where: { id: validatedData.id },
-            select: { 
-                id: true, 
-                date: true, 
+            select: {
+                id: true,
+                date: true,
                 status: true,
                 studentId: true,
                 cohortId: true
@@ -130,7 +130,7 @@ export async function updateAttendance(data: UpdateAttendanceInput): Promise<Upd
         });
 
         logger.logDatabaseOperation('update', 'attendance', attendance.id, {
-            metadata: { 
+            metadata: {
                 previousStatus: existingAttendance.status,
                 newStatus: attendance.status,
                 studentId: attendance.studentId,

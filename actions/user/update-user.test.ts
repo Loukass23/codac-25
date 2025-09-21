@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { describe, test, expect, beforeEach } from 'vitest'
 
-import type { UserPrivate } from '@/lib/server-action-utils'
+import type { UserPrivate } from '@/lib/utils/server-action-utils'
 import type { UpdateUserInput } from '@/lib/validation/user'
 import { DatabaseHelpers } from '@/tests/utils/database-helpers'
 import { createMockUser } from '@/tests/utils/fixtures'

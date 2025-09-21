@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface PageHeaderProps {
   title: string;
@@ -10,7 +10,7 @@ interface PageHeaderProps {
 
 const titleSizes = {
   sm: "text-2xl",
-  md: "text-3xl", 
+  md: "text-3xl",
   lg: "text-4xl"
 };
 
@@ -20,10 +20,10 @@ const descriptionSizes = {
   lg: "text-xl"
 };
 
-export function PageHeader({ 
-  title, 
-  description, 
-  children, 
+export function PageHeader({
+  title,
+  description,
+  children,
   className,
   size = "md"
 }: PageHeaderProps) {

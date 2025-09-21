@@ -4,8 +4,7 @@ import { PlateEditor } from '@/components/editor/plate-editor';
 import { ProjectCard } from '@/components/projects/project-card';
 import { getProjectById } from '@/data/projects/get-project-by-id'
 import { requireServerAuth } from '@/lib/auth/auth-server';
-import { jsonToPlateValue } from '@/lib/plate-utils';
-
+import { jsonToPlateValue } from '@/lib/utils/plate-utils';
 interface ProjectPageProps {
     params: Promise<{
         id: string

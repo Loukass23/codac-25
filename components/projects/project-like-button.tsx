@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { likeProject } from '@/actions/projects/like-project'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 interface ProjectLikeButtonProps {
   projectId: string
@@ -65,7 +65,7 @@ export function ProjectLikeButton({
 
         // Show feedback
         toast.success(result.data.liked ? 'Project liked!' : 'Project unliked')
-        
+
         // Refresh the page data to ensure consistency
         router.refresh()
 

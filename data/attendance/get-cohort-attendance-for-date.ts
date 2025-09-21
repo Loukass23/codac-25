@@ -5,7 +5,7 @@ import { startOfDay, subDays, isAfter, isBefore, isSameDay } from 'date-fns';
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { type ServerActionResult } from '@/lib/server-action-utils';
+import { type ServerActionResult } from '@/lib/utils/server-action-utils';
 import { auth } from '@/lib/auth/auth';
 
 export type StudentWithAttendance = {

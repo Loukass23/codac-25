@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import { startDirectMessage } from '@/actions/chat/start-direct-message'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 interface ChatButtonProps {
     userId: string
@@ -17,11 +17,11 @@ interface ChatButtonProps {
     showText?: boolean
 }
 
-export function ChatButton({ 
-    userId, 
-    userName, 
-    variant = 'outline', 
-    size = 'sm', 
+export function ChatButton({
+    userId,
+    userName,
+    variant = 'outline',
+    size = 'sm',
     className,
     showText = true
 }: ChatButtonProps) {
@@ -30,11 +30,11 @@ export function ChatButton({
 
     const handleStartChat = async () => {
         if (isLoading) return
-        
+
         setIsLoading(true)
         try {
             const result = await startDirectMessage(userId)
-            
+
             if (result.success && result.data?.conversationId) {
                 // Navigate to the chat page with the conversation ID
                 router.push(`/chat?conversation=${result.data.conversationId}`)
@@ -53,9 +53,9 @@ export function ChatButton({
     }
 
     return (
-        <Button 
-            variant={variant} 
-            size={size} 
+        <Button
+            variant={variant}
+            size={size}
             className={cn(showText ? 'justify-start' : '', className)}
             onClick={handleStartChat}
             disabled={isLoading}
@@ -67,20 +67,20 @@ export function ChatButton({
             )}
             {showText && (
                 <span>
-                    {isLoading 
-                        ? 'Starting chat...' 
-                        : userName 
-                            ? `Message ${userName}` 
+                    {isLoading
+                        ? 'Starting chat...'
+                        : userName
+                            ? `Message ${userName}`
                             : 'Send Message'
                     }
                 </span>
             )}
             {!showText && (
                 <span className="sr-only">
-                    {isLoading 
-                        ? 'Starting chat...' 
-                        : userName 
-                            ? `Message ${userName}` 
+                    {isLoading
+                        ? 'Starting chat...'
+                        : userName
+                            ? `Message ${userName}`
                             : 'Send Message'
                     }
                 </span>

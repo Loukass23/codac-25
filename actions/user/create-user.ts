@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
 import {
     type UserPrivate,
     commonSelects
-} from '@/lib/server-action-utils';
+} from '@/lib/utils/server-action-utils';
 import {
     createUserSchema,
     type CreateUserInput,

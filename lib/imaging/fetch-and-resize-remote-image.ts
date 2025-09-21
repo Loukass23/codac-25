@@ -1,7 +1,8 @@
 import { createHash } from 'crypto';
 
-import { resizeImage } from '@/lib/imaging/resize-image';
-import { getBaseUrl } from '@/lib/urls/get-base-url';
+import { getBaseUrl } from '../utils/get-base-url';
+
+import { resizeImage } from './resize-image';
 
 type ResizedImage = {
   bytes?: Buffer;

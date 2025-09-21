@@ -12,7 +12,7 @@ import {
 import {
     type UserWithCounts,
     commonSelects
-} from '@/lib/server-action-utils';
+} from '@/lib/utils/server-action-utils';
 
 // Define return type
 type GetUsersResult = ServerActionResult<{

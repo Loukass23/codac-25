@@ -5,10 +5,10 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { auth } from '@/lib/auth/auth';
-import { 
-    type ServerActionResult, 
-    handlePrismaError 
-} from '@/lib/server-action-utils';
+import {
+    type ServerActionResult,
+    handlePrismaError
+} from '@/lib/utils/server-action-utils';
 
 
 // Define return types for attendance summary
@@ -61,7 +61,7 @@ export async function getCohortAttendanceSummary(
 
     try {
         logger.logServerAction('read', 'attendance_summary', {
-            metadata: { 
+            metadata: {
                 cohortId: data.cohortId,
                 startDate: data.startDate?.toISOString(),
                 endDate: data.endDate?.toISOString()
@@ -142,7 +142,7 @@ export async function getCohortAttendanceSummary(
         // Process attendance data for each student
         const studentSummaries: StudentAttendanceSummary[] = cohort.students.map(student => {
             const studentAttendance = attendanceRecords.filter(r => r.studentId === student.id);
-            
+
             const totalDays = studentAttendance.length;
             const presentDays = studentAttendance.filter(r => r.status === 'PRESENT').length;
             const absentSick = studentAttendance.filter(r => r.status === 'ABSENT_SICK').length;
@@ -174,8 +174,8 @@ export async function getCohortAttendanceSummary(
         const totalAbsentExcused = attendanceRecords.filter(r => r.status === 'ABSENT_EXCUSED').length;
         const totalAbsentUnexcused = attendanceRecords.filter(r => r.status === 'ABSENT_UNEXCUSED').length;
 
-        const overallAttendancePercentage = totalAttendanceRecords > 0 
-            ? Math.round((totalPresentRecords / totalAttendanceRecords) * 100) 
+        const overallAttendancePercentage = totalAttendanceRecords > 0
+            ? Math.round((totalPresentRecords / totalAttendanceRecords) * 100)
             : 0;
 
         const summary: CohortAttendanceSummary = {
@@ -199,7 +199,7 @@ export async function getCohortAttendanceSummary(
         };
 
         logger.logDatabaseOperation('read', 'attendance_summary', cohort.id, {
-            metadata: { 
+            metadata: {
                 cohortId: data.cohortId,
                 totalStudents: cohort.students.length,
                 totalRecords: totalAttendanceRecords,
@@ -248,7 +248,7 @@ export async function getCohortAttendanceSummary(
 function calculateWorkingDays(startDate: Date, endDate: Date): number {
     let count = 0;
     const currentDate = new Date(startDate);
-    
+
     while (currentDate <= endDate) {
         const dayOfWeek = currentDate.getDay();
         // Count Monday (1) through Friday (5)
@@ -257,6 +257,6 @@ function calculateWorkingDays(startDate: Date, endDate: Date): number {
         }
         currentDate.setDate(currentDate.getDate() + 1);
     }
-    
+
     return count;
 }

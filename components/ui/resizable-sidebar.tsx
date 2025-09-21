@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface ResizableSidebarProps {
   children: React.ReactNode;
@@ -54,7 +54,7 @@ export function ResizableSidebar({
   const updateWidth = useCallback((newWidth: number) => {
     const clampedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
     setWidth(clampedWidth);
-    
+
     if (storageKey && typeof window !== 'undefined') {
       localStorage.setItem(storageKey, clampedWidth.toString());
     }
@@ -94,7 +94,7 @@ export function ResizableSidebar({
         document.body.style.userSelect = 'auto';
       };
     }
-    
+
     return undefined;
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
@@ -107,7 +107,7 @@ export function ResizableSidebar({
       <div className="flex-1">
         {children}
       </div>
-      
+
       {/* Resize Handle - hidden on mobile */}
       {!isMobile && (
         <div

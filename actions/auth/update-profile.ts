@@ -10,7 +10,7 @@ import {
     type ServerActionResult,
     type UserPrivate,
     commonSelects
-} from '@/lib/server-action-utils';
+} from '@/lib/utils/server-action-utils';
 import {
     type UpdateProfileInput,
     updateProfileSchema

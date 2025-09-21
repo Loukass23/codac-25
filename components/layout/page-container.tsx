@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ interface PageContainerProps {
 const sizeClasses = {
   sm: "max-w-4xl mx-auto",
   md: "max-w-6xl mx-auto",
-  lg: "max-w-7xl mx-auto", 
+  lg: "max-w-7xl mx-auto",
   xl: "max-w-screen-2xl mx-auto",
   full: "w-full"
 };
@@ -18,12 +18,12 @@ const sizeClasses = {
 const paddingClasses = {
   none: "",
   sm: "p-2 md:p-4",
-  md: "p-3 md:p-6", 
+  md: "p-3 md:p-6",
   lg: "p-4 md:p-8"
 };
 
-export function PageContainer({ 
-  children, 
+export function PageContainer({
+  children,
   className,
   size = "lg",
   padding = "md"

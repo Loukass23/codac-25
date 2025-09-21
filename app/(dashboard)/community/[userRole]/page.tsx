@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { getUsers } from '@/data/user/get-users';
 import { requireServerAuth } from '@/lib/auth/auth-server';
-import { UserWithCounts } from '@/lib/server-action-utils';
+import { UserWithCounts } from '@/lib/utils/server-action-utils';
 
 type Params = {
     userRole: string;

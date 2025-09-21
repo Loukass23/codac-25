@@ -4,7 +4,7 @@ import { cache } from 'react';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { UserRole, UserStatus } from '@prisma/client';
-import type { ServerActionResult } from '@/lib/server-action-utils';
+import type { ServerActionResult } from '@/lib/utils/server-action-utils';
 import { withAttendanceViewAuth } from '@/lib/auth/attendance-middleware';
 import { z } from 'zod';
 
@@ -49,7 +49,7 @@ const getStudentAttendanceSummaryInternal = cache(async (
     data: GetStudentAttendanceSummaryInput
 ): Promise<GetStudentAttendanceSummaryResult> => {
     const requestStart = Date.now();
-    
+
     try {
         // Validate input
         const validatedData = getStudentAttendanceSummarySchema.parse(data);
@@ -68,10 +68,10 @@ const getStudentAttendanceSummaryInternal = cache(async (
 
         if (!cohort) {
             logger.error('Cohort not found for attendance summary', new Error('Cohort not found'), {
-                metadata: { 
+                metadata: {
                     action: 'get',
                     resource: 'student_attendance_summary',
-                    cohortId 
+                    cohortId
                 }
             });
             return {
@@ -125,7 +125,7 @@ const getStudentAttendanceSummaryInternal = cache(async (
             const absentSick = student.attendanceRecords.filter(r => r.status === 'ABSENT_SICK').length;
             const absentExcused = student.attendanceRecords.filter(r => r.status === 'ABSENT_EXCUSED').length;
             const absentUnexcused = student.attendanceRecords.filter(r => r.status === 'ABSENT_UNEXCUSED').length;
-            
+
             const totalRecorded = present + absentSick + absentExcused + absentUnexcused;
             const unrecorded = Math.max(0, totalWorkingDays - totalRecorded);
 
@@ -146,15 +146,15 @@ const getStudentAttendanceSummaryInternal = cache(async (
         });
 
         const duration = Date.now() - requestStart;
-        
+
         logger.info('Successfully fetched student attendance summary', {
             action: 'get',
             resource: 'student_attendance_summary',
-            metadata: { 
+            metadata: {
                 cohortId,
                 studentsCount: studentsWithStats.length,
                 totalWorkingDays,
-                duration 
+                duration
             }
         });
 
@@ -174,12 +174,12 @@ const getStudentAttendanceSummaryInternal = cache(async (
 
     } catch (error) {
         const duration = Date.now() - requestStart;
-        
+
         logger.error('Failed to fetch student attendance summary', error instanceof Error ? error : new Error(String(error)), {
-            metadata: { 
+            metadata: {
                 action: 'get',
                 resource: 'student_attendance_summary',
-                duration 
+                duration
             }
         });
 

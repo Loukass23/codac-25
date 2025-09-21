@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -31,7 +31,7 @@ export function AttendanceProgressBar({
     size = 'md'
 }: AttendanceProgressBarProps) {
     const attendanceRate = totalDays > 0 ? (presentDays / totalDays) * 100 : 0;
-    
+
     // Size variants
     const sizeClasses = {
         sm: 'h-4',
@@ -49,7 +49,7 @@ export function AttendanceProgressBar({
         <TooltipProvider>
             <div className={cn('space-y-2', className)}>
                 {/* Progress Bar Container */}
-                <div 
+                <div
                     className={cn(
                         'relative w-full bg-gray-200 rounded-full overflow-hidden border',
                         sizeClasses[size]
@@ -99,7 +99,7 @@ export function AttendanceProgressBar({
                 <div className="flex flex-wrap gap-2">
                     {segments.filter(segment => segment.count > 0).map((segment, index) => (
                         <div key={index} className="flex items-center space-x-1">
-                            <div 
+                            <div
                                 className={cn('w-3 h-3 rounded-full', segment.color)}
                             />
                             <Badge variant="outline" className="text-xs">

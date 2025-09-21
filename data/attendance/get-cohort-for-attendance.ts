@@ -4,7 +4,7 @@ import { Prisma, UserRole, UserStatus } from '@prisma/client';
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { type ServerActionResult } from '@/lib/server-action-utils';
+import { type ServerActionResult } from '@/lib/utils/server-action-utils';
 import { auth } from '@/lib/auth/auth';
 
 export type CohortForAttendanceDetail = Prisma.CohortGetPayload<{
@@ -94,7 +94,7 @@ export async function getCohortForAttendance(cohortSlug: string): Promise<GetCoh
             const end = endDate || new Date();
             let count = 0;
             const current = new Date(startDate);
-            
+
             while (current <= end) {
                 const dayOfWeek = current.getDay();
                 // Monday = 1, Tuesday = 2, ..., Friday = 5
@@ -103,7 +103,7 @@ export async function getCohortForAttendance(cohortSlug: string): Promise<GetCoh
                 }
                 current.setDate(current.getDate() + 1);
             }
-            
+
             return count;
         };
 

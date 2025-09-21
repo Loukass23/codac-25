@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check, Clock } from 'lucide-react';
 import { AttendanceStatus } from '@prisma/client';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 import {
     Select,
@@ -115,7 +115,7 @@ export function AttendanceStatusDropdown({
         }
 
         return (
-            <Badge 
+            <Badge
                 variant="secondary"
                 className={cn(
                     'cursor-default',
@@ -137,7 +137,7 @@ export function AttendanceStatusDropdown({
                     onValueChange={handleStatusChange}
                     disabled={isUpdating}
                 >
-                    <SelectTrigger 
+                    <SelectTrigger
                         className={cn(
                             'w-48',
                             currentOption && 'border-2',
@@ -148,7 +148,7 @@ export function AttendanceStatusDropdown({
                         <SelectValue placeholder="Select status">
                             {currentOption ? (
                                 <div className="flex items-center space-x-2">
-                                    <Badge 
+                                    <Badge
                                         variant="secondary"
                                         className={cn(
                                             'text-xs',
@@ -166,7 +166,7 @@ export function AttendanceStatusDropdown({
                             )}
                         </SelectValue>
                     </SelectTrigger>
-                    
+
                     <SelectContent>
                         <SelectItem value="null">
                             <div className="flex items-center space-x-2">
@@ -176,13 +176,13 @@ export function AttendanceStatusDropdown({
                                 <span>Not Recorded</span>
                             </div>
                         </SelectItem>
-                        
+
                         {ATTENDANCE_STATUS_OPTIONS.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <div className="flex items-center space-x-2 w-full">
-                                            <Badge 
+                                            <Badge
                                                 variant="secondary"
                                                 className={cn(
                                                     'text-xs',
@@ -212,7 +212,7 @@ export function AttendanceStatusDropdown({
                 {isUpdating && (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                 )}
-                
+
             </div>
         </TooltipProvider>
     );

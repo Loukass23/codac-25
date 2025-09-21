@@ -9,30 +9,31 @@ import type { ProjectFilter } from '@/types/portfolio'
 export const dynamic = 'force-dynamic'
 
 interface ProjectsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     search?: string
     tech?: string | string[]
     status?: string | string[]
     featured?: string
     view?: 'grid' | 'list'
-  }
+  }>
 }
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
+  const params = await searchParams
   // Parse search parameters into filter object
   const filter: ProjectFilter = {
-    search: searchParams.search,
-    techStack: Array.isArray(searchParams.tech)
-      ? searchParams.tech
-      : searchParams.tech
-        ? [searchParams.tech]
+    search: params.search,
+    techStack: Array.isArray(params.tech)
+      ? params.tech
+      : params.tech
+        ? [params.tech]
         : undefined,
-    status: Array.isArray(searchParams.status)
-      ? searchParams.status as ProjectStatus[]
-      : searchParams.status
-        ? [searchParams.status] as ProjectStatus[]
+    status: Array.isArray(params.status)
+      ? params.status as ProjectStatus[]
+      : params.status
+        ? [params.status] as ProjectStatus[]
         : undefined,
-    featured: searchParams.featured === 'true' ? true : undefined,
+    featured: params.featured === 'true' ? true : undefined,
   }
 
   // Load projects with applied filters
@@ -49,19 +50,19 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
       <ProjectsList
         projects={projects}
         initialFilters={{
-          search: searchParams.search || '',
-          tech: Array.isArray(searchParams.tech)
-            ? searchParams.tech
-            : searchParams.tech
-              ? [searchParams.tech]
+          search: params.search || '',
+          tech: Array.isArray(params.tech)
+            ? params.tech
+            : params.tech
+              ? [params.tech]
               : [],
-          status: Array.isArray(searchParams.status)
-            ? searchParams.status as ProjectStatus[]
-            : searchParams.status
-              ? [searchParams.status] as ProjectStatus[]
+          status: Array.isArray(params.status)
+            ? params.status as ProjectStatus[]
+            : params.status
+              ? [params.status] as ProjectStatus[]
               : [],
-          featured: searchParams.featured === 'true',
-          view: searchParams.view || 'grid'
+          featured: params.featured === 'true',
+          view: params.view || 'grid'
         }}
       />
     </PageContainer>

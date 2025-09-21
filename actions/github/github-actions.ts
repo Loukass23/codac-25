@@ -14,7 +14,7 @@ import {
     type GitHubRepository
 } from '@/lib/github/api'
 import { logger } from '@/lib/logger'
-import { handlePrismaError, type ServerActionResult } from '@/lib/server-action-utils'
+import { handlePrismaError, type ServerActionResult } from '@/lib/utils/server-action-utils'
 
 /**
  * Get user's GitHub repositories

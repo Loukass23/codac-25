@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { getCurrentUser } from '@/lib/auth/auth-utils'
 import { prisma } from '@/lib/db/prisma'
 import { logger } from '@/lib/logger'
-import { handlePrismaError, type ServerActionResult } from '@/lib/server-action-utils'
+import { handlePrismaError, type ServerActionResult } from '@/lib/utils/server-action-utils'
 
 /**
  * Unlink GitHub account from user profile

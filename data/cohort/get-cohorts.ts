@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import type { ServerActionResult } from '@/lib/server-action-utils';
+import type { ServerActionResult } from '@/lib/utils/server-action-utils';
 
 export type CohortWithStudents = Prisma.CohortGetPayload<{
     include: {
@@ -77,7 +77,7 @@ export async function getCohorts(): Promise<GetCohortsResult> {
                         currentJob: true,
                         currentCompany: true,
                         startDate: true,
-                endDate: true,
+                        endDate: true,
                         createdAt: true,
                         _count: {
                             select: {

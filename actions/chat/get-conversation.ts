@@ -3,7 +3,7 @@
 import { z } from 'zod'
 
 import { getConversation } from '@/data/chat/get-conversations'
-import { handleServerAction } from '@/lib/server-action-utils'
+import { handleServerAction } from '@/lib/utils/server-action-utils'
 
 const getConversationSchema = z.object({
     conversationId: z.string().min(1),

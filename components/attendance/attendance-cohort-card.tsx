@@ -6,7 +6,7 @@ import { Users, Calendar, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { CohortForAttendance } from '@/data/attendance/get-cohorts-for-attendance';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface AttendanceCohortCardProps {
     cohort: CohortForAttendance;

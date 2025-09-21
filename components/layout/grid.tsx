@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface GridProps {
   children: React.ReactNode;
@@ -22,8 +22,8 @@ const gapClasses = {
   lg: "gap-6 md:gap-8"
 };
 
-export function Grid({ 
-  children, 
+export function Grid({
+  children,
   className,
   cols = "3",
   gap = "md",
@@ -48,9 +48,9 @@ interface StatsGridProps {
 
 export function StatsGrid({ children, className }: StatsGridProps) {
   return (
-    <Grid 
-      cols="4" 
-      gap="md" 
+    <Grid
+      cols="4"
+      gap="md"
       className={cn("grid-cols-1 md:grid-cols-2 lg:grid-cols-4", className)}
     >
       {children}

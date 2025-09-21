@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Github, CheckCircle, AlertCircle, ExternalLink, Unlink, Link as LinkIcon, RefreshCw } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Separator } from '@/components/ui/separator'
 import { checkGitHubConnection, getGitHubUserInfo } from '@/actions/github/github-actions'
 import { unlinkGitHubAccount } from '@/actions/github/unlink-github'
-import { toast } from 'sonner'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+
 
 interface GitHubIntegrationCardProps {
     className?: string
@@ -84,7 +87,7 @@ export function GitHubIntegrationCard({ className }: GitHubIntegrationCardProps)
                 setIsConnected(false)
                 setGitHubUser(null)
             } else {
-                toast.error(result.error || 'Failed to unlink GitHub account')
+                toast.error('Failed to unlink GitHub account')
             }
         } catch (error) {
             console.error('Error unlinking GitHub:', error)
@@ -169,7 +172,7 @@ export function GitHubIntegrationCard({ className }: GitHubIntegrationCardProps)
                                 <Separator />
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3">
-                                        <img
+                                        <Image
                                             src={gitHubUser.avatar_url}
                                             alt={gitHubUser.name || gitHubUser.login}
                                             className="h-10 w-10 rounded-full"
@@ -240,13 +243,13 @@ export function GitHubIntegrationCard({ className }: GitHubIntegrationCardProps)
                         </Alert>
 
                         <Button asChild className="w-full">
-                            <a
-                                href="/api/auth/signin/github"
+                            <Link
+                                href="/api/auth/signin/github/callback"
                                 className="flex items-center gap-2"
                             >
                                 <LinkIcon className="h-4 w-4" />
                                 Connect GitHub Account
-                            </a>
+                            </Link>
                         </Button>
                     </>
                 )}

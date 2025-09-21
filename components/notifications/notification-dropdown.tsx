@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications, type Notification } from "@/hooks/use-notifications";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 
 function getNotificationIcon(type: Notification["type"]) {

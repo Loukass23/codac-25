@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { getCurrentUser } from '@/lib/auth/auth-utils'
 import { prisma } from '@/lib/db'
 import { logger } from '@/lib/logger'
-import { handlePrismaError, type ServerActionResult } from '@/lib/server-action-utils'
+import { handlePrismaError, type ServerActionResult } from '@/lib/utils/server-action-utils'
 import type { CreateProjectData } from '@/types/portfolio'
 
 export async function createProject(

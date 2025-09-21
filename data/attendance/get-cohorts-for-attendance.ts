@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { auth } from '@/lib/auth/auth';
-import { type ServerActionResult } from '@/lib/server-action-utils';
+import { type ServerActionResult } from '@/lib/utils/server-action-utils';
 
 // Define cohort type with active student count for attendance
 export type CohortForAttendance = Prisma.CohortGetPayload<{
@@ -110,9 +110,9 @@ export async function getCohortsForAttendance(): Promise<GetCohortsForAttendance
         );
 
         logger.logDatabaseOperation('findMany', 'cohorts', undefined, {
-            metadata: { 
+            metadata: {
                 cohortCount: cohorts.length,
-                totalActiveStudents 
+                totalActiveStudents
             }
         });
 
@@ -144,9 +144,9 @@ export async function getCohortsForAttendance(): Promise<GetCohortsForAttendance
             }
         });
 
-        return { 
-            success: false, 
-            error: 'Failed to load cohorts for attendance' 
+        return {
+            success: false,
+            error: 'Failed to load cohorts for attendance'
         };
     }
 }

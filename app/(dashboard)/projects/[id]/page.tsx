@@ -5,7 +5,7 @@ import { BaseEditorKit } from '@/components/editor/plugins/editor-base-kit';
 import { ProjectCard } from '@/components/projects/project-card'
 import { getProjectById } from '@/data/projects/get-project-by-id'
 import { requireServerAuth } from '@/lib/auth/auth-server'
-import { jsonToPlateValue } from '@/lib/plate-utils'
+import { jsonToPlateValue } from '@/lib/utils/plate-utils'
 
 interface ProjectPageProps {
   params: Promise<{

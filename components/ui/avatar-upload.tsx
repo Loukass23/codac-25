@@ -8,7 +8,7 @@ import { updateUserAvatar } from '@/actions/user/update-user-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { useUserAvatar } from '@/hooks/use-user-avatar';
 
 interface AvatarUploadProps {

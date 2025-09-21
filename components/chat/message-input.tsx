@@ -5,7 +5,7 @@ import { useState, useRef, KeyboardEvent, useEffect, useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface MessageInputProps {
   onSendMessage: (content: string) => Promise<void>;

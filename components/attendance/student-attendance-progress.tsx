@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { User, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { AttendanceProgressBar, createAttendanceSegments } from './attendance-progress-bar';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface StudentAttendanceData {
     id: string;
@@ -35,41 +35,41 @@ export function StudentAttendanceProgress({
 }: StudentAttendanceProgressProps) {
     // Sort students by attendance rate (highest first)
     const sortedStudents = [...students].sort((a, b) => {
-        const rateA = a.attendanceStats.totalDays > 0 
-            ? (a.attendanceStats.present / a.attendanceStats.totalDays) * 100 
+        const rateA = a.attendanceStats.totalDays > 0
+            ? (a.attendanceStats.present / a.attendanceStats.totalDays) * 100
             : 0;
-        const rateB = b.attendanceStats.totalDays > 0 
-            ? (b.attendanceStats.present / b.attendanceStats.totalDays) * 100 
+        const rateB = b.attendanceStats.totalDays > 0
+            ? (b.attendanceStats.present / b.attendanceStats.totalDays) * 100
             : 0;
         return rateB - rateA;
     });
 
     const getAttendanceStatus = (attendanceRate: number) => {
-        if (attendanceRate >= 95) return { 
-            icon: TrendingUp, 
-            color: 'text-green-600', 
-            bgColor: 'bg-green-50', 
+        if (attendanceRate >= 95) return {
+            icon: TrendingUp,
+            color: 'text-green-600',
+            bgColor: 'bg-green-50',
             label: 'Excellent',
             borderColor: 'border-green-200'
         };
-        if (attendanceRate >= 85) return { 
-            icon: TrendingUp, 
-            color: 'text-blue-600', 
-            bgColor: 'bg-blue-50', 
+        if (attendanceRate >= 85) return {
+            icon: TrendingUp,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50',
             label: 'Good',
             borderColor: 'border-blue-200'
         };
-        if (attendanceRate >= 75) return { 
-            icon: AlertTriangle, 
-            color: 'text-yellow-600', 
-            bgColor: 'bg-yellow-50', 
+        if (attendanceRate >= 75) return {
+            icon: AlertTriangle,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50',
             label: 'At Risk',
             borderColor: 'border-yellow-200'
         };
-        return { 
-            icon: TrendingDown, 
-            color: 'text-red-600', 
-            bgColor: 'bg-red-50', 
+        return {
+            icon: TrendingDown,
+            color: 'text-red-600',
+            bgColor: 'bg-red-50',
             label: 'Poor',
             borderColor: 'border-red-200'
         };
@@ -99,20 +99,20 @@ export function StudentAttendanceProgress({
                     <ScrollArea className="h-96">
                         <div className="space-y-4">
                             {sortedStudents.map((student, index) => {
-                                const attendanceRate = student.attendanceStats.totalDays > 0 
-                                    ? (student.attendanceStats.present / student.attendanceStats.totalDays) * 100 
+                                const attendanceRate = student.attendanceStats.totalDays > 0
+                                    ? (student.attendanceStats.present / student.attendanceStats.totalDays) * 100
                                     : 0;
-                                
+
                                 const status = getAttendanceStatus(attendanceRate);
                                 const StatusIcon = status.icon;
-                                
+
                                 const segments = createAttendanceSegments(
                                     student.attendanceStats,
                                     student.attendanceStats.totalDays
                                 );
 
                                 return (
-                                    <div 
+                                    <div
                                         key={student.id}
                                         className={cn(
                                             'p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md',
@@ -125,8 +125,8 @@ export function StudentAttendanceProgress({
                                             <div className="flex items-center space-x-3">
                                                 <div className="flex-shrink-0">
                                                     {student.avatar ? (
-                                                        <img 
-                                                            src={student.avatar} 
+                                                        <img
+                                                            src={student.avatar}
                                                             alt={student.name}
                                                             className="w-8 h-8 rounded-full"
                                                         />
@@ -141,10 +141,10 @@ export function StudentAttendanceProgress({
                                                     <div className="text-xs text-gray-500">{student.email}</div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex items-center space-x-2">
-                                                <Badge 
-                                                    variant="secondary" 
+                                                <Badge
+                                                    variant="secondary"
                                                     className={cn('text-xs', status.color)}
                                                 >
                                                     <StatusIcon className="h-3 w-3 mr-1" />
@@ -170,8 +170,8 @@ export function StudentAttendanceProgress({
                                             <div className="flex space-x-4">
                                                 <span>Present: {student.attendanceStats.present}</span>
                                                 <span>Absent: {
-                                                    student.attendanceStats.absentSick + 
-                                                    student.attendanceStats.absentExcused + 
+                                                    student.attendanceStats.absentSick +
+                                                    student.attendanceStats.absentExcused +
                                                     student.attendanceStats.absentUnexcused
                                                 }</span>
                                                 {student.attendanceStats.unrecorded > 0 && (

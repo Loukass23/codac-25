@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 
 import { prisma } from '@/lib/db/prisma'
-import { handleServerAction } from '@/lib/server-action-utils'
+import { handleServerAction } from '@/lib/utils/server-action-utils'
 import { logger } from '@/lib/logger'
 import { notificationService } from '@/lib/notification-service'
 

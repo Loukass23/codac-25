@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Import the shared type
-export type { ServerActionResult } from '@/lib/server-action-utils';
+export type { ServerActionResult } from '@/lib/utils/server-action-utils';
 
 // Attendance status enum validation
 export const attendanceStatusSchema = z.enum([
@@ -24,13 +24,13 @@ export const createAttendanceSchema = z.object({
   date: z.string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
     .transform((dateStr) => new Date(dateStr)),
-    /*
-    .transform((dateStr) => {
-      // Convert string to Date object at start of day in local timezone
-      const [year, month, day] = dateStr.split('-').map(Number);
-      return new Date(year, month - 1, day); // month is 0-indexed
-    }),
-    */ 
+  /*
+  .transform((dateStr) => {
+    // Convert string to Date object at start of day in local timezone
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day); // month is 0-indexed
+  }),
+  */
   status: attendanceStatusSchema,
   studentId: z.string().cuid('Invalid student ID'),
   cohortId: z.string().cuid('Invalid cohort ID'),

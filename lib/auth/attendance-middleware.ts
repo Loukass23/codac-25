@@ -1,6 +1,6 @@
 import { type AttendancePermission } from './attendance-permissions';
 import { getAttendanceAuthContext, verifyAttendanceViewAccess, verifyAttendanceEditAccess, logAttendanceOperation } from './attendance-auth';
-import type { ServerActionResult } from '@/lib/server-action-utils';
+import type { ServerActionResult } from '@/lib/utils/server-action-utils';
 
 /**
  * Higher-order function to wrap server actions with attendance authorization

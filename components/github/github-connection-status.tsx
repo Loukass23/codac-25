@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Github, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -93,18 +94,18 @@ export function GitHubConnectionStatus({
                                 You can now select repositories from your GitHub account to create projects.
                             </p>
                             <Button variant="outline" size="sm" asChild>
-                                <a href="/api/auth/signin/github" className="flex items-center gap-2">
+                                <Link href="/api/auth/signin/github" className="flex items-center gap-2">
                                     <ExternalLink className="h-3 w-3" />
                                     Manage Connection
-                                </a>
+                                </Link>
                             </Button>
                         </div>
                     ) : (
                         <Button asChild className="w-full">
-                            <a href="/api/auth/signin/github" className="flex items-center gap-2">
+                            <Link href="/api/auth/signin/github" className="flex items-center gap-2">
                                 <Github className="h-4 w-4" />
                                 Connect GitHub Account
-                            </a>
+                            </Link>
                         </Button>
                     )}
                 </CardContent>
@@ -134,10 +135,10 @@ export function GitHubConnectionStatus({
             </Badge>
             {!isConnected && (
                 <Button variant="outline" size="sm" asChild>
-                    <a href="/api/auth/signin/github" className="flex items-center gap-1">
+                    <Link href="/api/auth/signin/github" className="flex items-center gap-1">
                         <ExternalLink className="h-3 w-3" />
                         Connect
-                    </a>
+                    </Link>
                 </Button>
             )}
         </div>

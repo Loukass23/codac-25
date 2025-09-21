@@ -6,7 +6,7 @@ import { type Value } from 'platejs'
 import { getCurrentUser } from '@/lib/auth/auth-utils'
 import { prisma } from '@/lib/db'
 import { logger } from '@/lib/logger'
-import { handlePrismaError, type ServerActionResult } from '@/lib/server-action-utils'
+import { handlePrismaError, type ServerActionResult } from '@/lib/utils/server-action-utils'
 
 export async function updateProjectSummary(
   projectId: string,

@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/lib/db/prisma'
-import { createServerAction } from '@/lib/server-action-utils'
+import { createServerAction } from '@/lib/utils/server-action-utils'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'

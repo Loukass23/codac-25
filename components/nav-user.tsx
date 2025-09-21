@@ -33,7 +33,7 @@ import { useUserAvatar } from '@/hooks/use-user-avatar';
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data: session, status } = useSession();
-  const { avatar } = useUserAvatar();
+  const { displayAvatar } = useUserAvatar();
 
   if (status === 'loading') {
     return (
@@ -78,7 +78,7 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded">
                 <AvatarImage
-                  src={avatar || ""}
+                  src={displayAvatar || ""}
                   alt={user.name || user.email || "User"}
                 />
                 <AvatarFallback className="rounded">
@@ -108,7 +108,7 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded">
-                  <AvatarImage src={avatar || ""} alt={user.name || user.email || "User"} />
+                  <AvatarImage src={displayAvatar || ""} alt={user.name || user.email || "User"} />
                   <AvatarFallback className="rounded">
                     {(user.name?.charAt(0) || user.email?.charAt(0) || "U").toUpperCase()}
                   </AvatarFallback>

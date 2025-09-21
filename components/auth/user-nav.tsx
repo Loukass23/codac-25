@@ -18,7 +18,7 @@ import { useUserAvatar } from "@/hooks/use-user-avatar"
 
 export function UserNav() {
     const { data: session, status } = useSession()
-    const { avatar } = useUserAvatar()
+    const { displayAvatar } = useUserAvatar()
 
     if (status === "loading") {
         return (
@@ -44,7 +44,7 @@ export function UserNav() {
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
                         <AvatarImage
-                            src={avatar || ""}
+                            src={displayAvatar || ""}
                             alt={user.name || user.email || "User"}
                         />
                         <AvatarFallback>

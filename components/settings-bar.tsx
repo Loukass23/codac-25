@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 type SettingsBarItemProperties = {
   readonly title: string;
@@ -42,7 +42,7 @@ const Root = ({ children, collapsedContent }: SettingsBarProperties) => {
           )}
         </Button>
       </div>
-      
+
       {!isCollapsed && children}
       {isCollapsed && collapsedContent && (
         <div className="flex flex-col items-center space-y-2">

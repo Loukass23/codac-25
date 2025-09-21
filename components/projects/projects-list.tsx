@@ -13,7 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { useUrlFilters, type FilterState } from '@/lib/url-utils'
+import { useUrlFilters, type FilterState } from '@/lib/utils/url-utils'
 import { PROJECT_STATUSES, SKILL_CATEGORIES, type ProjectShowcaseWithStats } from '@/types/portfolio'
 
 interface ProjectsClientProps {

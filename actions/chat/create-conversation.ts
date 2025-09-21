@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { prisma } from '@/lib/db/prisma'
 import { logger } from '@/lib/logger'
-import { handleServerAction } from '@/lib/server-action-utils'
+import { handleServerAction } from '@/lib/utils/server-action-utils'
 
 // Create the schema with string literals for now, until Prisma client is regenerated
 const createConversationSchema = z.object({

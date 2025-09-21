@@ -7,7 +7,7 @@ import {
     createServerAction,
     type UserPrivate,
     commonSelects
-} from '@/lib/server-action-utils';
+} from '@/lib/utils/server-action-utils';
 
 // Using the utility function for cleaner server actions with built-in logging
 export const createUserOptimized = createServerAction(

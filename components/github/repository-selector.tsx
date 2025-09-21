@@ -1,8 +1,13 @@
 'use client'
 
+import { Search, Github, ExternalLink, Star, GitFork, Calendar, Code, Loader2, Link } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { Search, Github, ExternalLink, Star, GitFork, Calendar, Code, Loader2 } from 'lucide-react'
 
+import {
+    fetchGitHubRepositories,
+    checkGitHubConnection,
+
+} from '@/actions/github/github-actions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,11 +15,6 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-    fetchGitHubRepositories,
-    checkGitHubConnection,
-    createProjectFromGitHub
-} from '@/actions/github/github-actions'
 import type { GitHubRepository } from '@/lib/github/api'
 
 interface RepositorySelectorProps {
@@ -120,10 +120,10 @@ export function RepositorySelector({
                 </CardHeader>
                 <CardContent>
                     <Button asChild className="w-full">
-                        <a href="/api/auth/signin/github">
+                        <Link href="/api/auth/signin/github">
                             <Github className="h-4 w-4 mr-2" />
                             Connect GitHub Account
-                        </a>
+                        </Link>
                     </Button>
                 </CardContent>
             </Card>

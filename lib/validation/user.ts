@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Import the shared type
-export type { ServerActionResult } from '@/lib/server-action-utils';
+export type { ServerActionResult } from '@/lib/utils/server-action-utils';
 
 // Avatar validation schema - supports both URLs and base64 data URIs
 const avatarSchema = z.string().refine(

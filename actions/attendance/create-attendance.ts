@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 import {
     type ServerActionResult,
     handlePrismaError
-} from '@/lib/server-action-utils';
+} from '@/lib/utils/server-action-utils';
 
 
 // Define return type with Prisma's generated types

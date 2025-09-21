@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { githubService } from '@/lib/github/github-service'
 import type { ImportableProjectData } from '@/lib/github/types'
 import { logger } from '@/lib/logger'
-import { type ServerActionResult } from '@/lib/server-action-utils'
+import { type ServerActionResult } from '@/lib/utils/server-action-utils'
 
 
 // Validation schema for GitHub URL
