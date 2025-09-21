@@ -6,14 +6,13 @@ import {
   Code2,
   LayoutDashboard,
   GraduationCap,
-  HandHeart,
   MessageCircle,
   User2,
   BookOpen,
-  Lock,
-  ClipboardCheck,
+  Database,
+  TrendingUp,
+  Settings,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { User } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -30,40 +29,17 @@ import {
 } from "@/components/ui/sidebar";
 import { useTotalUnreadCount } from "@/hooks/use-total-unread-count";
 
+import CodacLogo from "./codac-logo";
 import { NavSecondary } from "./nav-secondary";
 import { NavTop, NavigationGroup } from "./nav-top";
 import { NavUser } from "./nav-user";
 
 const buildNavigationData = (role?: string): NavigationGroup[] => {
-  // Build mentorship items based on role
-  const mentorshipItems = [];
-  if (role === "MENTOR" || role === "ADMIN") {
-    mentorshipItems.push({
-      title: "My Sessions",
-      url: "/mentorship/sessions",
-    });
-  } else {
-    mentorshipItems.push(
-      {
-        title: "Find Mentors",
-        url: "/mentorship/find",
-      },
-      {
-        title: "My Sessions",
-        url: "/mentorship/my-mentors",
-      }
-    );
-  }
-
   // Build career items based on role
   const careerItems = [
     {
       title: "Jobs",
       url: "/career/jobs",
-    },
-    {
-      title: "Upload Duck",
-      url: "/career/ducks/upload",
     },
   ];
 
@@ -78,26 +54,21 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
   // Build learning items based on role
   const learningItems = [
     {
-      title: "Learning",
+      title: "LMS Overview",
       url: "/lms",
-      icon: BookOpen,
+    },
+    {
+      title: "Welcome",
+      url: "/lms/welcome",
     },
   ];
 
   if (role === "ADMIN") {
     learningItems.push({
-      title: "LMS Admin",
-      url: "/lms/admin",
-      icon: Lock
+      title: "Attendance",
+      url: "/attendance",
+      // icon: ClipboardCheck, // Removed to fix type error: 'icon' does not exist in type
     });
-
-    if (role === "ADMIN") {
-      learningItems.push({
-        title: "Attendance",
-        url: "/attendance",
-        icon: ClipboardCheck,
-      });
-    }
   }
 
   return [
@@ -148,16 +119,58 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
       icon: Briefcase,
       items: careerItems,
     },
-    {
-      title: "Mentorship",
-      icon: HandHeart,
-      items: mentorshipItems,
-    },
-    {
+    ...(learningItems.length > 0 ? [{
       title: "Learning",
       icon: GraduationCap,
       items: learningItems,
-    },
+    }] : []),
+
+    // Separate LMS groups for better organization
+    ...(role === "ADMIN" || role === "MENTOR" || role === "STUDENT" ? [
+      {
+        title: "Web Development",
+        icon: BookOpen,
+        items: [
+          { title: "Overview", url: "/lms/web" },
+          { title: "Module 1", url: "/lms/web/Module-1" },
+          { title: "Module 2", url: "/lms/web/Module-2" },
+          { title: "Module 3", url: "/lms/web/Module-3" },
+        ],
+      },
+      {
+        title: "Data Science",
+        icon: Database,
+        items: [
+          { title: "Overview", url: "/lms/data" },
+          { title: "Module 1", url: "/lms/data/Module-1" },
+          { title: "Module 2", url: "/lms/data/Module-2" },
+          { title: "Module 3", url: "/lms/data/Module-3" },
+          { title: "ML Fundamentals", url: "/lms/data/Machine-Learning-Fundamentals" },
+          { title: "Tableau", url: "/lms/data/Tableau" },
+        ],
+      },
+      {
+        title: "Career Services",
+        icon: TrendingUp,
+        items: [
+          { title: "Overview", url: "/lms/career" },
+          { title: "Step 1", url: "/lms/career/Step-1" },
+          { title: "Step 2", url: "/lms/career/Step-2" },
+          { title: "Step 3", url: "/lms/career/Step-3" },
+        ],
+      },
+    ] : []),
+
+    // Admin-only content
+    ...(role === "ADMIN" ? [
+      {
+        title: "Admin",
+        icon: Settings,
+        items: [
+          { title: "Guidelines", url: "/lms/guidelines" },
+        ],
+      },
+    ] : []),
 
   ];
 };
@@ -200,15 +213,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-2"
             >
               <Link href="/">
-                <Image
-                  src={"/codac_logo.svg"}
-                  alt="codac logo"
-                  width={24}
-                  height={24}
-                  className="shrink-0"
+
+                <CodacLogo
+                  size="sm"
+
                 />
                 <div className="flex-1 text-left leading-tight group-data-[collapsible=icon]:group-data-[state=collapsed]:hidden">
-                  <span className="font-codac-brand text-2xl uppercase tracking-wider text-primary">
+                  <span className="font-codac-brand text-2xl uppercase tracking-wider text-codac-pink">
                     codac
                   </span>
                 </div>

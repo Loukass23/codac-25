@@ -43,6 +43,13 @@ export const colorSchemes = [
         colors: ['#EC4899', '#E11D48'],
         description: 'Warm rose tones for a friendly feel',
     },
+    {
+        name: 'codac',
+        label: 'Codac Brand',
+        class: 'theme-codac',
+        colors: ['#E77096', '#52EACE'],
+        description: 'Official Codac brand colors from the logo',
+    },
 ] as const;
 
 export type ColorScheme = typeof colorSchemes[number]['name'];

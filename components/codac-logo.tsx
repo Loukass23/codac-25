@@ -76,6 +76,10 @@ const sizeConfig = {
         logo: "w-24 h-24",
         text: "text-3xl",
     },
+    "8xl": {
+        logo: "w-96 h-96",
+        text: "text-8xl",
+    },
 };
 
 export const CodacLogo: React.FC<CodacLogoProps> = ({
@@ -86,8 +90,6 @@ export const CodacLogo: React.FC<CodacLogoProps> = ({
     textClassName,
     logoClassName,
     useGradient = false,
-    leftDiamondAnimation,
-    rightDiamondAnimation,
 }) => {
     const config = sizeConfig[size];
     const showText = !logoOnly && text;
@@ -119,7 +121,7 @@ export const CodacLogo: React.FC<CodacLogoProps> = ({
                     className="w-full h-full"
                 >
                     {/* Left Diamond */}
-                    <g id="left-diamond" className={cn("left-diamond", leftDiamondAnimation)}>
+                    <g id="left-diamond" className={cn("left-diamond", size === "lg" || size === "xl" || size === "2xl" ? "animate-diamond-pulse" : "")}>
                         <path
                             d="M292.461 8L125 342.461L292.461 676.923L-42 342.461L292.461 8Z"
                             fill="url(#paint0_linear_0_1)"
@@ -133,7 +135,7 @@ export const CodacLogo: React.FC<CodacLogoProps> = ({
                     </g>
 
                     {/* Right Diamond */}
-                    <g id="right-diamond" className={cn("right-diamond", rightDiamondAnimation)}>
+                    <g id="right-diamond" className={cn("right-diamond", size === "lg" || size === "xl" || size === "2xl" ? "animate-diamond-pulse" : "")} style={{ animationDelay: "1s" }}>
                         <path
                             d="M392.461 676.923L559.923 342.461L392.461 8L726.923 342.461L392.461 676.923Z"
                             fill="url(#paint1_linear_0_1)"

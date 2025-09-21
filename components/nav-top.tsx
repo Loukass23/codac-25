@@ -25,6 +25,7 @@ export interface NavigationItem {
   title: string;
   url: string;
   badge?: string;
+  icon?: LucideIcon;
 }
 
 export interface NavigationGroup {
