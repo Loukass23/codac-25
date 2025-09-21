@@ -16,6 +16,23 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  // Handle server-side external packages
+  serverExternalPackages: ['canvas', 'jsdom'],
+  // Handle external packages that shouldn't be bundled
+  webpack: (config, { isServer }) => {
+    // Exclude canvas from bundling (it's not needed in browser environments)
+    config.externals = config.externals || [];
+    if (!isServer) {
+      config.externals.push('canvas');
+    }
+
+    // Handle jsdom version conflicts
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+    config.resolve.alias.jsdom = require.resolve('jsdom');
+
+    return config;
+  },
 
   // Headers configuration to handle large cookies/headers
   async headers() {

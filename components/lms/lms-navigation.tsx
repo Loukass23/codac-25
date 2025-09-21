@@ -373,6 +373,27 @@ export function LMSNavigation() {
         }
     }, [pathname, getParentUrls]);
 
+    // Preserve navigation state during route changes
+    React.useEffect(() => {
+        // Keep navigation expanded state persistent
+        const savedState = sessionStorage.getItem('lms-navigation-state');
+        if (savedState) {
+            try {
+                const parsedState = JSON.parse(savedState);
+                setExpandedItems(new Set(parsedState));
+            } catch (error) {
+                console.warn('Failed to restore navigation state:', error);
+            }
+        }
+    }, []);
+
+    // Save navigation state
+    React.useEffect(() => {
+        if (expandedItems.size > 0) {
+            sessionStorage.setItem('lms-navigation-state', JSON.stringify([...expandedItems]));
+        }
+    }, [expandedItems]);
+
     const navigationGroups = buildLMSNavigation();
 
     return (

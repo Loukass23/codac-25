@@ -89,19 +89,31 @@ export default async function LMSPage() {
 
     if (userRole === 'ADMIN') {
         // Admin can access everything
-        accessibleContent = ['web', 'data', 'career', 'admin'].flatMap(access =>
-            getMarkdownFilesByAccess(access).map(file => getContentMetadata(file)).filter((item): item is ContentItem => item !== null)
+        const adminFiles = await Promise.all(
+            ['web', 'data', 'career', 'admin'].map(async (access) => {
+                const files = await getMarkdownFilesByAccess(access);
+                return files.map(file => getContentMetadata(file)).filter((item): item is ContentItem => item !== null);
+            })
         );
+        accessibleContent = adminFiles.flat();
     } else if (userRole === 'MENTOR') {
         // Mentors can access web and data content
-        accessibleContent = ['web', 'data', 'career'].flatMap(access =>
-            getMarkdownFilesByAccess(access).map(file => getContentMetadata(file)).filter((item): item is ContentItem => item !== null)
+        const mentorFiles = await Promise.all(
+            ['web', 'data', 'career'].map(async (access) => {
+                const files = await getMarkdownFilesByAccess(access);
+                return files.map(file => getContentMetadata(file)).filter((item): item is ContentItem => item !== null);
+            })
         );
+        accessibleContent = mentorFiles.flat();
     } else {
         // Students can access content based on their enrollment/role
-        accessibleContent = ['web', 'data', 'career'].flatMap(access =>
-            getMarkdownFilesByAccess(access).map(file => getContentMetadata(file)).filter((item): item is ContentItem => item !== null)
+        const studentFiles = await Promise.all(
+            ['web', 'data', 'career'].map(async (access) => {
+                const files = await getMarkdownFilesByAccess(access);
+                return files.map(file => getContentMetadata(file)).filter((item): item is ContentItem => item !== null);
+            })
         );
+        accessibleContent = studentFiles.flat();
     }
 
     // Sort by order and filter out duplicates

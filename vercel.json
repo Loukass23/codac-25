@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm run build",
+  "buildCommand": "pnpm db:generate && pnpm db:push && pnpm run build  ",
   "devCommand": "pnpm run dev",
   "outputDirectory": ".next",
   "installCommand": "pnpm install",

@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: LMSContentPageProps) {
         const parsedMarkdown = await parseMarkdownFile(filePath);
 
         return {
-            title: parsedMarkdown.metadata.metaTitle || parsedMarkdown.metadata.title,
+            title: "codac | " + parsedMarkdown.metadata.metaTitle || parsedMarkdown.metadata.title,
             description: parsedMarkdown.metadata.metaDescription,
         };
     } catch {
