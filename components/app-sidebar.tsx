@@ -71,7 +71,7 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
       items: [
         {
           title: "Dashboard",
-          url: "/",
+          url: "/home",
         },
       ],
     },
