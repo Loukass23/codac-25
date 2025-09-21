@@ -4,6 +4,11 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+const databaseUrl = process.env['DATABASE_URL'];
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
@@ -11,7 +16,7 @@ export const prisma =
     errorFormat: 'colorless',
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: databaseUrl,
       },
     },
   });

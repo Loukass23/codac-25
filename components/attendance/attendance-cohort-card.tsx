@@ -1,7 +1,7 @@
-import Link from 'next/link';
 
 import { format } from 'date-fns';
 import { Users, Calendar, Clock } from 'lucide-react';
+import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

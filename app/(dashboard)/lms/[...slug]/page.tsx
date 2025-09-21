@@ -1,8 +1,11 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
-import { LMSLayout } from "@/components/lms/lms-layout";
+import { LMSSkeleton } from "@/components/lms/lms-skeleton";
+import { PlateLMSWrapper } from "@/components/lms/plate-lms-wrapper";
 import { auth } from "@/lib/auth/auth";
-import { parseMarkdownFile } from "@/lib/markdown-parser";
+import { parseMarkdownFile } from "@/lib/plate/markdown-parser";
+
 
 
 interface LMSContentPageProps {
@@ -13,7 +16,7 @@ interface LMSContentPageProps {
 
 export async function generateStaticParams() {
     // Generate static params for all markdown files
-    const { getAllMarkdownFiles } = await import("@/lib/markdown-parser");
+    const { getAllMarkdownFiles } = await import("@/lib/plate/markdown-parser");
     const files = getAllMarkdownFiles();
 
     return files.map((file) => ({
@@ -28,7 +31,7 @@ export async function generateMetadata({ params }: LMSContentPageProps) {
         const parsedMarkdown = await parseMarkdownFile(filePath);
 
         return {
-            title: "codac | " + parsedMarkdown.metadata.metaTitle || parsedMarkdown.metadata.title,
+            title: parsedMarkdown.metadata.metaTitle || parsedMarkdown.metadata.title,
             description: parsedMarkdown.metadata.metaDescription,
         };
     } catch {
@@ -77,11 +80,23 @@ export default async function LMSContentPage({ params }: LMSContentPageProps) {
             redirect('/lms');
         }
 
+        const { metadata, plateValue } = parsedMarkdown;
         return (
-            <LMSLayout
-                parsedMarkdown={parsedMarkdown}
-                currentPath={filePath}
-            />
+            <Suspense fallback={<LMSSkeleton />}>
+
+                <PlateLMSWrapper
+                    plateValue={plateValue}
+                    title={metadata.title}
+                    description={metadata.metaDescription || ''}
+                    showEditButton={true}
+                    editLink={`/lms/${resolvedParams.slug.join('/')}/edit`}
+                    showNavigation={!!(metadata.prev || metadata.next)}
+                    prevLink={metadata.prev ? `/lms/${metadata.prev}` : ''}
+                    nextLink={metadata.next ? `/lms/${metadata.next}` : ''}
+                    showTableOfContents={true}
+                />
+
+            </Suspense>
         );
     } catch (error) {
         console.error('Error loading content:', error);

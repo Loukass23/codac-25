@@ -163,16 +163,16 @@ async function processSelection(input: string) {
 
         if (index >= 0 && index < seedOptions.length) {
             const option = seedOptions[index];
-            logger.info(`🌱 Starting ${option.name}...`);
-            console.log(`\n🌱 Seeding ${option.name}...`);
+            logger.info(`🌱 Starting ${option?.name}...`);
+            console.log(`\n🌱 Seeding ${option?.name}...`);
 
             try {
-                await option.action();
-                console.log(`✅ ${option.name} completed successfully!`);
+                await option?.action();
+                console.log(`✅ ${option?.name} completed successfully!`);
             } catch (error) {
                 const errorMessage = error instanceof Error ? error : new Error(String(error));
-                logger.error(`❌ ${option.name} failed:`, errorMessage);
-                console.log(`❌ ${option.name} failed. Check logs for details.`);
+                logger.error(`❌ ${option?.name} failed:`, errorMessage);
+                console.log(`❌ ${option?.name} failed. Check logs for details.`);
             }
         } else {
             console.log(`❌ Invalid selection: ${selection}`);
@@ -244,7 +244,7 @@ async function main() {
                 console.log('✅ Chat data cleaned successfully!');
             } else {
                 // Try to process as selection
-                await processSelection(command);
+                await processSelection(command!);
             }
         } else {
             // Interactive mode

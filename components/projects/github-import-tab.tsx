@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 
 import { fetchRepository } from '@/actions/github/fetch-repository'
 import { RepositorySelector } from '@/components/github/repository-selector'
+import { RepositoryPreviewCard } from '@/components/projects/repository-preview-card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,7 +14,6 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { GitHubImportPreview, GitHubImportOptions, CreateProjectData } from '@/types/portfolio'
 
-import { RepositoryPreviewCard } from '@/components/projects/repository-preview-card'
 
 interface GitHubImportTabProps {
   onImport: (data: Partial<CreateProjectData>) => void

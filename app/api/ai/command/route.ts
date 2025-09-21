@@ -4,12 +4,12 @@ import { convertToCoreMessages, streamText } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { markdownJoinerTransform } from '@/lib/markdown-joiner-transform';
+import { markdownJoinerTransform } from '@/lib/plate/markdown-joiner-transform';
 
 export async function POST(req: NextRequest) {
   const { apiKey: key, messages, system } = await req.json();
 
-  const apiKey = key || process.env.OPENAI_API_KEY;
+  const apiKey = key || process.env['OPENAI_API_KEY'];
 
   if (!apiKey) {
     return NextResponse.json(

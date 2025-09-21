@@ -1,9 +1,7 @@
 'use client';
 
-import * as React from 'react';
 
 import type { Emoji } from '@emoji-mart/data';
-
 import {
   type EmojiCategoryList,
   type EmojiIconList,
@@ -29,8 +27,10 @@ import {
   StarIcon,
   XIcon,
 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { ToolbarButton } from '@/components/ui/toolbar';
 import {
   Tooltip,
   TooltipContent,
@@ -38,7 +38,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { ToolbarButton } from '@/components/ui/toolbar';
 
 export function EmojiToolbarButton({
   options,
@@ -178,7 +177,7 @@ const EmojiButton = React.memo(function EmojiButton({
       onClick={() => onSelect(emoji)}
       onMouseEnter={() => onMouseOver(emoji)}
       onMouseLeave={() => onMouseOver()}
-      aria-label={emoji.skins[0].native}
+      aria-label={emoji.skins[0]?.native}
       data-index={index}
       tabIndex={-1}
       type="button"
@@ -195,7 +194,7 @@ const EmojiButton = React.memo(function EmojiButton({
         }}
         data-emoji-set="native"
       >
-        {emoji.skins[0].native}
+        {emoji.skins[0]?.native}
       </span>
     </button>
   );
@@ -419,7 +418,7 @@ function EmojiPreview({ emoji }: Pick<UseEmojiPickerType, 'emoji'>) {
   return (
     <div className="flex h-14 max-h-14 min-h-14 items-center border-t border-muted p-2">
       <div className="flex items-center justify-center text-2xl">
-        {emoji?.skins[0].native}
+        {emoji?.skins[0]?.native}
       </div>
       <div className="overflow-hidden pl-2">
         <div className="truncate text-sm font-semibold">{emoji?.name}</div>

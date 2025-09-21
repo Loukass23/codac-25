@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import matter from 'gray-matter';
+import { TElement } from 'platejs';
 import { rehype } from 'rehype';
 import rehypeSlug from 'rehype-slug';
 import { remark } from 'remark';
@@ -22,10 +23,16 @@ export interface MarkdownMetadata {
     prev?: string;
 }
 
+import { logger } from '@/lib/logger';
+
+import { convertMarkdownToPlateValue } from './markdown-converter';
+
+
 export interface ParsedMarkdown {
     metadata: MarkdownMetadata;
     content: string;
     htmlContent: string;
+    plateValue: TElement[];
 }
 
 const contentDirectory = path.join(process.cwd(), 'content');
@@ -191,10 +198,27 @@ export async function parseMarkdownFile(filePath: string): Promise<ParsedMarkdow
     // Enhance HTML with better styling classes
     htmlWithAssets = enhanceMarkdownHtml(htmlWithAssets);
 
+    // Convert to Plate.js value format
+    let plateValue: TElement[] = [];
+    try {
+        plateValue = await convertMarkdownToPlateValue(content);
+    } catch (error) {
+        logger.error('Failed to convert markdown to Plate.js value in parser',
+            error instanceof Error ? error : new Error(String(error)),
+            {
+                action: 'parse_markdown_file',
+                metadata: { filePath }
+            }
+        );
+        // Fallback to a simple paragraph
+        plateValue = [{ type: 'p', children: [{ text: 'Error processing content' }] }];
+    }
+
     return {
         metadata: data as MarkdownMetadata,
         content,
         htmlContent: htmlWithAssets,
+        plateValue,
     };
 }
 

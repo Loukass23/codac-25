@@ -9,8 +9,8 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Create a standalone Supabase client for seeding (no Next.js dependencies)
 function createClientForSeed() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY;
+    const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+    const supabaseServiceKey = process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY'];
 
     if (!supabaseUrl || !supabaseServiceKey) {
         throw new Error('Missing Supabase environment variables for seeding');
@@ -72,9 +72,10 @@ export async function uploadFileFromPathForSeed(
     const { data, error } = await supabase.storage
         .from(bucket)
         .upload(storageFilePath, fileBuffer, {
+            contentType: contentType || '',
             cacheControl: '3600',
             upsert: true, // Allow overwriting existing files
-            contentType
+
         });
 
     if (error) {

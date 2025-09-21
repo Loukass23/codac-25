@@ -29,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
     // Use Resend instead of Nodemailer for Edge Runtime compatibility
     Resend({
-      from: process.env.EMAIL_FROM || "auth@example.com",
+      from: process.env['EMAIL_FROM'] || "auth@example.com",
     }),
     CredentialsProvider({
       name: "credentials",
@@ -167,6 +167,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   events: {
     async createUser({ user }) {
       try {
+        if (!user.id) {
+          throw new Error("User ID is required");
+        }
         // Set default role and status for new users
         await prisma.user.update({
           where: { id: user.id },

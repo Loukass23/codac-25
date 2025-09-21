@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
   // Monitor header sizes to debug 431 errors in development
@@ -37,7 +37,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Get token without importing the full auth configuration
-  const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+  const authSecret = process.env['AUTH_SECRET'] || process.env['NEXTAUTH_SECRET'];
 
   if (!authSecret) {
     console.error("AUTH_SECRET environment variable is required for middleware authentication");

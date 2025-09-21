@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  Plus,
-  MessageCircle,
-  Users,
+  AlertCircle,
   Hash,
   Loader2,
+  MessageCircle,
+  Plus,
   Search,
+  Users,
   X,
-  AlertCircle,
 } from "lucide-react";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { createConversation } from "@/actions/chat/create-conversation";
 import { findExistingDirectConversation } from "@/actions/chat/find-existing-conversation";
@@ -171,7 +171,7 @@ export function CreateConversationDialog({
       // For direct messages, check if conversation already exists
       if (type === "DIRECT" && selectedUserIds.length === 1) {
         const existingResult = await findExistingDirectConversation(
-          selectedUserIds[0]
+          selectedUserIds[0]!
         );
         if (existingResult.success && existingResult.data?.conversationId) {
           // Navigate to existing conversation

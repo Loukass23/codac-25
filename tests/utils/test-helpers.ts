@@ -387,7 +387,7 @@ export class DocumentHelpers {
     const countText = await this.page.getByText(/\d+ documents? found/).textContent();
     if (!countText) return 0;
     const match = countText.match(/(\d+)/);
-    return match ? parseInt(match[1], 10) : 0;
+    return match ? parseInt(match[1]!, 10) : 0;
   }
 
   async clickFirstDocument() {

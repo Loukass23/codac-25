@@ -1,9 +1,10 @@
+import { UserRole, UserStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+
 // Note: getSession import removed - implement based on your auth system
-import { BusinessRuleValidationContext } from '@/lib/validation/attendance-advanced';
-import { UserRole, UserStatus } from '@prisma/client';
 import { logger } from '@/lib/logger';
+import { BusinessRuleValidationContext } from '@/lib/validation/attendance-advanced';
 
 /**
  * Middleware for validating attendance-related requests

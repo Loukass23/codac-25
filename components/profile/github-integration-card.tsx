@@ -244,7 +244,7 @@ export function GitHubIntegrationCard({ className }: GitHubIntegrationCardProps)
 
                         <Button asChild className="w-full">
                             <Link
-                                href="/api/auth/signin/github/callback"
+                                href="/api/auth/signin/github"
                                 className="flex items-center gap-2"
                             >
                                 <LinkIcon className="h-4 w-4" />

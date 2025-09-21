@@ -1,9 +1,7 @@
 'use client';
 
-import * as React from 'react';
 
 import type { TResolvedSuggestion } from '@platejs/suggestion';
-
 import {
   acceptSuggestion,
   getSuggestionKey,
@@ -24,15 +22,16 @@ import {
   TextApi,
 } from 'platejs';
 import { useEditorPlugin, usePluginOption } from 'platejs/react';
+import * as React from 'react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import {
   type TDiscussion,
   discussionPlugin,
-} from '@/components/discussion-kit';
+} from '@/components/editor/plugins/discussion-kit';
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 import {
   type TComment,
@@ -337,6 +336,7 @@ export const useResolveSuggestion = (
           if (ElementApi.isElement(node)) {
             return api.suggestion.nodeId(node);
           }
+          return [];
         })
         .filter(Boolean)
     );
@@ -417,18 +417,18 @@ export const useResolveSuggestion = (
           if (lineBreakData.type === 'insert') {
             newText += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node);
+              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type]?.(node);
           } else if (lineBreakData.type === 'remove') {
             text += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node);
+              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type]?.(node);
           }
         }
       });
 
       if (entries.length === 0) return;
 
-      const nodeData = api.suggestion.suggestionData(entries[0][0]);
+      const nodeData = api.suggestion.suggestionData(entries[0]?.[0]!);
 
       if (!nodeData) return;
 
@@ -440,7 +440,7 @@ export const useResolveSuggestion = (
       const keyId = getSuggestionKey(id);
 
       if (nodeData.type === 'update') {
-        return res.push({
+        res.push({
           comments,
           createdAt,
           keyId,
@@ -451,9 +451,10 @@ export const useResolveSuggestion = (
           type: 'update',
           userId: nodeData.userId,
         });
+        return;
       }
       if (newText.length > 0 && text.length > 0) {
-        return res.push({
+        res.push({
           comments,
           createdAt,
           keyId,
@@ -463,9 +464,10 @@ export const useResolveSuggestion = (
           type: 'replace',
           userId: nodeData.userId,
         });
+        return;
       }
       if (newText.length > 0) {
-        return res.push({
+        res.push({
           comments,
           createdAt,
           keyId,
@@ -474,9 +476,10 @@ export const useResolveSuggestion = (
           type: 'insert',
           userId: nodeData.userId,
         });
+        return;
       }
       if (text.length > 0) {
-        return res.push({
+        res.push({
           comments,
           createdAt,
           keyId,
@@ -485,6 +488,7 @@ export const useResolveSuggestion = (
           type: 'remove',
           userId: nodeData.userId,
         });
+        return;
       }
     });
 

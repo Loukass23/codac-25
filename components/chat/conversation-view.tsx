@@ -1,7 +1,7 @@
 "use client";
 
-import { Loader2, AlertCircle } from "lucide-react";
-import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { getConversationAction } from "@/actions/chat/get-conversation";
@@ -342,11 +342,14 @@ export function ConversationView({
 
     // Sort messages within each date group by time
     Object.keys(groups).forEach((date) => {
-      groups[date].sort((a, b) => {
-        const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
-        const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
-        return dateA.getTime() - dateB.getTime();
-      });
+      const group = groups[date];
+      if (group) {
+        group.sort((a, b) => {
+          const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+          const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+          return dateA.getTime() - dateB.getTime();
+        });
+      }
     });
 
     return groups;
@@ -459,9 +462,9 @@ export function ConversationView({
 
             {/* Messages for this date */}
             <div className="space-y-1">
-              {messageGroups[date].map((message, index) => {
-                const prevMessage = messageGroups[date][index - 1];
-                const nextMessage = messageGroups[date][index + 1];
+              {messageGroups[date]?.map((message, index) => {
+                const prevMessage = messageGroups[date]?.[index - 1];
+                const nextMessage = messageGroups[date]?.[index + 1];
 
                 return (
                   <MessageBubble

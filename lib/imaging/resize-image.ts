@@ -43,7 +43,7 @@ function getFormatFromMimeType(mimeType: string): string {
     if (parts.length !== 2 || parts[0] !== 'image') {
       throw new Error(`Invalid mime type: ${mimeType}`);
     }
-    return parts[1];
+    return parts[1]!;
   } catch {
     console.warn(`Error parsing mime type. Using default format.`);
     return defaultFormat;

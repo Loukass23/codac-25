@@ -1,18 +1,16 @@
 'use client';
 
-import * as React from 'react';
 
-import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';
 
 import { getDraftCommentKey } from '@platejs/comment';
 import { CommentPlugin } from '@platejs/comment/react';
-import { getTransientSuggestionKey } from '@platejs/suggestion';
 import { SuggestionPlugin } from '@platejs/suggestion/react';
 import {
   MessageSquareTextIcon,
   MessagesSquareIcon,
   PencilLineIcon,
 } from 'lucide-react';
+import { KEYS } from 'platejs';
 import {
   type AnyPluginConfig,
   type NodeEntry,
@@ -23,8 +21,16 @@ import {
   PathApi,
   TextApi,
 } from 'platejs';
+import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';
 import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react';
+import * as React from 'react';
 
+import { commentPlugin } from '@/components/editor/plugins/comment-kit';
+import {
+  type TDiscussion,
+  discussionPlugin,
+} from '@/components/editor/plugins/discussion-kit';
+import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -32,12 +38,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { commentPlugin } from '@/components/editor/plugins/comment-kit';
-import {
-  type TDiscussion,
-  discussionPlugin,
-} from '@/components/discussion-kit';
-import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
 
 import {
   BlockSuggestionCard,
@@ -61,7 +61,7 @@ export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
 
   const suggestionNodes = [
     ...editor.getApi(SuggestionPlugin).suggestion.nodes({ at: blockPath }),
-  ].filter(([node]) => !node[getTransientSuggestionKey()]);
+  ].filter(([node]) => !node[KEYS.suggestion]);
 
   if (
     commentNodes.length === 0 &&
@@ -71,7 +71,7 @@ export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
     return;
   }
 
-  return (props) => (
+  const BlockDiscussionWrapper = (props: any) => (
     <BlockCommentContent
       blockPath={blockPath}
       commentNodes={commentNodes}
@@ -80,6 +80,8 @@ export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
       {...props}
     />
   );
+  BlockDiscussionWrapper.displayName = 'BlockDiscussionWrapper';
+  return BlockDiscussionWrapper;
 };
 
 const BlockCommentContent = ({

@@ -3,7 +3,7 @@
 import { BookOpen, Database, TrendingUp, ChevronRight, ChevronDown, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -229,7 +229,6 @@ const buildLMSNavigation = (): NavigationGroup[] => [
             { title: "Guidelines", url: "/lms/guidelines" },
         ],
     },
-
 ];
 
 interface NavigationItemProps {
@@ -323,23 +322,28 @@ export function LMSNavigation() {
     const pathname = usePathname();
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-    const toggleExpanded = (url: string) => {
-        const newExpanded = new Set(expandedItems);
-        if (newExpanded.has(url)) {
-            newExpanded.delete(url);
-        } else {
-            newExpanded.add(url);
-        }
-        setExpandedItems(newExpanded);
-    };
+    // Memoize navigation groups to prevent unnecessary re-renders
+    const navigationGroups = useMemo(() => buildLMSNavigation(), []);
 
-    const isItemActive = (item: NavigationItem): boolean => {
+    const toggleExpanded = useCallback((url: string) => {
+        setExpandedItems(prev => {
+            const newExpanded = new Set(prev);
+            if (newExpanded.has(url)) {
+                newExpanded.delete(url);
+            } else {
+                newExpanded.add(url);
+            }
+            return newExpanded;
+        });
+    }, []);
+
+    const isItemActive = useCallback((item: NavigationItem): boolean => {
         if (item.url === pathname) return true;
         if (item.children) {
             return item.children.some(child => isItemActive(child));
         }
         return false;
-    };
+    }, [pathname]);
 
     // Auto-expand navigation to show current active item
     const getParentUrls = useCallback((item: NavigationItem, targetUrl: string, parents: string[] = []): string[] | null => {
@@ -357,8 +361,6 @@ export function LMSNavigation() {
 
     // Auto-expand when pathname changes
     React.useEffect(() => {
-        const navigationGroups = buildLMSNavigation();
-
         for (const group of navigationGroups) {
             for (const item of group.items) {
                 const parentUrls = getParentUrls(item, pathname);
@@ -371,7 +373,7 @@ export function LMSNavigation() {
                 }
             }
         }
-    }, [pathname, getParentUrls]);
+    }, [pathname, getParentUrls, navigationGroups]);
 
     // Preserve navigation state during route changes
     React.useEffect(() => {
@@ -393,8 +395,6 @@ export function LMSNavigation() {
             sessionStorage.setItem('lms-navigation-state', JSON.stringify([...expandedItems]));
         }
     }, [expandedItems]);
-
-    const navigationGroups = buildLMSNavigation();
 
     return (
         <div className="h-full overflow-y-auto">

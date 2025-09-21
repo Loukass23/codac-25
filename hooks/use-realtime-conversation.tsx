@@ -141,7 +141,12 @@ export function useRealtimeConversation({
           userName: rawData.userName || rawData.user_name,
           userId: rawData.userId || rawData.user_id,
           conversationId: rawData.conversationId || rawData.conversation_id,
-          user: undefined, // Realtime messages don't include user object
+          user: {
+            id: rawData.userId || rawData.user_id || '',
+            name: rawData.userName || rawData.user_name || null,
+            email: null,
+            avatar: null,
+          }, // Realtime messages don't include full user object, so we construct a minimal one
         } as ConversationMessage;
 
         setMessages((prev) => {
@@ -194,7 +199,7 @@ export function useRealtimeConversation({
         (payload) => {
           // Filter for our conversation in JavaScript
           const messageConversationId =
-            payload.new?.conversationId || payload.new?.conversation_id;
+            payload.new?.['conversationId'] || payload.new?.['conversation_id'];
 
           if (messageConversationId === conversationId) {
             handleNewMessage(payload);
@@ -219,8 +224,8 @@ export function useRealtimeConversation({
       // })
       // Listen for typing indicators
       .on("broadcast", { event: "typing" }, (payload) => {
-        if (payload.payload) {
-          const { userId, username, isTyping: typing } = payload.payload;
+        if (payload['payload']) {
+          const { userId, username, isTyping: typing } = payload['payload'];
 
           // Don't show own typing indicator
           if (userId === currentUserId) return;
@@ -360,14 +365,19 @@ export function useRealtimeConversation({
           setMessages((prev) => {
             const withoutOptimistic = prev.filter((m) => m.id !== optimisticMessage.id);
 
-            const realMessageData = {
+            const realMessageData: ConversationMessage = {
               id: realMessage.id,
               content: realMessage.content,
               createdAt: new Date(realMessage.createdAt), // Ensure it's always a Date object
               userName: realMessage.userName,
               userId: realMessage.userId,
               conversationId: realMessage.conversationId,
-              user: optimisticMessage.user,
+              user: optimisticMessage.user || {
+                id: realMessage.userId || '',
+                name: realMessage.userName || null,
+                email: null,
+                avatar: null,
+              },
             };
 
             // Check if real message already exists (from WebSocket)

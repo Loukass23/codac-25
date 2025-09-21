@@ -1,9 +1,11 @@
 'use server';
 
+import { UserRole, UserStatus } from '@prisma/client';
+
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-import { UserRole, UserStatus } from '@prisma/client';
+
 import { 
     ATTENDANCE_PERMISSIONS, 
     ROLE_PERMISSIONS,

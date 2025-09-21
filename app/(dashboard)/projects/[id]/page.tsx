@@ -1,11 +1,10 @@
-import { notFound } from 'next/navigation'
-import { createSlateEditor, PlateStatic } from 'platejs';
+import { notFound, redirect } from 'next/navigation'
 
-import { BaseEditorKit } from '@/components/editor/plugins/editor-base-kit';
-import { ProjectCard } from '@/components/projects/project-card'
+import { PlateProjectWrapper } from '@/components/projects/plate-project-wrapper'
 import { getProjectById } from '@/data/projects/get-project-by-id'
+import { getAllProjects } from '@/data/projects/get-projects'
 import { requireServerAuth } from '@/lib/auth/auth-server'
-import { jsonToPlateValue } from '@/lib/utils/plate-utils'
+import { jsonToPlateValue } from '@/lib/plate/utils'
 
 interface ProjectPageProps {
   params: Promise<{
@@ -19,61 +18,46 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const user = await requireServerAuth()
 
   if (!project) {
+    // Check if there are any public projects available to redirect to
+    try {
+      const allProjects = await getAllProjects({})
+      if (allProjects.length > 0) {
+        // Redirect to the most recent project
+        const mostRecentProject = allProjects.sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0]
+        redirect(`/projects/${mostRecentProject?.id}`)
+      }
+    } catch (error) {
+      // If we can't get projects, just show not found
+      console.error('Failed to get projects for redirect:', error)
+    }
+
     notFound()
   }
 
   const isOwner = user?.id === project.projectProfile.userId
-  if (!isOwner) {
+
+
+  const { title, description, summary } = project;
+
+
+  const plateValue = jsonToPlateValue(summary);
+
+  if (!plateValue.length) {
     notFound()
   }
-
-  const editor = createSlateEditor({
-    plugins: BaseEditorKit,
-    value: jsonToPlateValue(project.summary)
-  });
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Minimal header */}
-      <ProjectCard
-        project={project}
-        showEditActions={isOwner}
-      />
-      {/* <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {author && <UserProfileAvatar
-                user={{
-                  id: author.id,
-                  name: author.name || undefined,
-                  avatar: author.avatar || undefined
-                }}
-              />}
-              <div>
-                <h1 className="text-lg font-semibold text-foreground">
-                  {project.title}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  by {author.name}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-xs">
-                {project.status}
-              </Badge>
-            </div>
-          </div>
-        </div>
-      </div> */}
 
-      {/* Editor content - takes up most of the screen */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <PlateStatic editor={editor} />
-        </div>
-      </div>
+      <PlateProjectWrapper
+        plateValue={plateValue}
+        title={title}
+        description={description}
+        showEditButton={isOwner}
+        editLink={`/projects/${id}/edit`}
+      />
+
     </div>
   );
 }

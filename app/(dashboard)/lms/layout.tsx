@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import { LMSPersistentNavigation } from "@/components/lms/lms-navigation-persistent";
+import { LMSNavigation } from "@/components/lms/lms-navigation";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function LMSLayout({
                         maxSize={40}
                         className="border-r bg-background"
                     >
-                        <LMSPersistentNavigation />
+                        <LMSNavigation />
                     </ResizablePanel>
 
                     <ResizableHandle withHandle />

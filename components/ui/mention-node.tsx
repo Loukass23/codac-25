@@ -1,21 +1,20 @@
 'use client';
 
-import * as React from 'react';
-
-import type { TComboboxInputElement, TMentionElement } from 'platejs';
-import type { PlateElementProps } from 'platejs/react';
 
 import { getMentionOnSelectItem } from '@platejs/mention';
+import type { TComboboxInputElement, TMentionElement } from 'platejs';
 import { IS_APPLE, KEYS } from 'platejs';
+import type { PlateElementProps } from 'platejs/react';
 import {
   PlateElement,
   useFocused,
   useReadOnly,
   useSelected,
 } from 'platejs/react';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils';
 import { useMounted } from '@/hooks/use-mounted';
+import { cn } from '@/lib/utils';
 
 import {
   InlineCombobox,
@@ -45,9 +44,9 @@ export function MentionElement(
         'inline-block rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm font-medium',
         !readOnly && 'cursor-pointer',
         selected && focused && 'ring-2 ring-ring',
-        element.children[0][KEYS.bold] === true && 'font-bold',
-        element.children[0][KEYS.italic] === true && 'italic',
-        element.children[0][KEYS.underline] === true && 'underline'
+        element.children[0]?.[KEYS.bold] === true && 'font-bold',
+        element.children[0]?.[KEYS.italic] === true && 'italic',
+        element.children[0]?.[KEYS.underline] === true && 'underline'
       )}
       attributes={{
         ...props.attributes,

@@ -29,7 +29,7 @@ class Logger {
             timestamp: new Date().toISOString(),
             level,
             message,
-            context,
+            context: context ?? {},
         };
     }
 
@@ -72,7 +72,7 @@ class Logger {
             logEntry.error = {
                 name: error.name,
                 message: error.message,
-                stack: error.stack,
+                stack: error.stack ?? undefined,
             };
         }
 
@@ -100,7 +100,7 @@ class Logger {
         this.debug(`Database ${operation}`, {
             action: operation,
             resource: table,
-            resourceId: recordId,
+            resourceId: recordId ?? '',
             ...context,
         });
     }
@@ -117,7 +117,7 @@ class Logger {
         this.warn(`Permission denied: ${action} on ${resource}`, {
             action,
             resource,
-            userId,
+            userId: userId ?? '',
             ...context,
         });
     }
@@ -126,7 +126,7 @@ class Logger {
         this.info(`Auth event: ${event}`, {
             action: event,
             resource: 'auth',
-            userId,
+            userId: userId ?? '',
             ...context,
         });
     }
@@ -136,4 +136,4 @@ class Logger {
 export const logger = new Logger();
 
 // Export types for use in other files
-export type { LogLevel, LogContext, LogEntry }; 
+export type { LogContext, LogEntry, LogLevel };

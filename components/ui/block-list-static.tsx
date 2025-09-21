@@ -1,13 +1,13 @@
-import * as React from 'react';
 
+
+import { isOrderedList } from '@platejs/list';
+import { CheckIcon } from 'lucide-react';
 import type {
   RenderStaticNodeWrapper,
   SlateRenderElementProps,
   TListElement,
 } from 'platejs';
-
-import { isOrderedList } from '@platejs/list';
-import { CheckIcon } from 'lucide-react';
+import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -25,9 +25,11 @@ const config: Record<
 };
 
 export const BlockListStatic: RenderStaticNodeWrapper = (props) => {
-  if (!props.element.listStyleType) return;
+  if (!props.element['listStyleType']) return;
 
-  return (props) => <List {...props} />;
+  const BlockListStaticWrapper = (props: any) => <List {...props} />;
+  BlockListStaticWrapper.displayName = 'BlockListStaticWrapper';
+  return BlockListStaticWrapper;
 };
 
 function List(props: SlateRenderElementProps) {
@@ -48,7 +50,7 @@ function List(props: SlateRenderElementProps) {
 }
 
 function TodoMarkerStatic(props: SlateRenderElementProps) {
-  const checked = props.element.checked as boolean;
+  const checked = props.element['checked'] as boolean;
 
   return (
     <div contentEditable={false}>
@@ -73,8 +75,8 @@ function TodoLiStatic(props: SlateRenderElementProps) {
     <li
       className={cn(
         'list-none',
-        (props.element.checked as boolean) &&
-          'text-muted-foreground line-through'
+        (props.element['checked'] as boolean) &&
+        'text-muted-foreground line-through'
       )}
     >
       {props.children}

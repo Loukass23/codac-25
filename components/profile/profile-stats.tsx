@@ -8,6 +8,7 @@ import {
     Users
 } from 'lucide-react';
 
+import { GitHubConnectionStatus } from '@/components/github/github-connection-status';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserProfile } from '@/data/user/get-user';
@@ -139,6 +140,9 @@ export function ProfileStats({ user }: ProfileStatsProps) {
                     )}
                 </CardContent>
             </Card>
+
+            {/* GitHub Integration Status */}
+            <GitHubConnectionStatus />
 
             {/* Quick Actions */}
             <Card>

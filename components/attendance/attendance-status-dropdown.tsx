@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Check, Clock } from 'lucide-react';
 import { AttendanceStatus } from '@prisma/client';
-import { cn } from '@/lib/utils';
+import { Check, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import {
     Select,
     SelectContent,
@@ -12,8 +12,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 export interface AttendanceStatusOption {
     value: AttendanceStatus;

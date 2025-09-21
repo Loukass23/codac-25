@@ -333,7 +333,7 @@ export class NotificationService {
             mentions.push(match[1])
         }
 
-        return mentions
+        return mentions.filter((mention): mention is string => mention !== undefined)
     }
 }
 

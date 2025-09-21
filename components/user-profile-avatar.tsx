@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { AvatarUpload } from '@/components/ui/avatar-upload';
 
@@ -24,8 +24,8 @@ export function UserProfileAvatar({ user }: UserProfileAvatarProps) {
         <div className="flex flex-col items-center space-y-4">
             <AvatarUpload
                 userId={user.id}
-                currentAvatar={currentAvatar}
-                userName={user.name}
+                currentAvatar={currentAvatar ?? ''}
+                userName={user.name ?? ''}
                 size="lg"
                 onAvatarUpdate={handleAvatarUpdate}
                 className="shadow-lg"

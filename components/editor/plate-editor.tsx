@@ -3,10 +3,10 @@
 import { Value } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
 
-import { BasicNodesKit } from '@/components/editor/plugins/basic-nodes-kit';
+import { EditorKit } from '@/components/editor/editor-kit';
 import { MarkdownKit } from '@/components/editor/plugins/markdown-kit';
 
-import { EditorContainer, Editor } from '../ui/editor';
+import { Editor, EditorContainer } from '../ui/editor';
 
 
 
@@ -16,14 +16,16 @@ interface PlateEditorProps {
 
 export function PlateEditor({ initialValue = [] }: PlateEditorProps) {
     const editor = usePlateEditor({
-        plugins: [...BasicNodesKit, ...MarkdownKit],
+        plugins: [...EditorKit,
+        ...MarkdownKit
+        ],
         value: initialValue,
     });
 
     return (
         <Plate editor={editor}>
-            <EditorContainer>
-                <Editor variant="demo" placeholder="Type..." />
+            <EditorContainer >
+                <Editor variant="default" />
             </EditorContainer>
         </Plate>
     );

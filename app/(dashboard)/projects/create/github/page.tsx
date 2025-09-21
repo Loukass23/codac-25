@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 
 import { createProjectFromGitHub } from '@/actions/github/github-actions'
 import { DndWrapper } from '@/components/dnd/dnd-wrapper'
-import { PageContainer, PageHeader } from '@/components/layout'
 import { RepositorySelector } from '@/components/github/repository-selector'
+import { PageContainer, PageHeader } from '@/components/layout'
 import type { GitHubRepository } from '@/lib/github/api'
 
 export default async function CreateProjectFromGitHubPage() {

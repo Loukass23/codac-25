@@ -1,6 +1,7 @@
-import { type AttendancePermission } from './attendance-permissions';
-import { getAttendanceAuthContext, verifyAttendanceViewAccess, verifyAttendanceEditAccess, logAttendanceOperation } from './attendance-auth';
 import type { ServerActionResult } from '@/lib/utils/server-action-utils';
+
+import { getAttendanceAuthContext, logAttendanceOperation, verifyAttendanceEditAccess, verifyAttendanceViewAccess } from './attendance-auth';
+import { type AttendancePermission } from './attendance-permissions';
 
 /**
  * Higher-order function to wrap server actions with attendance authorization
@@ -216,7 +217,10 @@ function extractEditParams(args: any[]): { cohortId?: string; date?: Date } {
         }
     }
 
-    return { cohortId, date };
+    return {
+        cohortId: cohortId ?? undefined,
+        date: date ?? undefined
+    };
 }
 
 /**

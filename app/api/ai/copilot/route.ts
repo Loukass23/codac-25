@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     system,
   } = await req.json();
 
-  const apiKey = key || process.env.OPENAI_API_KEY;
+  const apiKey = key || process.env['OPENAI_API_KEY'];
 
   if (!apiKey) {
     return NextResponse.json(

@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "next-auth/react";
-import { logger } from "@/lib/logger";
+import { useCallback, useEffect, useState } from "react";
 
 export interface Notification {
   id: string;
   type:
-    | "DIRECT_MESSAGE"
-    | "GROUP_MESSAGE"
-    | "CHANNEL_MESSAGE"
-    | "MENTION"
-    | "CONVERSATION_INVITE"
-    | "SYSTEM";
+  | "DIRECT_MESSAGE"
+  | "GROUP_MESSAGE"
+  | "CHANNEL_MESSAGE"
+  | "MENTION"
+  | "CONVERSATION_INVITE"
+  | "SYSTEM";
   title: string;
   message: string;
   isRead: boolean;
@@ -56,12 +56,12 @@ export function useNotifications(): UseNotificationsReturn {
       .on("broadcast", { event: "new_notification" }, (payload) => {
         logger.info("New notification received", {
           metadata: {
-            notificationId: payload.payload.id,
-            type: payload.payload.type,
+            notificationId: payload['payload'].id,
+            type: payload['payload'].type,
           },
         });
 
-        const notification = payload.payload as Notification;
+        const notification = payload['payload'] as Notification;
         setNotifications((prev) => [notification, ...prev]);
       })
       .subscribe((status) => {

@@ -330,7 +330,7 @@ export function parseCSVAttendanceData(csvContent: string): {
         );
 
         for (let i = 0; i < dataLines.length; i++) {
-            const line = dataLines[i];
+            const line = dataLines[i]!;
             const parts = line.split(',');
             
             if (parts.length < 4) {
@@ -338,9 +338,9 @@ export function parseCSVAttendanceData(csvContent: string): {
                 continue;
             }
 
-            const studentId = parts[0].trim();
-            const date = parts[2].trim();
-            const statusCode = parts[4].trim();
+            const studentId = parts[0]!.trim();
+            const date = parts[2]!.trim();
+            const statusCode = parts[4]!.trim();
 
             // Validate student ID
             if (!studentId) {

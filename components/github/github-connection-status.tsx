@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { Github, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
+import { checkGitHubConnection } from '@/actions/github/github-actions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { checkGitHubConnection } from '@/actions/github/github-actions'
 
 interface GitHubConnectionStatusProps {
     className?: string

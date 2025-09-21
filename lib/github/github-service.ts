@@ -42,8 +42,8 @@ class GitHubService {
         const match = url.match(pattern)
         if (match) {
           return {
-            owner: match[1],
-            repo: match[2]
+            owner: match[1]!,
+            repo: match[2]!
           }
         }
       }
@@ -259,7 +259,7 @@ class GitHubService {
       })
 
       // Add Node.js for server-side projects
-      if (packageJson.scripts?.start || packageJson.main || Object.keys(deps).some(dep => 
+      if (packageJson.scripts?.['start'] || packageJson.main || Object.keys(deps).some(dep => 
         ['express', 'koa', 'fastify', 'nestjs'].some(server => dep.includes(server))
       )) {
         technologies.add('Node.js')
@@ -450,7 +450,7 @@ class GitHubService {
             let elementIndex = 0
             
             for (let i = 0; i < parts.length; i++) {
-              if (parts[i] && !parts[i].match(/^(BOLD|ITALIC|CODE|LINK)$/)) {
+              if (parts[i] && !parts[i]!.match(/^(BOLD|ITALIC|CODE|LINK)$/)) {
                 children.push({ text: parts[i] })
               } else if (parts[i]?.match(/^(BOLD|ITALIC|CODE|LINK)$/)) {
                 if (elementIndex < elements.length) {

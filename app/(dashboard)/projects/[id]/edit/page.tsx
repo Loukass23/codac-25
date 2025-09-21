@@ -1,10 +1,11 @@
+import { JsonValue } from '@prisma/client/runtime/library';
 import { notFound } from 'next/navigation'
 
 import { PlateEditor } from '@/components/editor/plate-editor';
-import { ProjectCard } from '@/components/projects/project-card';
 import { getProjectById } from '@/data/projects/get-project-by-id'
 import { requireServerAuth } from '@/lib/auth/auth-server';
-import { jsonToPlateValue } from '@/lib/utils/plate-utils';
+import { jsonToPlateValue } from '@/lib/plate/utils';
+
 interface ProjectPageProps {
     params: Promise<{
         id: string
@@ -24,17 +25,12 @@ export default async function ProjectEditPage({ params }: ProjectPageProps) {
     if (!isOwner) {
         notFound()
     }
-    return <div className="min-h-screen bg-background">
-        <ProjectCard
-            project={project}
-            showEditActions={isOwner}
-        />
-        <div className="container mx-auto px-4 py-8">
-            <div className="max-w-4xl mx-auto">
-                <PlateEditor initialValue={jsonToPlateValue(project.summary)} />
-            </div>
-        </div>
-    </div>;
+
+    const plateValue = jsonToPlateValue(project.summary as JsonValue);
+
+    return (
+        <PlateEditor initialValue={plateValue} />
+    );
 }
 
 

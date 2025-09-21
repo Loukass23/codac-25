@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 export interface Toast {
     id: string;
@@ -25,7 +25,7 @@ export function useToast() {
         const newToast: Toast = {
             id,
             title: options.title,
-            description: options.description,
+            description: options.description ?? '',
             variant: options.variant || 'default',
             duration: options.duration || 5000,
         };
@@ -61,7 +61,7 @@ export function showSimpleToast(message: string, type: 'success' | 'error' | 'in
     // Create a simple DOM-based toast notification
     const toastId = 'simple-toast-' + Date.now();
     const toast = document.createElement('div');
-    
+
     const getToastStyles = (type: string) => {
         const baseStyles = 'fixed top-4 right-4 z-50 p-4 rounded-lg border shadow-lg max-w-sm transition-all duration-300 ease-in-out';
         switch (type) {

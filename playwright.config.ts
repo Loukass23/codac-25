@@ -6,8 +6,8 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  forbidOnly: !!process.env['CI'],
+  retries: process.env['CI'] ? 2 : 0,
   workers: 1,
   reporter: 'html',
 
@@ -41,7 +41,7 @@ export default defineConfig({
   webServer: {
     command: 'pnpm dev --port 3001',
     url: 'http://localhost:3001',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env['CI'],
     timeout: 120000,
     env: {
       'AUTH_URL': 'http://localhost:3001',

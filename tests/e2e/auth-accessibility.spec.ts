@@ -84,7 +84,7 @@ test.describe('Authentication Accessibility Tests', () => {
       ];
 
       for (let i = 0; i < focusableElements.length; i++) {
-        const element = page.locator(focusableElements[i]);
+        const element = page.locator(focusableElements[i]!);
 
         // Tab to next element or check if already focused
         if (i > 0) {
@@ -226,11 +226,11 @@ test.describe('Authentication Accessibility Tests', () => {
       ];
 
       let currentIndex = 0;
-      await page.locator(expectedFocusOrder[currentIndex]).focus();
+      await page.locator(expectedFocusOrder[currentIndex]!).focus();
 
       for (let i = 1; i < expectedFocusOrder.length; i++) {
         await page.keyboard.press('Tab');
-        await expect(page.locator(expectedFocusOrder[i])).toBeFocused();
+        await expect(page.locator(expectedFocusOrder[i]!)).toBeFocused();
       }
     });
 

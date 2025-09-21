@@ -1,7 +1,7 @@
 import type { UserRole } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getToken } from "next-auth/jwt";
 
 import { prisma } from "@/lib/db/prisma";
 
@@ -11,11 +11,15 @@ import { prisma } from "@/lib/db/prisma";
  */
 export async function getServerAuth() {
     const headersList = await headers();
+    const secret = process.env['AUTH_SECRET'] || process.env['NEXTAUTH_SECRET'];
+    if (!secret) {
+        throw new Error("AUTH_SECRET or NEXTAUTH_SECRET environment variable is required");
+    }
     const token = await getToken({
         req: {
             headers: headersList,
         } as any,
-        secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
+        secret
     });
 
     if (!token) {

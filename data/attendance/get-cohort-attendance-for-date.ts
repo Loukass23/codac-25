@@ -1,12 +1,12 @@
 'use server';
 
-import { UserRole, AttendanceStatus } from '@prisma/client';
-import { startOfDay, subDays, isAfter, isBefore, isSameDay } from 'date-fns';
+import { AttendanceStatus, UserRole } from '@prisma/client';
+import { isAfter, isBefore, isSameDay, startOfDay, subDays } from 'date-fns';
 
+import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { type ServerActionResult } from '@/lib/utils/server-action-utils';
-import { auth } from '@/lib/auth/auth';
 
 export type StudentWithAttendance = {
     id: string;
@@ -111,7 +111,7 @@ export async function getCohortAttendanceForDate(
             name: student.name || 'Unknown Student',
             email: student.email || '',
             avatar: student.avatar,
-            attendance: student.attendanceRecords.length > 0 ? student.attendanceRecords[0] : null,
+            attendance: student.attendanceRecords.length > 0 ? student.attendanceRecords[0] ?? null : null,
         }));
 
         // Check if the date is within the 30-day editable window

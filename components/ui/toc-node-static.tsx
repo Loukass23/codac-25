@@ -1,10 +1,10 @@
-import * as React from 'react';
 
-import type { SlateEditor, SlateElementProps, TElement } from 'platejs';
 
 import { type Heading, BaseTocPlugin, isHeading } from '@platejs/toc';
 import { cva } from 'class-variance-authority';
+import type { SlateEditor, SlateElementProps, TElement } from 'platejs';
 import { NodeApi, SlateElement } from 'platejs';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -82,10 +82,10 @@ const getHeadingList = (editor?: SlateEditor) => {
     const { type } = node;
     const title = NodeApi.string(node);
     const depth = headingDepth[type];
-    const id = node.id as string;
+    const id = node['id'] as string;
 
     if (title) {
-      headingList.push({ id, depth, path, title, type });
+      headingList.push({ id, depth: depth!, path, title, type });
     }
   });
 
