@@ -49,10 +49,7 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
 
   // Build learning items based on role
   const learningItems = [
-    {
-      title: "LMS Overview",
-      url: "/lms",
-    },
+
     {
       title: "LMS",
       url: "/lms/welcome",
