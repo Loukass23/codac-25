@@ -2,19 +2,15 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { getDucks } from "@/actions/duck/get-ducks";
 import { getJobs } from "@/actions/job/get-jobs";
-import { DuckCard } from "@/components/career/duck-card";
 import { JobCard } from "@/components/career/job-card";
 import { JobFilters } from "@/components/career/job-filters";
-import { SecretDuckForm } from "@/components/career/secret-duck-form";
 import { PageContainer, PageHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireServerAuth } from "@/lib/auth/auth-server";
 
-type Job = Awaited<ReturnType<typeof getJobs>>[number];
-type DuckItem = Awaited<ReturnType<typeof getDucks>>[number];
+
 
 interface JobsPageProps {
   searchParams: Promise<{
@@ -60,7 +56,6 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           </Suspense>
         </div>
       </div>
-      <SecretDuckForm />
     </PageContainer>
   );
 }
@@ -72,13 +67,8 @@ type JobsListProps = {
 async function JobsList({ searchParams }: JobsListProps) {
   const params = await searchParams;
   const jobs = await getJobs(params);
-  const ducks = await getDucks();
 
-  const combinedList = [...jobs, ...ducks].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-  );
-
-  if (combinedList.length === 0) {
+  if (jobs.length === 0) {
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
@@ -89,18 +79,11 @@ async function JobsList({ searchParams }: JobsListProps) {
     );
   }
 
-  // Type guard to check if an item is a job
-  const isJob = (item: Job | DuckItem): item is Job => "company" in item;
-
   return (
     <div className="space-y-6">
-      {combinedList.map((item) =>
-        isJob(item) ? (
-          <JobCard key={`job-${item.id}`} job={item} />
-        ) : (
-          <DuckCard key={`duck-${item.id}`} duck={item} />
-        )
-      )}
+      {jobs.map((item) => (
+        <JobCard key={`job-${item.id}`} job={item} />
+      ))}
     </div>
   );
 }

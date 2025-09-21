@@ -5,7 +5,6 @@ import { Plate, usePlateEditor, useEditorRef, useEditorSelector } from "platejs/
 import React, { createContext, useContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // updateDoc import removed
-import { updateLessonContent } from "@/actions/lms/update-lesson";
 import { updateProjectSummary } from "@/actions/projects/update-project-summary";
 import { AIKit } from '@/components/ai-kit';
 import { AutoformatKit } from '@/components/autoformat-kit';
@@ -136,7 +135,7 @@ const plugins = [
 interface SimplifiedUnifiedEditorProps {
     initialValue: Value;
     contentId: string;
-    contentType: 'lesson' | 'project';
+    contentType: 'project';
     showStatusBar?: boolean;
     canEdit?: boolean;
     readOnly?: boolean;
@@ -191,7 +190,7 @@ const SimplifiedStateUpdater = React.memo(function SimplifiedStateUpdater({
     canEdit = false
 }: {
     contentId: string;
-    contentType: 'lesson' | 'project';
+    contentType: 'project';
     showStatusBar?: boolean;
     initialValue?: Value;
     canEdit?: boolean;
@@ -236,9 +235,7 @@ const SimplifiedStateUpdater = React.memo(function SimplifiedStateUpdater({
 
         try {
             let result;
-            if (contentType === 'lesson') {
-                result = await updateLessonContent(contentId, content);
-            } else if (contentType === 'project') {
+            if (contentType === 'project') {
                 result = await updateProjectSummary(contentId, content);
             } else {
                 throw new Error(`Unsupported content type: ${contentType}`);
@@ -262,7 +259,7 @@ const SimplifiedStateUpdater = React.memo(function SimplifiedStateUpdater({
                 const errorMessage = typeof result.error === 'string'
                     ? result.error
                     : Array.isArray(result.error)
-                        ? result.error.map(e => e.message).join(', ')
+                        ? result.error.map((e: any) => e.message).join(', ')
                         : `Failed to save ${contentType}`;
                 throw new Error(errorMessage);
             }

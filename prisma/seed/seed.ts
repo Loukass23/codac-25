@@ -12,7 +12,6 @@ import { seedJobs, cleanJobs } from './seeders/jobs';
 // import { seedLMSContent, cleanLMSContent } from './seeders/lms-content';
 import { seedProjects, cleanProjects } from './seeders/projects';
 import { seedChatData, cleanChatData } from './seeders/chat';
-import { cleanQuizzes, seedQuizzes, seedQuizzesIncremental } from './seeders/quizzes';
 
 const prisma = new PrismaClient();
 
@@ -39,20 +38,6 @@ const seedOptions: SeedOption[] = [
     //     action: seedLMSContent,
     //     cleanAction: cleanLMSContent,
     // },
-    {
-        id: 'quizzes',
-        name: 'Quiz Data',
-        description: 'Import quiz questions and answers',
-        action: seedQuizzes,
-        cleanAction: cleanQuizzes,
-    },
-    {
-        id: 'quizzes-incremental',
-        name: 'Quiz Data (Incremental)',
-        description: 'Import quiz questions incrementally (preserves existing)',
-        action: seedQuizzesIncremental,
-        cleanAction: cleanQuizzes,
-    },
     {
         id: 'jobs',
         name: 'Job Postings',
@@ -97,11 +82,10 @@ async function seedAll() {
     logger.info('🌱 Starting complete database seeding...');
 
     try {
-        // Seed in order: courses -> users -> content -> chats -> quizzes -> jobs -> projects
+        // Seed in order: courses -> users -> content -> chats -> jobs -> projects
         // await seedLMSContent();
         await seedAttackOnTitan();
         await seedChatData();
-        await seedQuizzes();
         await seedJobs();
         await seedProjects();
         await seedChatData();
@@ -115,7 +99,7 @@ async function seedAll() {
         console.log('  • Black Owls cohort with progress tracking');
         console.log('  • LMS content from markdown files');
         console.log('  • Group chat conversations per cohort');
-        console.log('  • Quiz questions and answers');
+
         console.log('  • Job postings');
         console.log('  • Demo project showcases');
         console.log('  • Chat conversations and messages');
@@ -139,7 +123,6 @@ async function cleanAll() {
         await cleanChatData();
         await cleanProjects();
         await cleanJobs();
-        await cleanQuizzes();
         await cleanChatData();
         // await cleanLMSContent();
         await cleanAttackOnTitan();
@@ -312,4 +295,4 @@ if (require.main === module) {
     main();
 }
 
-export { seedAll, cleanAll, seedOptions }; 
+export { seedAll, cleanAll, seedOptions };

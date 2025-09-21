@@ -5,7 +5,6 @@ import { PlateController, useEditorRef, useEditorSelector } from "platejs/react"
 import React, { createContext, useContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // updateDoc import removed
-import { updateLessonContent } from "@/actions/lms/update-lesson";
 import { updateProjectSummary } from "@/actions/projects/update-project-summary";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -111,7 +110,7 @@ const SaveStatusIndicator = React.memo(function SaveStatusIndicator({
 interface UnifiedEditorProps {
     initialValue: Value;
     contentId: string;
-    contentType: 'lesson' | 'project';
+    contentType: 'project';
     showStatusBar?: boolean;
     canEdit?: boolean;
     readOnly?: boolean;
@@ -155,7 +154,7 @@ const UnifiedStateUpdater = React.memo(function UnifiedStateUpdater({
     canEdit = false
 }: {
     contentId: string;
-    contentType: 'lesson' | 'project';
+    contentType: 'project';
     showStatusBar?: boolean;
     initialValue?: Value;
     canEdit?: boolean;
@@ -200,9 +199,7 @@ const UnifiedStateUpdater = React.memo(function UnifiedStateUpdater({
 
         try {
             let result;
-            if (contentType === 'lesson') {
-                result = await updateLessonContent(contentId, content);
-            } else if (contentType === 'project') {
+            if (contentType === 'project') {
                 result = await updateProjectSummary(contentId, content);
             } else {
                 throw new Error(`Unsupported content type: ${contentType}`);
@@ -291,4 +288,4 @@ const UnifiedStateUpdater = React.memo(function UnifiedStateUpdater({
 });
 
 // Export the save context for use in toolbars
-export { SaveContext }; 
+export { SaveContext };
