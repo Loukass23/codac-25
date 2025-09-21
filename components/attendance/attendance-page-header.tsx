@@ -1,8 +1,9 @@
-import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+
 import { PageHeader } from '@/components/layout';
+import { Button } from '@/components/ui/button';
 
 interface AttendancePageHeaderProps {
     cohortName: string;

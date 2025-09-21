@@ -213,13 +213,6 @@ export const CodacLogo: React.FC<CodacLogoProps> = ({
 };
 
 // Convenient preset components
-export const CodacBrand: React.FC<Omit<CodacLogoProps, "text">> = (props) => (
-    <CodacLogo text="CODAC" useGradient {...props} />
-);
-
-export const CodacBrandFull: React.FC<Omit<CodacLogoProps, "text">> = (props) => (
-    <CodacLogo text="codac" useGradient {...props} />
-);
 
 export const CodacLandingLogo: React.FC<Omit<CodacLogoProps, "text">> = (props) => (
     <CodacLogo

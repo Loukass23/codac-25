@@ -1,11 +1,12 @@
-import { Users, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { format } from 'date-fns';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { format } from 'date-fns';
+import { Users, Calendar, Clock } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { CohortForAttendance } from '@/data/attendance/get-cohorts-for-attendance';
+import { cn } from '@/lib/utils';
 
 interface AttendanceCohortCardProps {
     cohort: CohortForAttendance;
@@ -50,7 +51,7 @@ export function AttendanceCohortCard({ cohort, className }: AttendanceCohortCard
                     <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary" />
                         <span className="text-sm font-medium">{studentCountText}</span>
-                        <Badge 
+                        <Badge
                             variant={isActive ? "default" : "secondary"}
                             className="ml-auto"
                         >

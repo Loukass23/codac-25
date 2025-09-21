@@ -22,7 +22,7 @@ export function withAttendanceAuth<T extends any[], R>(
         try {
             // Get authentication context
             const authContext = await getAttendanceAuthContext();
-            
+
             if (!authContext) {
                 return {
                     success: false,
@@ -65,10 +65,10 @@ export function withAttendanceAuth<T extends any[], R>(
 
             // Log the operation if requested
             if (options?.logOperation) {
-                const resourceId = options.logOperation.getResourceId 
+                const resourceId = options.logOperation.getResourceId
                     ? options.logOperation.getResourceId(...args)
                     : 'unknown';
-                    
+
                 await logAttendanceOperation(
                     options.logOperation.operation,
                     options.logOperation.resource,
@@ -80,7 +80,7 @@ export function withAttendanceAuth<T extends any[], R>(
             // Execute the actual server action
             return await serverAction(...args);
 
-        } catch (error) {
+        } catch (_error) {
             return {
                 success: false,
                 error: 'An error occurred while processing the request'
@@ -103,7 +103,7 @@ export function withAttendanceViewAuth<T extends any[], R>(
         // Verify view access
         const cohortId = options?.extractCohortId ? options.extractCohortId(...args) : undefined;
         const accessCheck = await verifyAttendanceViewAccess(cohortId);
-        
+
         if (!accessCheck.success) {
             return {
                 success: false,
@@ -141,10 +141,10 @@ export function withAttendanceEditAuth<T extends any[], R>(
     return async (...args: T): Promise<ServerActionResult<R>> => {
         const cohortId = options.extractCohortId(...args);
         const date = options.extractDate(...args);
-        
+
         // Verify edit access
         const editAccess = await verifyAttendanceEditAccess(cohortId, date);
-        
+
         if (!editAccess.success) {
             return {
                 success: false,
@@ -163,17 +163,17 @@ export function withAttendanceEditAuth<T extends any[], R>(
                     return new Date(year, month - 1, day);
                   })()
                 : date;
-            */ 
+            */
 
-            const resourceId = options.getResourceId 
+            const resourceId = options.getResourceId
                 ? options.getResourceId(...args)
                 : `${cohortId}-${dateForLogging.toISOString().split('T')[0]}`;
-                
+
             await logAttendanceOperation(
                 'update',
                 options.logResource,
                 resourceId,
-                { 
+                {
                     userId: editAccess.authContext.userId,
                     cohortId,
                     date: dateForLogging.toISOString()
@@ -234,7 +234,7 @@ export function withRateLimit<T extends any[], R>(
 ) {
     return async (...args: T): Promise<ServerActionResult<R>> => {
         const authContext = await getAttendanceAuthContext();
-        
+
         if (!authContext) {
             return {
                 success: false,
@@ -243,7 +243,7 @@ export function withRateLimit<T extends any[], R>(
         }
 
         // Generate rate limit key
-        const key = options.keyExtractor 
+        const key = options.keyExtractor
             ? options.keyExtractor(...args)
             : authContext.userId;
 

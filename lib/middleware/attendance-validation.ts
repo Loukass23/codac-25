@@ -38,7 +38,7 @@ export function createAttendanceValidationMiddleware(
       if (config.requireAuth !== false) {
         // TODO: Implement session check based on your auth system
         // const session = await getSession();
-        
+
         // For now, skip authentication check
         // if (!session?.user) {
         //   if (config.logValidation) {
@@ -87,7 +87,7 @@ export function createAttendanceValidationMiddleware(
           }
 
           const body = await request.json();
-          
+
           // Validate request body size
           const bodySize = JSON.stringify(body).length;
           if (bodySize > 1024 * 1024) { // 1MB limit
@@ -146,7 +146,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 async function isRateLimited(userKey: string, _operationType: string): Promise<boolean> {
   const now = Date.now();
   const windowMs = 60 * 1000; // 1 minute window
-  
+
   // Different limits for different operations
   const limits: Record<string, number> = {
     create: 60,      // 60 per minute
@@ -282,7 +282,7 @@ export async function validateAttendanceRequest(
     let requestData;
     try {
       requestData = await request.json();
-    } catch (error) {
+    } catch (_error) {
       return {
         success: false,
         errors: ['Invalid JSON body']

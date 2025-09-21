@@ -45,17 +45,18 @@ export function NavTop({
 
   // State for tracking collapsed categories (only used when sidebar is expanded)
   const [collapsedCategories, setCollapsedCategories] = React.useState<Set<string>>(() => {
-    // Always start with empty set - we'll populate it when groups are available
-    return new Set();
+    // Initialize with all groups collapsed to prevent flash
+    return new Set(groups.map(group => group.title));
   });
 
-  // Initialize all groups as collapsed when groups are first loaded
+  // Update collapsed categories when groups change
   React.useEffect(() => {
     if (groups.length > 0) {
       setCollapsedCategories(prev => {
-        // If we don't have any collapsed categories set yet, initialize all groups as collapsed
-        if (prev.size === 0) {
-          return new Set(groups.map(group => group.title));
+        // Add any new groups to collapsed state
+        const newGroups = groups.filter(group => !prev.has(group.title));
+        if (newGroups.length > 0) {
+          return new Set([...prev, ...newGroups.map(group => group.title)]);
         }
         return prev;
       });
