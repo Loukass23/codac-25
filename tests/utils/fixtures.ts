@@ -6,8 +6,8 @@ import type {
   JobType,
   User,
   UserRole,
-  UserStatus
-} from '@prisma/client'
+  UserStatus,
+} from '@prisma/client';
 
 // Test data fixtures
 export const mockUser: User = {
@@ -33,8 +33,8 @@ export const mockUser: User = {
   updatedAt: new Date('2024-01-01T00:00:00.000Z'),
   emailVerified: null,
   image: null,
-  password: null
-}
+  password: null,
+};
 
 export const mockUserPrivate = {
   id: 'user-123',
@@ -55,9 +55,8 @@ export const mockUserPrivate = {
   expertise: null,
   yearsExp: null,
   createdAt: new Date('2024-01-01T00:00:00.000Z'),
-  updatedAt: new Date('2024-01-01T00:00:00.000Z')
-}
-
+  updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+};
 
 // Mock Job
 export const mockJob: Job = {
@@ -79,8 +78,8 @@ export const mockJob: Job = {
   expiresAt: null,
   postedById: 'user-123',
   createdAt: new Date('2024-01-01T00:00:00.000Z'),
-  updatedAt: new Date('2024-01-01T00:00:00.000Z')
-}
+  updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+};
 
 // Mock Duck
 export const mockDuck = {
@@ -88,8 +87,8 @@ export const mockDuck = {
   title: 'Rubber Duck',
   imageUrl: 'https://example.com/duck.jpg',
   userId: 'user-123',
-  createdAt: new Date('2024-01-01T00:00:00.000Z')
-}
+  createdAt: new Date('2024-01-01T00:00:00.000Z'),
+};
 
 // Mock Cohort
 export const mockCohort: Cohort = {
@@ -102,39 +101,46 @@ export const mockCohort: Cohort = {
   avatar: null,
   slug: 'fall-2024',
   createdAt: new Date('2024-01-01T00:00:00.000Z'),
-  updatedAt: new Date('2024-01-01T00:00:00.000Z')
-}
+  updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+};
 
 // Factory functions for creating test data
 export function createMockUser(overrides: Partial<User> = {}): User {
   return {
     ...mockUser,
     ...overrides,
-    id: overrides.id || `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-  }
+    id:
+      overrides.id ||
+      `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  };
 }
-
 
 export function createMockJob(overrides: Partial<Job> = {}): Job {
   return {
     ...mockJob,
     ...overrides,
-    id: overrides.id || `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-  }
+    id:
+      overrides.id ||
+      `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  };
 }
 
 export function createMockDuck(overrides: Partial<typeof mockDuck> = {}) {
   return {
     ...mockDuck,
     ...overrides,
-    id: overrides.id || `duck-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-  }
+    id:
+      overrides.id ||
+      `duck-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  };
 }
 
 export function createMockCohort(overrides: Partial<Cohort> = {}): Cohort {
   return {
     ...mockCohort,
     ...overrides,
-    id: overrides.id || `cohort-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-  }
+    id:
+      overrides.id ||
+      `cohort-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  };
 }

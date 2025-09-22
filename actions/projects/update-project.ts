@@ -96,9 +96,10 @@ export async function updateProject(
       data: { id: projectId, updated: true },
     };
   } catch (error) {
-    const handledError = error instanceof PrismaClientKnownRequestError
-      ? handlePrismaError(error)
-      : { message: 'An unexpected error occurred' };
+    const handledError =
+      error instanceof PrismaClientKnownRequestError
+        ? handlePrismaError(error)
+        : { message: 'An unexpected error occurred' };
 
     logger.error(
       'Failed to update project',
@@ -113,7 +114,8 @@ export async function updateProject(
 
     return {
       success: false,
-      error: typeof handledError === 'string' ? handledError : handledError.message,
+      error:
+        typeof handledError === 'string' ? handledError : handledError.message,
     };
   }
 }

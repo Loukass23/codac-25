@@ -80,9 +80,10 @@ export async function updateProjectSummary(
       data: { id: projectId, updated: true },
     };
   } catch (error) {
-    const handledError = error instanceof PrismaClientKnownRequestError
-      ? handlePrismaError(error)
-      : { message: 'An unexpected error occurred' };
+    const handledError =
+      error instanceof PrismaClientKnownRequestError
+        ? handlePrismaError(error)
+        : { message: 'An unexpected error occurred' };
 
     logger.error(
       'Failed to update project summary',

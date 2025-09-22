@@ -158,7 +158,11 @@ export async function createProjectFromGitHub(
         features: [], // Can be populated later
         challenges: additionalData?.challenges || null,
         solutions: additionalData?.solutions || null,
-        status: (additionalData?.status as 'COMPLETED' | 'IN_PROGRESS' | 'PLANNING') || 'COMPLETED',
+        status:
+          (additionalData?.status as
+            | 'COMPLETED'
+            | 'IN_PROGRESS'
+            | 'PLANNING') || 'COMPLETED',
         startDate: additionalData?.startDate
           ? new Date(additionalData.startDate)
           : new Date(repository.created_at),
@@ -195,9 +199,10 @@ export async function createProjectFromGitHub(
       },
     };
   } catch (error) {
-    const handledError = error instanceof PrismaClientKnownRequestError
-      ? handlePrismaError(error)
-      : { message: 'An unexpected error occurred' };
+    const handledError =
+      error instanceof PrismaClientKnownRequestError
+        ? handlePrismaError(error)
+        : { message: 'An unexpected error occurred' };
     logger.error(
       'Error creating project from GitHub repository',
       error instanceof Error ? error : new Error(String(error))
