@@ -1,7 +1,7 @@
 import type { UserRole } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getToken } from "next-auth/jwt";
 
 import { prisma } from "@/lib/db/prisma";
 

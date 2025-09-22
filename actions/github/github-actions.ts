@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { Prisma, PrismaClientKnownRequestError } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db/prisma';
@@ -200,9 +200,9 @@ export async function createProjectFromGitHub(
     };
   } catch (error) {
     const handledError =
-      error instanceof PrismaClientKnownRequestError
+      error instanceof Prisma.PrismaClientKnownRequestError
         ? handlePrismaError(error)
-        : { message: 'An unexpected error occurred' };
+        : 'An unexpected error occurred';
     logger.error(
       'Error creating project from GitHub repository',
       error instanceof Error ? error : new Error(String(error))

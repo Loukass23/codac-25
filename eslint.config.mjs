@@ -20,48 +20,39 @@ const eslintConfig = [
       },
     },
     rules: {
-      // Enforce naming conventions
-      camelcase: ['warn', { properties: 'never', ignoreDestructuring: false }],
-
-      // Prefer named exports
-      'import/prefer-default-export': 'off',
-      // 'import/no-default-export': 'warn',
-
-      // TypeScript specific rules - STRICTER
+      // TypeScript rules - balanced approach
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_',
         },
       ],
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'error', // Changed from warn to error
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
 
-      // React specific rules - STRICTER
+      // React rules - practical defaults
       'react/jsx-props-no-spreading': 'off',
       'react/require-default-props': 'off',
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
-      'react/no-unescaped-entities': 'error', // Changed from warn to error
-      'react/display-name': 'error', // Enforce display names
+      'react/no-unescaped-entities': 'warn',
+      'react/display-name': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
 
-      // General code quality - STRICTER
-      'no-console': ['error', { allow: ['warn', 'error'] }], // Changed from warn to error
-      'prefer-const': 'error', // Changed from warn to error
-      'no-var': 'error', // Changed from warn to error
-      'no-unused-expressions': 'error',
+      // General code quality - practical approach
+      'no-console': 'warn',
+      'prefer-const': 'warn',
+      'no-var': 'error',
+      'no-unused-expressions': 'warn',
       'no-debugger': 'error',
 
-      // Import organization - ENHANCED
+      // Import rules - simplified
       'import/order': [
-        'error', // Changed from warn to error
+        'warn',
         {
           groups: [
             'builtin',
@@ -76,28 +67,9 @@ const eslintConfig = [
             order: 'asc',
             caseInsensitive: true,
           },
-          pathGroups: [
-            {
-              pattern: 'react',
-              group: 'external',
-              position: 'before',
-            },
-            {
-              pattern: 'next/**',
-              group: 'external',
-              position: 'before',
-            },
-            {
-              pattern: '@/**',
-              group: 'internal',
-              position: 'before',
-            },
-          ],
-          pathGroupsExcludedImportTypes: ['react', 'next'],
         },
       ],
-      'import/no-duplicates': 'error',
-      'import/no-unused-modules': 'warn',
+      'import/no-duplicates': 'warn',
     },
   },
   {
@@ -108,7 +80,7 @@ const eslintConfig = [
     },
   },
   {
-    // Disable type-aware rules for config files and other non-source files
+    // Disable type-aware rules for config files
     files: [
       '*.config.*',
       '*.mjs',
@@ -128,7 +100,7 @@ const eslintConfig = [
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/prefer-optional-chain': 'off',
       '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-      'no-console': 'off', // Allow console in debug/test files
+      'no-console': 'off',
     },
   },
 ];

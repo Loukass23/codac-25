@@ -1,8 +1,7 @@
-import { UserRole, UserStatus } from "@prisma/client"
-import NextAuth from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import Google from "next-auth/providers/google"
-import Resend from "next-auth/providers/resend"
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
 
 // Lightweight auth configuration for Edge Runtime
 // This version excludes Prisma adapter and database operations
@@ -51,9 +50,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // Add user data from token to session
             if (token && session.user) {
                 session.user.id = token.sub as string
-                session.user.role = token.role as UserRole
-                session.user.status = token.status as UserStatus
-                session.user.cohortId = token.cohortId as string | null
+                session.user.role = token.role
+                session.user.status = token.status
+                session.user.cohortId = token.cohortId
             }
             return session
         },

@@ -1,9 +1,7 @@
 'use client';
 
-import * as React from 'react';
 
 import type { Emoji } from '@emoji-mart/data';
-
 import {
   type EmojiCategoryList,
   type EmojiIconList,
@@ -29,6 +27,7 @@ import {
   StarIcon,
   XIcon,
 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -37,8 +36,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 import { ToolbarButton } from '@/lib/plate/ui/toolbar';
+import { cn } from '@/lib/utils';
 
 export function EmojiToolbarButton({
   options,

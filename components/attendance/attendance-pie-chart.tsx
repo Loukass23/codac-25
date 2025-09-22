@@ -78,7 +78,7 @@ export function AttendancePieChart({
 
     // Custom tooltip component
     const CustomTooltip = ({ active, payload }: any) => {
-        if (active && payload && payload.length) {
+        if (active && payload?.length) {
             const data = payload[0].payload;
             const percentage = totalStudents > 0 ? (data.value / totalStudents * 100).toFixed(1) : 0;
             

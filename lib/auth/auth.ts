@@ -70,7 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
           })
 
-          if (!user || !user.password) {
+          if (!user?.password) {
             return null;
           }
 
@@ -118,9 +118,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Add user data from token to session with proper typing
       if (token && session.user) {
         session.user.id = token.sub as string
-        session.user.role = token.role as UserRole
-        session.user.status = token.status as UserStatus
-        session.user.cohortId = token.cohortId as string | null
+        session.user.role = token.role
+        session.user.status = token.status
+        session.user.cohortId = token.cohortId
       }
 
       return session
@@ -143,8 +143,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           })
 
           if (dbUser) {
-            token.role = dbUser.role as UserRole
-            token.status = dbUser.status as UserStatus
+            token.role = dbUser.role
+            token.status = dbUser.status
             token.cohortId = dbUser.cohortId
           } else {
             // Set defaults

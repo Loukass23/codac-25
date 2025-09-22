@@ -263,7 +263,7 @@ export function validateAttendanceBusinessSecurity(
   // Rule 5: Export data size limits
   if (operation === 'export') {
     const dateRange = data.dateRange;
-    if (dateRange && dateRange.startDate && dateRange.endDate) {
+    if (dateRange?.startDate && dateRange.endDate) {
       const startDate = new Date(dateRange.startDate);
       const endDate = new Date(dateRange.endDate);
       const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));

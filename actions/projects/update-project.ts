@@ -1,8 +1,8 @@
 'use server';
 
+import { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
-import { PrismaClientKnownRequestError } from '@prisma/client';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db';
@@ -97,9 +97,9 @@ export async function updateProject(
     };
   } catch (error) {
     const handledError =
-      error instanceof PrismaClientKnownRequestError
+      error instanceof Prisma.PrismaClientKnownRequestError
         ? handlePrismaError(error)
-        : { message: 'An unexpected error occurred' };
+        : 'An unexpected error occurred';
 
     logger.error(
       'Failed to update project',
@@ -114,8 +114,7 @@ export async function updateProject(
 
     return {
       success: false,
-      error:
-        typeof handledError === 'string' ? handledError : handledError.message,
+      error: handledError,
     };
   }
 }

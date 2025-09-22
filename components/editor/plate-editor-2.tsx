@@ -4,8 +4,8 @@ import { createSlateEditor, PlateStatic, TElement } from 'platejs';
 import { memo, useMemo } from 'react';
 
 import { logger } from '@/lib/logger';
-
 import { MarkdownKit } from '@/lib/plate/plugins/markdown-kit';
+
 import { EditorKit } from './editor-kit';
 
 interface PlateEditorStaticProps {

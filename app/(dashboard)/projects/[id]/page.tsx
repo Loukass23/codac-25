@@ -28,7 +28,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   if (!plateValue.length) {
     notFound();
   }
-  console.log(plateValue);
 
   return (
     <div className='min-h-screen bg-background'>

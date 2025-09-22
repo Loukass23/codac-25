@@ -1,4 +1,3 @@
-import { JsonValue } from '@prisma/client/runtime/library';
 import { notFound } from 'next/navigation';
 
 import { PlateEditor } from '@/components/editor/plate-editor-client';
@@ -26,7 +25,7 @@ export default async function ProjectEditPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const plateValue = jsonToPlateValue(project.summary as JsonValue);
+  const plateValue = jsonToPlateValue(project.summary);
 
   return <PlateEditor initialValue={plateValue} />;
 }

@@ -2,7 +2,6 @@ import { BaseListPlugin } from '@platejs/list';
 import { KEYS } from 'platejs';
 
 import { BaseIndentKit } from '@/lib/plate/plugins/indent-base-kit';
-import { BlockListStatic } from '@/lib/plate/ui/block-list-static';
 
 export const BaseListKit = [
   ...BaseIndentKit,
@@ -15,9 +14,6 @@ export const BaseListKit = [
         KEYS.codeBlock,
         KEYS.toggle,
       ],
-    },
-    render: {
-      belowNodes: BlockListStatic,
     },
   }),
 ];

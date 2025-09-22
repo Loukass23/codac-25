@@ -1,13 +1,12 @@
 'use client';
 
-import * as React from 'react';
-
-import type { TInlineSuggestionData, TLinkElement } from 'platejs';
-import type { PlateElementProps } from 'platejs/react';
 
 import { getLinkAttributes } from '@platejs/link';
 import { SuggestionPlugin } from '@platejs/suggestion/react';
+import type { TInlineSuggestionData, TLinkElement } from 'platejs';
+import type { PlateElementProps } from 'platejs/react';
 import { PlateElement } from 'platejs/react';
+import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 

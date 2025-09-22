@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { Prisma, PrismaClientKnownRequestError } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { type Value } from 'platejs';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
@@ -81,9 +81,9 @@ export async function updateProjectSummary(
     };
   } catch (error) {
     const handledError =
-      error instanceof PrismaClientKnownRequestError
+      error instanceof Prisma.PrismaClientKnownRequestError
         ? handlePrismaError(error)
-        : { message: 'An unexpected error occurred' };
+        : 'An unexpected error occurred';
 
     logger.error(
       'Failed to update project summary',

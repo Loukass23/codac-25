@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        if (!user || !user.password) {
+        if (!user?.password) {
             return NextResponse.json(
                 { error: "Invalid credentials" },
                 { status: 401 }

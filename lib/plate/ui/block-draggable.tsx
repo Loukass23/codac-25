@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 
 import { DndPlugin, useDraggable, useDropLine } from '@platejs/dnd';
 import { expandListItemsWithChildren } from '@platejs/list';
@@ -17,6 +16,7 @@ import {
   type PlateElementProps,
   type RenderNodeWrapper,
 } from 'platejs/react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -263,7 +263,7 @@ const DragHandle = React.memo(function DragHandle({
                 : editor.api.blocks({ mode: 'highest' });
 
             // If current block is not in selection, use it as the starting point
-            if (!selectionNodes.some(([node]) => node.id === element.id)) {
+            if (!selectionNodes.some(([node]) => node['id'] === element['id'])) {
               selectionNodes = [[element, editor.api.findPath(element)!]];
             }
 
@@ -286,7 +286,7 @@ const DragHandle = React.memo(function DragHandle({
 
             editor
               .getApi(BlockSelectionPlugin)
-              .blockSelection.set(blocks.map(block => block.id as string));
+              .blockSelection.set(blocks.map(block => block['id'] as string));
           }}
           onMouseEnter={() => {
             if (isDragging) return;
@@ -301,7 +301,7 @@ const DragHandle = React.memo(function DragHandle({
                 : editor.api.blocks({ mode: 'highest' });
 
             // If current block is not in selection, use it as the starting point
-            if (!selectedBlocks.some(([node]) => node.id === element.id)) {
+            if (!selectedBlocks.some(([node]) => node['id'] === element['id'])) {
               selectedBlocks = [[element, editor.api.findPath(element)!]];
             }
 
@@ -311,9 +311,9 @@ const DragHandle = React.memo(function DragHandle({
               selectedBlocks
             );
 
-            const ids = processedBlocks.map(block => block[0].id as string);
+            const ids = processedBlocks.map(block => block[0]['id'] as string);
 
-            if (ids.length > 1 && ids.includes(element.id as string)) {
+            if (ids.length > 1 && ids.includes(element['id'] as string)) {
               const previewTop = calculatePreviewTop(editor, {
                 blocks: processedBlocks.map(block => block[0]),
                 element,
@@ -425,7 +425,7 @@ const createDragPreviewElements = (
 
     applyScrollCompensation(domNode, newDomNode);
 
-    ids.push(node.id as string);
+    ids.push(node['id'] as string);
     const wrapper = document.createElement('div');
     wrapper.append(newDomNode);
     wrapper.style.display = 'flow-root';

@@ -1,5 +1,8 @@
 'use client';
 
+import { TrailingBlockPlugin, type Value } from 'platejs';
+import { useEditorRef, type TPlateEditor } from 'platejs/react';
+
 import { AlignKit } from '@/lib/plate/plugins/align-kit';
 import { AutoformatKit } from '@/lib/plate/plugins/autoformat-kit';
 import { BasicBlocksKit } from '@/lib/plate/plugins/basic-blocks-kit';
@@ -30,8 +33,6 @@ import { SlashKit } from '@/lib/plate/plugins/slash-kit';
 import { TableKit } from '@/lib/plate/plugins/table-kit';
 import { TocKit } from '@/lib/plate/plugins/toc-kit';
 import { ToggleKit } from '@/lib/plate/plugins/toggle-kit';
-import { TrailingBlockPlugin, type Value } from 'platejs';
-import { useEditorRef, type TPlateEditor } from 'platejs/react';
 
 export const EditorKit = [
   // Elements

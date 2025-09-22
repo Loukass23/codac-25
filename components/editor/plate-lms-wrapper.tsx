@@ -48,7 +48,7 @@ export function PlateLMSWrapper({
 
     function extractHeadings(nodes: any[], level = 0): void {
       for (const node of nodes) {
-        if (node.type && node.type.startsWith('h') && node.type.length === 2) {
+        if (node.type?.startsWith('h') && node.type.length === 2) {
           const headingLevel = parseInt(node.type.charAt(1));
           const text = extractTextFromNode(node);
           if (text) {

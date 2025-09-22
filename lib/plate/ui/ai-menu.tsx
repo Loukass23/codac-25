@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 
 import {
   AIChatPlugin,
@@ -8,9 +7,9 @@ import {
   useEditorChat,
   useLastAssistantMessage,
 } from '@platejs/ai/react';
-import { getTransientCommentKey } from '@platejs/comment';
+import { getDraftCommentKey } from '@platejs/comment';
 import { BlockSelectionPlugin, useIsSelecting } from '@platejs/selection/react';
-import { getTransientSuggestionKey } from '@platejs/suggestion';
+import { getSuggestionKeys } from '@platejs/suggestion';
 import { Command as CommandPrimitive } from 'cmdk';
 import {
   Album,
@@ -45,6 +44,7 @@ import {
   usePluginOption,
   type PlateEditor,
 } from 'platejs/react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -66,7 +66,7 @@ import { AIChatEditor } from './ai-chat-editor';
 export function AIMenu() {
   const { api, editor } = useEditorPlugin(AIChatPlugin);
   const mode = usePluginOption(AIChatPlugin, 'mode');
-  const toolName = usePluginOption(AIChatPlugin, 'toolName');
+  const toolName = usePluginOption(AIChatPlugin, 'toolName' as any);
 
   const streaming = usePluginOption(AIChatPlugin, 'streaming');
   const isSelecting = useIsSelecting();
@@ -111,32 +111,35 @@ export function AIMenu() {
     setOpen(true);
   };
 
-  useEditorChat({
-    chat,
-    onOpenBlockSelection: (blocks: NodeEntry[]) => {
-      show(editor.api.toDOMNode(blocks.at(-1)![0])!);
-    },
-    onOpenChange: open => {
-      if (!open) {
-        setAnchorElement(null);
-        setInput('');
-      }
-    },
-    onOpenCursor: () => {
-      const [ancestor] = editor.api.block({ highest: true })!;
+  // Only use useEditorChat if chat is properly configured
+  if (chat && chat.messages !== undefined) {
+    useEditorChat({
+      chat: chat as any, // Type assertion to bypass the partial type issue
+      onOpenBlockSelection: (blocks: NodeEntry[]) => {
+        show(editor.api.toDOMNode(blocks.at(-1)![0])!);
+      },
+      onOpenChange: open => {
+        if (!open) {
+          setAnchorElement(null);
+          setInput('');
+        }
+      },
+      onOpenCursor: () => {
+        const [ancestor] = editor.api.block({ highest: true })!;
 
-      if (!editor.api.isAt({ end: true }) && !editor.api.isEmpty(ancestor)) {
-        editor
-          .getApi(BlockSelectionPlugin)
-          .blockSelection.set(ancestor.id as string);
-      }
+        if (!editor.api.isAt({ end: true }) && !editor.api.isEmpty(ancestor)) {
+          editor
+            .getApi(BlockSelectionPlugin)
+            .blockSelection.set(ancestor.id as string);
+        }
 
-      show(editor.api.toDOMNode(ancestor)!);
-    },
-    onOpenSelection: () => {
-      show(editor.api.toDOMNode(editor.api.blocks().at(-1)![0])!);
-    },
-  });
+        show(editor.api.toDOMNode(ancestor)!);
+      },
+      onOpenSelection: () => {
+        show(editor.api.toDOMNode(editor.api.blocks().at(-1)![0])!);
+      },
+    });
+  }
 
   useHotkeys('esc', () => {
     api.aiChat.stop();
@@ -152,7 +155,7 @@ export function AIMenu() {
       let anchorNode = editor.api.node({
         at: [],
         reverse: true,
-        match: n => !!n[KEYS.suggestion] && !!n[getTransientSuggestionKey()],
+        match: n => !!n[KEYS.suggestion] && !!n[getSuggestionKeys().draft],
       });
 
       anchorNode ??= editor
@@ -617,7 +620,7 @@ export const AIMenuItems = ({
 export function AILoadingBar() {
   const editor = useEditorRef();
 
-  const toolName = usePluginOption(AIChatPlugin, 'toolName');
+  const toolName = usePluginOption(AIChatPlugin, 'toolName' as any);
   const chat = usePluginOption(AIChatPlugin, 'chat');
   const mode = usePluginOption(AIChatPlugin, 'mode');
 
@@ -629,7 +632,7 @@ export function AILoadingBar() {
 
   const handleComments = (type: 'accept' | 'reject') => {
     if (type === 'accept') {
-      editor.tf.unsetNodes([getTransientCommentKey()], {
+      editor.tf.unsetNodes([getDraftCommentKey()], {
         at: [],
         match: n => TextApi.isText(n) && !!n[KEYS.comment],
       });

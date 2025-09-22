@@ -1,6 +1,6 @@
+import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
-import { notFound, redirect } from 'next/navigation';
 
 import { PlateLMSWrapper } from '@/components/editor/plate-lms-wrapper';
 import { LMSSkeleton } from '@/components/lms/lms-skeleton';

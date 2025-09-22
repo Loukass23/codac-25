@@ -1,7 +1,6 @@
 'use client';
 
-import { Search, Grid, List } from 'lucide-react';
-import { Filter } from 'lucide-react';
+import { Search, Grid, List , Filter } from 'lucide-react';
 import { useState } from 'react';
 
 import { Grid as LayoutGrid, Section } from '@/components/layout';

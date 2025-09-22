@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 
 import { isOrderedList } from '@platejs/list';
 import {
@@ -13,6 +12,7 @@ import {
   type PlateElementProps,
   type RenderNodeWrapper,
 } from 'platejs/react';
+import React from 'react';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';

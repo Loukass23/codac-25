@@ -1,9 +1,9 @@
-import * as React from 'react';
 
-import type { SlateRenderElementProps, TListElement } from 'platejs';
 
 import { isOrderedList } from '@platejs/list';
 import { CheckIcon } from 'lucide-react';
+import type { SlateRenderElementProps, TListElement } from 'platejs';
+import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -21,7 +21,9 @@ const config: Record<
 };
 
 export const BlockListStatic = (props: SlateRenderElementProps) => {
-  if (!props.element['listStyleType']) return null;
+  if (!props.element['listStyleType']) {
+    return <div>{props.children}</div>;
+  }
 
   return <List {...props} />;
 };
@@ -70,7 +72,7 @@ function TodoLiStatic(props: SlateRenderElementProps) {
       className={cn(
         'list-none',
         (props.element['checked'] as boolean) &&
-          'text-muted-foreground line-through'
+        'text-muted-foreground line-through'
       )}
     >
       {props.children}

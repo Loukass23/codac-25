@@ -1,9 +1,9 @@
 'use client';
 
-import * as React from 'react';
 
 import { useTheme } from 'next-themes';
 import { Plate, usePlateEditor, usePlateViewEditor } from 'platejs/react';
+import * as React from 'react';
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit';
 import { Button } from '@/components/ui/button';
