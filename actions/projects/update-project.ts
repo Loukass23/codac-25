@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { PrismaClientKnownRequestError } from '@prisma/client';
+
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
@@ -94,7 +96,9 @@ export async function updateProject(
       data: { id: projectId, updated: true },
     };
   } catch (error) {
-    const handledError = handlePrismaError(error as Error);
+    const handledError = error instanceof PrismaClientKnownRequestError
+      ? handlePrismaError(error)
+      : { message: 'An unexpected error occurred' };
 
     logger.error(
       'Failed to update project',
@@ -109,7 +113,7 @@ export async function updateProject(
 
     return {
       success: false,
-      error: handledError,
+      error: typeof handledError === 'string' ? handledError : handledError.message,
     };
   }
 }

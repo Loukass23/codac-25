@@ -2,11 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Prisma, PrismaClientKnownRequestError } from '@prisma/client';
 import { type Value } from 'platejs';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db';
-import { Prisma } from '@prisma/client';
 import { logger } from '@/lib/logger';
 import {
   handlePrismaError,
@@ -55,7 +55,7 @@ export async function updateProjectSummary(
     await prisma.project.update({
       where: { id: projectId },
       data: {
-        summary: summary as Prisma.JsonValue, // Prisma handles JSON serialization
+        summary: summary as Prisma.InputJsonValue, // Prisma handles JSON serialization
         updatedAt: new Date(),
       },
     });
@@ -80,7 +80,9 @@ export async function updateProjectSummary(
       data: { id: projectId, updated: true },
     };
   } catch (error) {
-    const handledError = handlePrismaError(error as Error);
+    const handledError = error instanceof PrismaClientKnownRequestError
+      ? handlePrismaError(error)
+      : { message: 'An unexpected error occurred' };
 
     logger.error(
       'Failed to update project summary',

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClientKnownRequestError } from '@prisma/client';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db/prisma';
@@ -158,7 +158,7 @@ export async function createProjectFromGitHub(
         features: [], // Can be populated later
         challenges: additionalData?.challenges || null,
         solutions: additionalData?.solutions || null,
-        status: (additionalData?.status as string) || 'COMPLETED',
+        status: (additionalData?.status as 'COMPLETED' | 'IN_PROGRESS' | 'PLANNING') || 'COMPLETED',
         startDate: additionalData?.startDate
           ? new Date(additionalData.startDate)
           : new Date(repository.created_at),
@@ -195,7 +195,9 @@ export async function createProjectFromGitHub(
       },
     };
   } catch (error) {
-    const handledError = handlePrismaError(error as Error);
+    const handledError = error instanceof PrismaClientKnownRequestError
+      ? handlePrismaError(error)
+      : { message: 'An unexpected error occurred' };
     logger.error(
       'Error creating project from GitHub repository',
       error instanceof Error ? error : new Error(String(error))
@@ -291,7 +293,9 @@ export async function getRepositoryDetails(
 /**
  * Get GitHub user information
  */
-export async function getGitHubUserInfo(): Promise<ServerActionResult<unknown>> {
+export async function getGitHubUserInfo(): Promise<
+  ServerActionResult<unknown>
+> {
   try {
     const user = await getCurrentUser();
     if (!user) {

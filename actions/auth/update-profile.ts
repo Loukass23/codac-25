@@ -8,13 +8,13 @@ import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import {
+  commonSelects,
   type ServerActionResult,
   type UserPrivate,
-  commonSelects,
 } from '@/lib/utils/server-action-utils';
 import {
-  type UpdateProfileInput,
   updateProfileSchema,
+  type UpdateProfileInput,
 } from '@/lib/validation/auth';
 
 // Define return type using Prisma's generated types
@@ -144,12 +144,16 @@ export async function updateProfile(
 
     // Handle Zod validation errors
     if (error instanceof Error && error.name === 'ZodError') {
-      logger.logValidationError('user-profile', (error as { errors: unknown }).errors, {
-        resourceId: data.id,
-      });
+      logger.logValidationError(
+        'user-profile',
+        (error as unknown as { errors: unknown }).errors,
+        {
+          resourceId: data.id,
+        }
+      );
       return {
         success: false,
-        error: (error as { errors: unknown }).errors,
+        error: (error as unknown as { errors: unknown }).errors as string,
       };
     }
 

@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createUser } from '@/actions/user/create-user';
-import type { CreateUserInput } from '@/actions/user/create-user';
+import type { CreateUserInput } from '@/lib/validation/user';
 import { DatabaseHelpers } from '@/tests/utils/database-helpers';
 import { createMockUser } from '@/tests/utils/fixtures';
 import { mockPrisma } from '@/tests/utils/prisma-mock';
@@ -148,7 +148,7 @@ describe('createUser Server Action', () => {
       // Missing name, role, status
     } as Partial<CreateUserInput>;
 
-    const result = await createUser(incompleteData);
+    const result = await createUser(incompleteData as CreateUserInput);
 
     expect(result.success).toBe(false);
     if (!result.success) {

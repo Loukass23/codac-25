@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTheme } from 'next-themes';
 import { Plate, usePlateEditor, usePlateViewEditor } from 'platejs/react';
 
-import { EditorKitStatic } from '@/components/editor/editor-base-kit';
+import { BaseEditorKit } from '@/components/editor/editor-base-kit';
 import { Button } from '@/components/ui/button';
 import { Editor, EditorView } from '@/lib/plate/ui/editor';
 
@@ -87,7 +87,7 @@ export function HtmlIframe({
   return <iframe title='Preview' srcDoc={content} {...props} />;
 }
 
-export function EditorClient({ value }: { value: unknown }) {
+export function EditorClient({ value }: { value: any }) {
   const editor = usePlateEditor({
     override: {
       enabled: {
@@ -95,7 +95,7 @@ export function EditorClient({ value }: { value: unknown }) {
         'floating-toolbar': false,
       },
     },
-    plugins: EditorKitStatic,
+    plugins: BaseEditorKit,
     value,
   });
 
@@ -106,9 +106,9 @@ export function EditorClient({ value }: { value: unknown }) {
   );
 }
 
-export const EditorViewClient = ({ value }: { value: unknown }) => {
+export const EditorViewClient = ({ value }: { value: any }) => {
   const editor = usePlateViewEditor({
-    plugins: EditorKitStatic,
+    plugins: BaseEditorKit,
     value: value,
   });
 

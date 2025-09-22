@@ -1,12 +1,12 @@
 import type {
+  // Duck, // Removed as it's not available in current Prisma version
+  Cohort,
+  Job,
+  JobLevel,
+  JobType,
   User,
   UserRole,
-  UserStatus,
-  Job,
-  JobType,
-  JobLevel,
-  Duck,
-  Cohort
+  UserStatus
 } from '@prisma/client'
 
 // Test data fixtures
@@ -83,7 +83,7 @@ export const mockJob: Job = {
 }
 
 // Mock Duck
-export const mockDuck: Duck = {
+export const mockDuck = {
   id: 'duck-123',
   title: 'Rubber Duck',
   imageUrl: 'https://example.com/duck.jpg',
@@ -123,7 +123,7 @@ export function createMockJob(overrides: Partial<Job> = {}): Job {
   }
 }
 
-export function createMockDuck(overrides: Partial<Duck> = {}): Duck {
+export function createMockDuck(overrides: Partial<typeof mockDuck> = {}) {
   return {
     ...mockDuck,
     ...overrides,
