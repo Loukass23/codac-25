@@ -19,7 +19,7 @@ export function ResizableSidebar({
   minWidth = 200,
   maxWidth = 600,
   className,
-  storageKey
+  storageKey,
 }: ResizableSidebarProps) {
   const [width, setWidth] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
@@ -39,7 +39,11 @@ export function ResizableSidebar({
       const savedWidth = localStorage.getItem(storageKey);
       if (savedWidth) {
         const parsedWidth = parseInt(savedWidth, 10);
-        if (!isNaN(parsedWidth) && parsedWidth >= minWidth && parsedWidth <= maxWidth) {
+        if (
+          !isNaN(parsedWidth) &&
+          parsedWidth >= minWidth &&
+          parsedWidth <= maxWidth
+        ) {
           setWidth(parsedWidth);
         }
       }
@@ -51,14 +55,17 @@ export function ResizableSidebar({
   }, [storageKey, minWidth, maxWidth]);
 
   // Save width to localStorage when changed
-  const updateWidth = useCallback((newWidth: number) => {
-    const clampedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
-    setWidth(clampedWidth);
+  const updateWidth = useCallback(
+    (newWidth: number) => {
+      const clampedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
+      setWidth(clampedWidth);
 
-    if (storageKey && typeof window !== 'undefined') {
-      localStorage.setItem(storageKey, clampedWidth.toString());
-    }
-  }, [minWidth, maxWidth, storageKey]);
+      if (storageKey && typeof window !== 'undefined') {
+        localStorage.setItem(storageKey, clampedWidth.toString());
+      }
+    },
+    [minWidth, maxWidth, storageKey]
+  );
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -104,9 +111,7 @@ export function ResizableSidebar({
       className={cn('relative flex', className)}
       style={isMobile ? undefined : { width: `${width}px` }}
     >
-      <div className="flex-1">
-        {children}
-      </div>
+      <div className='flex-1'>{children}</div>
 
       {/* Resize Handle - hidden on mobile */}
       {!isMobile && (
@@ -116,9 +121,9 @@ export function ResizableSidebar({
             isResizing && 'bg-border'
           )}
           onMouseDown={handleMouseDown}
-          title="Drag to resize sidebar"
+          title='Drag to resize sidebar'
         >
-          <div className="h-8 w-0.5 bg-border group-hover:bg-primary transition-colors rounded-full" />
+          <div className='h-8 w-0.5 bg-border group-hover:bg-primary transition-colors rounded-full' />
         </div>
       )}
     </div>

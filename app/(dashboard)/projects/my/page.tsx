@@ -1,28 +1,28 @@
-import { Plus } from 'lucide-react'
-import Link from 'next/link'
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
 
-import { Grid, PageContainer, PageHeader, Section } from '@/components/layout'
-import { ProjectCard } from '@/components/projects/project-card'
-import { Button } from '@/components/ui/button'
-import { getUserProjects } from '@/data/projects/get-user-projects'
-import { requireServerAuth } from '@/lib/auth/auth-server'
+import { Grid, PageContainer, PageHeader, Section } from '@/components/layout';
+import { ProjectCard } from '@/components/projects/project-card';
+import { Button } from '@/components/ui/button';
+import { getUserProjects } from '@/data/projects/get-user-projects';
+import { requireServerAuth } from '@/lib/auth/auth-server';
 
 export default async function MyProjectsPage() {
-  const user = await requireServerAuth()
+  const user = await requireServerAuth();
 
-  const projects = await getUserProjects(user.id)
+  const projects = await getUserProjects(user.id);
 
   return (
     <PageContainer>
-      <div className="flex items-center justify-between">
+      <div className='flex items-center justify-between'>
         <PageHeader
-          title="My Projects"
-          description="Manage and showcase your project portfolio"
-          size="lg"
+          title='My Projects'
+          description='Manage and showcase your project portfolio'
+          size='lg'
         />
-        <Link href="/projects/create">
+        <Link href='/projects/create'>
           <Button>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className='h-4 w-4 mr-2' />
             New Project
           </Button>
         </Link>
@@ -30,21 +30,21 @@ export default async function MyProjectsPage() {
 
       <Section>
         {projects.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-lg mb-4">No projects yet</div>
-            <p className="text-muted-foreground mb-6">
+          <div className='text-center py-12'>
+            <div className='text-lg mb-4'>No projects yet</div>
+            <p className='text-muted-foreground mb-6'>
               Start building your portfolio by creating your first project
             </p>
-            <Link href="/projects/create">
+            <Link href='/projects/create'>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className='h-4 w-4 mr-2' />
                 Create Your First Project
               </Button>
             </Link>
           </div>
         ) : (
-          <Grid cols="3">
-            {projects.map((project) => (
+          <Grid cols='3'>
+            {projects.map(project => (
               <ProjectCard
                 key={project.id}
                 project={project}
@@ -55,5 +55,5 @@ export default async function MyProjectsPage() {
         )}
       </Section>
     </PageContainer>
-  )
+  );
 }

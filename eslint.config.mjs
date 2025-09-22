@@ -13,6 +13,12 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
+    },
     rules: {
       // Enforce naming conventions
       camelcase: ['warn', { properties: 'never', ignoreDestructuring: false }],
@@ -99,6 +105,30 @@ const eslintConfig = [
     rules: {
       // Allow default exports for Next.js app router pages
       'import/no-default-export': 'off',
+    },
+  },
+  {
+    // Disable type-aware rules for config files and other non-source files
+    files: [
+      '*.config.*',
+      '*.mjs',
+      '*.js',
+      'scripts/**/*',
+      'tests/**/*',
+      'debug-*.js',
+      'test-*.js',
+      'test-*.mjs',
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: null,
+      },
+    },
+    rules: {
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      'no-console': 'off', // Allow console in debug/test files
     },
   },
 ];

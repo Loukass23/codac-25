@@ -1,25 +1,21 @@
-'use client'
+'use client';
 
-import { AppHeader } from './app-header'
-import { useHeader } from './header-provider'
+import { AppHeader } from './app-header';
+import { useHeader } from './header-provider';
 
 interface AppHeaderClientProps {
-    showSidebarTrigger?: boolean
+  showSidebarTrigger?: boolean;
 }
 
 export function AppHeaderClient({
-    showSidebarTrigger = true
+  showSidebarTrigger = true,
 }: AppHeaderClientProps) {
-    const { isHeaderVisible } = useHeader()
+  const { isHeaderVisible } = useHeader();
 
-    // Don't render header if it's hidden
-    if (!isHeaderVisible) {
-        return null
-    }
+  // Don't render header if it's hidden
+  if (!isHeaderVisible) {
+    return null;
+  }
 
-    return (
-        <AppHeader
-            showSidebarTrigger={showSidebarTrigger}
-        />
-    )
-} 
+  return <AppHeader showSidebarTrigger={showSidebarTrigger} />;
+}

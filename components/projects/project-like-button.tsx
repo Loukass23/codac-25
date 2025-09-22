@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { Heart } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { Heart } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
 
-import { likeProject } from '@/actions/projects/like-project'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { likeProject } from '@/actions/projects/like-project';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ProjectLikeButtonProps {
-  projectId: string
-  initialIsLiked: boolean
-  initialLikesCount: number
-  size?: 'sm' | 'md' | 'lg'
-  showCount?: boolean
-  variant?: 'button' | 'icon'
-  className?: string
+  projectId: string;
+  initialIsLiked: boolean;
+  initialLikesCount: number;
+  size?: 'sm' | 'md' | 'lg';
+  showCount?: boolean;
+  variant?: 'button' | 'icon';
+  className?: string;
 }
 
 export function ProjectLikeButton({
@@ -27,56 +27,59 @@ export function ProjectLikeButton({
   size = 'md',
   showCount = true,
   variant = 'button',
-  className
+  className,
 }: ProjectLikeButtonProps) {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [isLiked, setIsLiked] = useState(initialIsLiked)
-  const [likesCount, setLikesCount] = useState(initialLikesCount)
-  const [isPending, startTransition] = useTransition()
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [likesCount, setLikesCount] = useState(initialLikesCount);
+  const [isPending, startTransition] = useTransition();
 
   const handleLike = async () => {
     if (!session?.user) {
-      toast.error('Please sign in to like projects')
-      return
+      toast.error('Please sign in to like projects');
+      return;
     }
 
     // Optimistic update
-    const wasLiked = isLiked
-    const previousCount = likesCount
+    const wasLiked = isLiked;
+    const previousCount = likesCount;
 
-    setIsLiked(!isLiked)
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1)
+    setIsLiked(!isLiked);
+    setLikesCount(prev => (isLiked ? prev - 1 : prev + 1));
 
     startTransition(async () => {
       try {
-        const result = await likeProject({ projectId })
+        const result = await likeProject({ projectId });
 
         if (!result.success) {
           // Revert optimistic update on error
-          setIsLiked(wasLiked)
-          setLikesCount(previousCount)
-          toast.error(typeof result.error === 'string' ? result.error : 'Failed to like project')
-          return
+          setIsLiked(wasLiked);
+          setLikesCount(previousCount);
+          toast.error(
+            typeof result.error === 'string'
+              ? result.error
+              : 'Failed to like project'
+          );
+          return;
         }
 
         // Update based on server response
-        setIsLiked(result.data.liked)
+        setIsLiked(result.data.liked);
 
         // Show feedback
-        toast.success(result.data.liked ? 'Project liked!' : 'Project unliked')
+        toast.success(result.data.liked ? 'Project liked!' : 'Project unliked');
 
         // Refresh the page data to ensure consistency
-        router.refresh()
-
+        router.refresh();
       } catch {
         // Revert optimistic update on error
-        setIsLiked(wasLiked)
-        setLikesCount(previousCount)
-        toast.error('Failed to like project')
+        setIsLiked(wasLiked);
+        setLikesCount(previousCount);
+        toast.error('Failed to like project');
       }
-    })
-  }
+    });
+  };
 
   const sizeClasses = {
     sm: {
@@ -94,15 +97,15 @@ export function ProjectLikeButton({
       icon: 'h-9 w-9 p-0',
       heart: 'h-5 w-5',
     },
-  }
+  };
 
-  const currentSize = sizeClasses[size]
+  const currentSize = sizeClasses[size];
 
   if (variant === 'icon') {
     return (
       <Button
-        variant="ghost"
-        size="sm"
+        variant='ghost'
+        size='sm'
         className={cn(
           currentSize.icon,
           'hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/50',
@@ -119,17 +122,17 @@ export function ProjectLikeButton({
             isPending && 'animate-pulse'
           )}
         />
-        <span className="sr-only">
+        <span className='sr-only'>
           {isLiked ? 'Unlike project' : 'Like project'}
         </span>
       </Button>
-    )
+    );
   }
 
   return (
     <Button
       variant={isLiked ? 'secondary' : 'ghost'}
-      size="sm"
+      size='sm'
       className={cn(
         currentSize.button,
         'gap-2 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/50',
@@ -147,13 +150,11 @@ export function ProjectLikeButton({
         )}
       />
       {showCount && (
-        <span className={cn(isPending && 'animate-pulse')}>
-          {likesCount}
-        </span>
+        <span className={cn(isPending && 'animate-pulse')}>{likesCount}</span>
       )}
-      <span className="sr-only">
+      <span className='sr-only'>
         {isLiked ? 'Unlike project' : 'Like project'}
       </span>
     </Button>
-  )
+  );
 }

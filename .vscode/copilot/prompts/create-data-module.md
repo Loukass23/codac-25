@@ -19,9 +19,9 @@ Template:
 
 ```ts
 // data/[entity]/[operation].ts
-import { cache } from "react";
-import { prisma } from "@/lib/db/prisma";
-import { logger } from "@/lib/logger";
+import { cache } from 'react';
+import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 /**
  * Options for fetching entities
@@ -29,8 +29,8 @@ import { logger } from "@/lib/logger";
 export interface GetEntitiesOptions {
   limit?: number;
   offset?: number;
-  orderBy?: "asc" | "desc";
-  orderField?: "createdAt" | "title" | "updatedAt";
+  orderBy?: 'asc' | 'desc';
+  orderField?: 'createdAt' | 'title' | 'updatedAt';
   filter?: {
     status?: string;
     category?: string;
@@ -45,8 +45,8 @@ export const getEntities = cache(async (options: GetEntitiesOptions = {}) => {
   const {
     limit = 10,
     offset = 0,
-    orderBy = "desc",
-    orderField = "createdAt",
+    orderBy = 'desc',
+    orderField = 'createdAt',
     filter = {},
   } = options;
 
@@ -95,8 +95,8 @@ export const getEntities = cache(async (options: GetEntitiesOptions = {}) => {
       },
     };
   } catch (error) {
-    logger.error("Error fetching entities", { error, options });
-    throw new Error("Failed to fetch entities");
+    logger.error('Error fetching entities', { error, options });
+    throw new Error('Failed to fetch entities');
   }
 });
 
@@ -131,8 +131,8 @@ export const getEntityById = cache(async (id: string) => {
 
     return entity;
   } catch (error) {
-    logger.error("Error fetching entity by ID", { error, id });
-    throw new Error("Failed to fetch entity");
+    logger.error('Error fetching entity by ID', { error, id });
+    throw new Error('Failed to fetch entity');
   }
 });
 ```
@@ -141,9 +141,9 @@ Example for course queries:
 
 ```ts
 // data/course/get-courses.ts
-import { cache } from "react";
-import { prisma } from "@/lib/db/prisma";
-import { logger } from "@/lib/logger";
+import { cache } from 'react';
+import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 export interface GetCoursesOptions {
   limit?: number;
@@ -172,8 +172,8 @@ export const getCourses = cache(async (options: GetCoursesOptions = {}) => {
       isPublished,
       ...(searchQuery && {
         OR: [
-          { title: { contains: searchQuery, mode: "insensitive" } },
-          { description: { contains: searchQuery, mode: "insensitive" } },
+          { title: { contains: searchQuery, mode: 'insensitive' } },
+          { description: { contains: searchQuery, mode: 'insensitive' } },
         ],
       }),
     };
@@ -193,11 +193,10 @@ export const getCourses = cache(async (options: GetCoursesOptions = {}) => {
           _count: {
             select: {
               projects: true,
-              enrollments: true,
             },
           },
         },
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
         skip: offset,
         take: limit,
       }),
@@ -213,8 +212,8 @@ export const getCourses = cache(async (options: GetCoursesOptions = {}) => {
       },
     };
   } catch (error) {
-    logger.error("Error fetching courses", { error, options });
-    throw new Error("Failed to fetch courses");
+    logger.error('Error fetching courses', { error, options });
+    throw new Error('Failed to fetch courses');
   }
 });
 ```

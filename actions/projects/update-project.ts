@@ -1,12 +1,15 @@
-'use server'
+'use server';
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath } from 'next/cache';
 
-import { getCurrentUser } from '@/lib/auth/auth-utils'
-import { prisma } from '@/lib/db'
-import { logger } from '@/lib/logger'
-import { handlePrismaError, type ServerActionResult } from '@/lib/utils/server-action-utils'
-import type { CreateProjectData } from '@/types/portfolio'
+import { getCurrentUser } from '@/lib/auth/auth-utils';
+import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {
+  handlePrismaError,
+  type ServerActionResult,
+} from '@/lib/utils/server-action-utils';
+import type { CreateProjectData } from '@/types/portfolio';
 
 export async function updateProject(
   projectId: string,
@@ -14,40 +17,40 @@ export async function updateProject(
 ): Promise<ServerActionResult<{ id: string; updated: boolean }>> {
   try {
     // Get current user
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
     if (!user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: 'Authentication required',
+      };
     }
 
     // Verify the project exists and user owns it
-    const project = await prisma.projectShowcase.findFirst({
+    const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         projectProfile: {
-          userId: user.id
-        }
+          userId: user.id,
+        },
       },
       include: {
         projectProfile: {
           select: {
-            userId: true
-          }
-        }
-      }
-    })
+            userId: true,
+          },
+        },
+      },
+    });
 
     if (!project) {
       return {
         success: false,
-        error: 'Project not found or access denied'
-      }
+        error: 'Project not found or access denied',
+      };
     }
 
     // Update the project
-    await prisma.projectShowcase.update({
+    await prisma.project.update({
       where: { id: projectId },
       data: {
         title: data.title,
@@ -66,14 +69,14 @@ export async function updateProject(
         endDate: data.endDate,
         isPublic: data.isPublic ?? true,
         updatedAt: new Date(),
-      }
-    })
+      },
+    });
 
     // Revalidate relevant pages
-    revalidatePath('/projects')
-    revalidatePath(`/projects/${projectId}`)
-    revalidatePath('/projects/my')
-    revalidatePath('/showcase')
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${projectId}`);
+    revalidatePath('/projects/my');
+    revalidatePath('/showcase');
 
     logger.info('Project updated successfully', {
       action: 'update_project',
@@ -82,28 +85,31 @@ export async function updateProject(
       metadata: {
         userId: user.id,
         title: data.title,
-        techStack: data.techStack
-      }
-    })
+        techStack: data.techStack,
+      },
+    });
 
     return {
       success: true,
-      data: { id: projectId, updated: true }
-    }
-
+      data: { id: projectId, updated: true },
+    };
   } catch (error) {
-    const handledError = handlePrismaError(error as any)
+    const handledError = handlePrismaError(error as Error);
 
-    logger.error('Failed to update project', error instanceof Error ? error : new Error(String(error)), {
-      action: 'update_project',
-      resource: 'project',
-      resourceId: projectId,
-      metadata: { error: handledError }
-    })
+    logger.error(
+      'Failed to update project',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        action: 'update_project',
+        resource: 'project',
+        resourceId: projectId,
+        metadata: { error: handledError },
+      }
+    );
 
     return {
       success: false,
-      error: handledError
-    }
+      error: handledError,
+    };
   }
 }

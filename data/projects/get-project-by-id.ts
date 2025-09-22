@@ -1,12 +1,14 @@
-'use server'
+'use server';
 
-import { prisma } from '@/lib/db'
-import { logger } from '@/lib/logger'
-import type { ProjectShowcaseWithDetails } from '@/types/portfolio'
+import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import type { ProjectShowcaseWithDetails } from '@/types/portfolio';
 
-export async function getProjectById(projectId: string): Promise<ProjectShowcaseWithDetails | null> {
+export async function getProjectById(
+  projectId: string
+): Promise<ProjectShowcaseWithDetails | null> {
   try {
-    const project = await prisma.projectShowcase.findUnique({
+    const project = await prisma.project.findUnique({
       where: { id: projectId },
       include: {
         projectProfile: {
@@ -18,9 +20,9 @@ export async function getProjectById(projectId: string): Promise<ProjectShowcase
                 avatar: true,
                 githubUrl: true,
                 linkedinUrl: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         comments: {
           include: {
@@ -29,7 +31,7 @@ export async function getProjectById(projectId: string): Promise<ProjectShowcase
                 id: true,
                 name: true,
                 avatar: true,
-              }
+              },
             },
             replies: {
               include: {
@@ -38,12 +40,12 @@ export async function getProjectById(projectId: string): Promise<ProjectShowcase
                     id: true,
                     name: true,
                     avatar: true,
-                  }
-                }
-              }
-            }
+                  },
+                },
+              },
+            },
           },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
         },
         projectLikes: {
           include: {
@@ -52,9 +54,9 @@ export async function getProjectById(projectId: string): Promise<ProjectShowcase
                 id: true,
                 name: true,
                 avatar: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         collaborators: {
           include: {
@@ -63,44 +65,52 @@ export async function getProjectById(projectId: string): Promise<ProjectShowcase
                 id: true,
                 name: true,
                 avatar: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         _count: {
           select: {
             comments: true,
             projectLikes: true,
             collaborators: true,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
 
     if (!project) {
-      return null
+      return null;
     }
 
     // Check if project is public or user has access
     if (!project.isPublic && !project.projectProfile.isPublic) {
-      return null
+      return null;
     }
 
     // Increment view count (fire and forget)
-    prisma.projectShowcase.update({
-      where: { id: projectId },
-      data: { views: { increment: 1 } }
-    }).catch((error) => {
-      logger.error('Failed to increment project view count', error instanceof Error ? error : new Error(String(error)))
-    })
+    prisma.project
+      .update({
+        where: { id: projectId },
+        data: { views: { increment: 1 } },
+      })
+      .catch(error => {
+        logger.error(
+          'Failed to increment project view count',
+          error instanceof Error ? error : new Error(String(error))
+        );
+      });
 
-    return project as ProjectShowcaseWithDetails
-
+    return project as ProjectShowcaseWithDetails;
   } catch (error) {
-    logger.error('Failed to get project by ID', error instanceof Error ? error : new Error(String(error)), {
-      action: 'get_project_by_id',
-      metadata: { projectId }
-    })
-    return null
+    logger.error(
+      'Failed to get project by ID',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        action: 'get_project_by_id',
+        metadata: { projectId },
+      }
+    );
+    return null;
   }
 }

@@ -1,20 +1,10 @@
 {
   "mcpServers": {
-    "context7": {
-      "url": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": "YOUR_API_KEY"
-      }
-    },
     "plate": {
       "description": "Plate editors, plugins, components, and docs",
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "shadcn@canary",
-        "registry:mcp"
-      ],
+      "args": ["-y", "shadcn@canary", "registry:mcp"],
       "env": {
         "REGISTRY_URL": "https://platejs.org/r/registry.json"
       }

@@ -1,43 +1,47 @@
-import { Prisma } from "@prisma/client";
-import { z } from "zod";
+import { Prisma } from '@prisma/client';
+import { z } from 'zod';
 
-import { auth } from "@/lib/auth/auth";
-import { logger } from "@/lib/logger";
+import { auth } from '@/lib/auth/auth';
+import { logger } from '@/lib/logger';
 
 // Generic server action result type
 export type ServerActionResult<T = unknown> =
   | { success: true; data: T }
-  | { success: false; error: string | z.ZodError["errors"]; validationErrors?: z.ZodError["errors"] };
+  | {
+      success: false;
+      error: string | z.ZodError['errors'];
+      validationErrors?: z.ZodError['errors'];
+    };
 
 // Common Prisma error handling
 export function handlePrismaError(
   error: Prisma.PrismaClientKnownRequestError
 ): string {
   switch (error.code) {
-    case "P2002":
-      return "A record with this information already exists";
-    case "P2003":
-      return "Invalid reference to related record";
-    case "P2025":
-      return "Record not found";
-    case "P2014":
-      return "Invalid data provided";
-    case "P2001":
-      return "Required record not found";
+    case 'P2002':
+      return 'A record with this information already exists';
+    case 'P2003':
+      return 'Invalid reference to related record';
+    case 'P2025':
+      return 'Record not found';
+    case 'P2014':
+      return 'Invalid data provided';
+    case 'P2001':
+      return 'Required record not found';
     default:
-      logger.error("Unhandled Prisma error", error);
-      return "Database error occurred";
+      logger.error('Unhandled Prisma error', error);
+      return 'Database error occurred';
   }
 }
 
 // Common validation error handling
 export function handleValidationError(
   error: unknown
-): string | z.ZodError["errors"] {
-  if (error instanceof Error && error.name === "ZodError") {
+): string | z.ZodError['errors'] {
+  if (error instanceof Error && error.name === 'ZodError') {
     return (error as z.ZodError).errors;
   }
-  return "Validation failed";
+  return 'Validation failed';
 }
 
 // Utility function to create type-safe server actions with logging
@@ -87,14 +91,14 @@ export function createServerAction<TInput, TOutput>(
         });
       } else {
         logger.error(
-          "Server action error",
+          'Server action error',
           error instanceof Error ? error : new Error(String(error))
         );
       }
 
-      if (error instanceof Error && error.name === "ZodError") {
+      if (error instanceof Error && error.name === 'ZodError') {
         logger.logValidationError(
-          resourceName || "unknown",
+          resourceName || 'unknown',
           (error as z.ZodError).errors
         );
         return { success: false, error: handleValidationError(error) };
@@ -104,7 +108,7 @@ export function createServerAction<TInput, TOutput>(
         return { success: false, error: handlePrismaError(error) };
       }
 
-      return { success: false, error: "An unexpected error occurred" };
+      return { success: false, error: 'An unexpected error occurred' };
     }
   };
 }
@@ -186,7 +190,6 @@ export type UserWithCounts = Prisma.UserGetPayload<{
   include: {
     _count: {
       select: {
-        enrollments: true;
         posts: true;
         comments: true;
         achievements: true;
@@ -196,7 +199,6 @@ export type UserWithCounts = Prisma.UserGetPayload<{
 }> & {
   specialty?: string;
 };
-
 
 // Permission checking logic is implemented in lib/permissions.ts
 export async function checkPermission(
@@ -208,8 +210,8 @@ export async function checkPermission(
   try {
     // Basic permission check - can be extended with role-based logic
     if (!userId) {
-      logger.warn("Permission check failed: No user ID provided", {
-        action: "permission_check",
+      logger.warn('Permission check failed: No user ID provided', {
+        action: 'permission_check',
         resource,
         metadata: { action, resourceId },
       });
@@ -217,8 +219,8 @@ export async function checkPermission(
     }
 
     // Log permission check
-    logger.debug("Checking permission", {
-      action: "permission_check",
+    logger.debug('Checking permission', {
+      action: 'permission_check',
       resource,
       userId,
       metadata: { action, resourceId },
@@ -236,7 +238,7 @@ export async function checkPermission(
     return true;
   } catch (error) {
     logger.error(
-      "Permission check failed",
+      'Permission check failed',
       error instanceof Error ? error : new Error(String(error)),
       {
         userId,
@@ -265,7 +267,10 @@ export function createReturnType<T>(
 export async function handleServerAction<TInput, TOutput>(
   schema: z.ZodSchema<TInput>,
   input: unknown,
-  handler: (context: { parsed: TInput; user: any }) => Promise<{ ok: boolean; data: TOutput }>
+  handler: (context: {
+    parsed: TInput;
+    user: any;
+  }) => Promise<{ ok: boolean; data: TOutput }>
 ): Promise<ServerActionResult<TOutput>> {
   try {
     // Parse and validate input
@@ -284,12 +289,20 @@ export async function handleServerAction<TInput, TOutput>(
 
     return { success: true, data: result.data };
   } catch (error) {
-    logger.error('Server action error', error instanceof Error ? error : new Error(String(error)), {
-      metadata: { input }
-    });
+    logger.error(
+      'Server action error',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        metadata: { input },
+      }
+    );
 
     if (error instanceof z.ZodError) {
-      return { success: false, error: 'Invalid input data', validationErrors: error.errors };
+      return {
+        success: false,
+        error: 'Invalid input data',
+        validationErrors: error.errors,
+      };
     }
 
     if (error instanceof Error) {

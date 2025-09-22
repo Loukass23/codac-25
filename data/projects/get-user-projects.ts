@@ -1,16 +1,18 @@
-'use server'
+'use server';
 
-import { prisma } from '@/lib/db'
-import { logger } from '@/lib/logger'
-import type { ProjectShowcaseWithStats } from '@/types/portfolio'
+import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import type { ProjectShowcaseWithStats } from '@/types/portfolio';
 
-export async function getUserProjects(userId: string): Promise<ProjectShowcaseWithStats[]> {
+export async function getUserProjects(
+  userId: string
+): Promise<ProjectShowcaseWithStats[]> {
   try {
-    const projects = await prisma.projectShowcase.findMany({
+    const projects = await prisma.project.findMany({
       where: {
         projectProfile: {
-          userId: userId
-        }
+          userId: userId,
+        },
       },
       include: {
         projectProfile: {
@@ -20,31 +22,31 @@ export async function getUserProjects(userId: string): Promise<ProjectShowcaseWi
                 id: true,
                 name: true,
                 avatar: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         _count: {
           select: {
             comments: true,
             projectLikes: true,
             collaborators: true,
-          }
-        }
+          },
+        },
       },
-      orderBy: [
-        { isFeatured: 'desc' },
-        { updatedAt: 'desc' }
-      ]
-    })
+      orderBy: [{ isFeatured: 'desc' }, { updatedAt: 'desc' }],
+    });
 
-    return projects as ProjectShowcaseWithStats[]
-
+    return projects as ProjectShowcaseWithStats[];
   } catch (error) {
-    logger.error('Failed to get user projects', error instanceof Error ? error : new Error(String(error)), {
-      action: 'get_user_projects',
-      metadata: { userId }
-    })
-    return []
+    logger.error(
+      'Failed to get user projects',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        action: 'get_user_projects',
+        metadata: { userId },
+      }
+    );
+    return [];
   }
 }

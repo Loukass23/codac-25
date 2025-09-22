@@ -82,10 +82,7 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  // Learning Relations
-  enrollments  CourseEnrollment[]
-  progress     LessonProgress[]
-  assignments  AssignmentSubmission[]
+
   achievements UserAchievement[]
   quizResults  QuizResult[]
 
@@ -102,8 +99,6 @@ model User {
   postedJobs      Job[]            @relation("PostedJobs")
   jobApplications JobApplication[] @relation("JobApplications")
 
-  // Duck Relations
-  ducks Duck[]
 
   // Project Relations
   projectProfile    ProjectProfile?
@@ -155,149 +150,11 @@ model Cohort {
   @@map("cohorts")
 }
 
-// Learning Management System Models
-model Course {
-  id          String         @id @default(cuid())
-  title       String
-  description String
-  thumbnail   String?
-  category    CourseCategory
-  duration    Int? // Duration in hours
-  isPublished Boolean        @default(false)
-  order       Int            @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  // Relations
-  projects      Project[]
-  enrollments   CourseEnrollment[]
-  prerequisites CoursePrerequisite[] @relation("Course")
-  dependents    CoursePrerequisite[] @relation("Prerequisite")
 
-  @@map("courses")
-}
 
-model Project {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-  thumbnail   String?
-  duration    Int? // Duration in hours
-  isPublished Boolean @default(false)
-  order       Int     @default(0)
 
-  courseId String
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  lessons Lesson[]
-
-  @@map("projects")
-}
-
-model Lesson {
-  id          String     @id @default(cuid())
-  title       String
-  description String?
-  content     Json? // Rich content (videos, text, code examples)
-  type        LessonType @default(TEXT)
-  duration    Int? // Duration in minutes
-  order       Int        @default(0)
-  isPublished Boolean    @default(false)
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  progress    LessonProgress[]
-  assignments Assignment[]
-  resources   LessonResource[]
-
-  @@map("lessons")
-}
-
-model Assignment {
-  id           String         @id @default(cuid())
-  title        String
-  description  String
-  instructions Json // Rich instructions content
-  type         AssignmentType @default(PROJECT)
-  dueDate      DateTime?
-  maxScore     Int            @default(100)
-  isPublished  Boolean        @default(false)
-
-  lessonId String?
-  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  submissions AssignmentSubmission[]
-  resources   AssignmentResource[]
-
-  @@map("assignments")
-}
-
-// Progress Tracking
-model CourseEnrollment {
-  id          String    @id @default(cuid())
-  enrolledAt  DateTime  @default(now())
-  completedAt DateTime?
-  progress    Float     @default(0) // Percentage 0-100
-
-  userId   String
-  courseId String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, courseId])
-  @@map("course_enrollments")
-}
-
-model LessonProgress {
-  id          String               @id @default(cuid())
-  status      LessonProgressStatus @default(NOT_STARTED)
-  startedAt   DateTime?
-  completedAt DateTime?
-  timeSpent   Int                  @default(0) // Time in minutes
-
-  userId   String
-  lessonId String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, lessonId])
-  @@map("lesson_progress")
-}
-
-model AssignmentSubmission {
-  id          String           @id @default(cuid())
-  content     Json // Submission content
-  status      SubmissionStatus @default(DRAFT)
-  score       Int?
-  feedback    String?
-  submittedAt DateTime?
-  gradedAt    DateTime?
-
-  userId       String
-  assignmentId String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, assignmentId])
-  @@map("assignment_submissions")
-}
 
 // Community Features
 model CommunityPost {
@@ -433,43 +290,12 @@ model UserAchievement {
   @@map("user_achievements")
 }
 
-// Resources
-model LessonResource {
-  id    String       @id @default(cuid())
-  title String
-  url   String
-  type  ResourceType @default(LINK)
 
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
-  @@map("lesson_resources")
-}
 
-model AssignmentResource {
-  id    String       @id @default(cuid())
-  title String
-  url   String
-  type  ResourceType @default(LINK)
-
-  assignmentId String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-
-  @@map("assignment_resources")
-}
 
 // Supporting Models
-model CoursePrerequisite {
-  id String @id @default(cuid())
 
-  courseId       String
-  prerequisiteId String
-  course         Course @relation("Course", fields: [courseId], references: [id], onDelete: Cascade)
-  prerequisite   Course @relation("Prerequisite", fields: [prerequisiteId], references: [id], onDelete: Cascade)
-
-  @@unique([courseId, prerequisiteId])
-  @@map("course_prerequisites")
-}
 
 model PostTag {
   id    String @id @default(cuid())
@@ -502,46 +328,13 @@ model ProjectProfile {
   // Relations
   userId   String @unique
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects ProjectShowcase[]
+  projects Project[]
   skills   ProjectSkill[]
   experiences Experience[]
 
   @@map("project_profiles")
 }
 
-model ProjectShowcase {
-  id            String   @id @default(cuid())
-  title         String
-  description   String
-  summary       Json? // Rich Plate.js content for detailed project summary
-  shortDesc     String? // Brief description for cards
-  images        Json? // Array of image URLs
-  demoUrl       String? // Live demo URL
-  githubUrl     String? // Repository URL
-  techStack     Json // Array of technologies used
-  features      Json? // Array of key features
-  challenges    String? // Challenges faced during development
-  solutions     String? // Solutions implemented
-  status        ProjectStatus @default(COMPLETED)
-  startDate     DateTime?
-  endDate       DateTime?
-  isFeatured    Boolean @default(false)
-  isPublic      Boolean @default(true)
-  likes         Int     @default(0)
-  views         Int     @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  projectProfileId String
-  projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
-  comments    ProjectComment[]
-  projectLikes ProjectLike[]
-  collaborators ProjectCollaborator[]
-
-  @@map("project_showcases")
-}
 
 model Skill {
   id          String @id @default(cuid())
@@ -593,6 +386,42 @@ model Experience {
   @@map("experiences")
 }
 
+
+model Project {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  summary       Json? // Rich Plate.js content for detailed project summary
+  shortDesc     String? // Brief description for cards
+  images        Json? // Array of image URLs
+  demoUrl       String? // Live demo URL
+  githubUrl     String? // Repository URL
+  techStack     Json // Array of technologies used
+  features      Json? // Array of key features
+  challenges    String? // Challenges faced during development
+  solutions     String? // Solutions implemented
+  status        ProjectStatus @default(COMPLETED)
+  startDate     DateTime?
+  endDate       DateTime?
+  isFeatured    Boolean @default(false)
+  isPublic      Boolean @default(true)
+  likes         Int     @default(0)
+  views         Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  projectProfileId String
+  projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
+  comments    ProjectComment[]
+  projectLikes ProjectLike[]
+  collaborators ProjectCollaborator[]
+
+  @@map("projects")
+}
+
+
 model ProjectComment {
   id      String @id @default(cuid())
   content String
@@ -601,7 +430,7 @@ model ProjectComment {
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   projectId String
-  project   ProjectShowcase @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   parentId String?
   parent   ProjectComment?  @relation("ProjectCommentThread", fields: [parentId], references: [id])
@@ -619,7 +448,7 @@ model ProjectLike {
   userId    String
   projectId String
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project   ProjectShowcase @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -634,7 +463,7 @@ model ProjectCollaborator {
   userId    String
   projectId String
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project   ProjectShowcase @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -764,17 +593,7 @@ model Job {
   @@map("jobs")
 }
 
-model Duck {
-  id        String   @id @default(cuid())
-  title     String
-  imageUrl  String
-  createdAt DateTime @default(now())
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("ducks")
-}
 
 model JobApplication {
   id          String               @id @default(cuid())

@@ -1,171 +1,187 @@
-import type { 
-  ProjectProfile, 
-  ProjectShowcase, 
-  Skill, 
-  ProjectSkill, 
-  Experience, 
-  ProjectComment, 
-  ProjectLike, 
-  ProjectCollaborator, 
-  User,
+import type {
+  Experience,
+  ExperienceType,
+  Project,
+  ProjectCollaborator,
+  ProjectComment,
+  ProjectLike,
+  ProjectProfile,
+  ProjectSkill,
   ProjectStatus,
+  Skill,
   SkillLevel,
-  ExperienceType
-} from '@prisma/client'
+  User,
+} from '@prisma/client';
 
 // Extended types for project data with relations
 export type ProjectProfileWithDetails = ProjectProfile & {
-  user: Pick<User, 'id' | 'name' | 'email' | 'avatar' | 'githubUrl' | 'linkedinUrl'>
-  projects: ProjectShowcaseWithStats[]
+  user: Pick<
+    User,
+    'id' | 'name' | 'email' | 'avatar' | 'githubUrl' | 'linkedinUrl'
+  >;
+  projects: ProjectShowcaseWithStats[];
   skills: (ProjectSkill & {
-    skill: Skill
-  })[]
-  experiences: Experience[]
+    skill: Skill;
+  })[];
+  experiences: Experience[];
   _count: {
-    projects: number
-  }
-}
+    projects: number;
+  };
+};
 
-export type ProjectShowcaseWithStats = ProjectShowcase & {
+export type ProjectShowcaseWithStats = Project & {
   projectProfile: ProjectProfile & {
-    user: Pick<User, 'id' | 'name' | 'avatar'>
-  }
-  isLiked?: boolean
+    user: Pick<User, 'id' | 'name' | 'avatar'>;
+  };
+  isLiked?: boolean;
   _count: {
-    comments: number
-    projectLikes: number
-    collaborators: number
-  }
-}
+    comments: number;
+    projectLikes: number;
+    collaborators: number;
+  };
+};
 
-export type ProjectShowcaseWithDetails = ProjectShowcase & {
+export type ProjectShowcaseWithDetails = Project & {
   projectProfile: ProjectProfile & {
-    user: Pick<User, 'id' | 'name' | 'avatar' | 'githubUrl' | 'linkedinUrl'>
-  }
-  isLiked?: boolean
+    user: Pick<User, 'id' | 'name' | 'avatar' | 'githubUrl' | 'linkedinUrl'>;
+  };
+  isLiked?: boolean;
   comments: (ProjectComment & {
-    author: Pick<User, 'id' | 'name' | 'avatar'>
+    author: Pick<User, 'id' | 'name' | 'avatar'>;
     replies?: (ProjectComment & {
-      author: Pick<User, 'id' | 'name' | 'avatar'>
-    })[]
-  })[]
+      author: Pick<User, 'id' | 'name' | 'avatar'>;
+    })[];
+  })[];
   projectLikes: (ProjectLike & {
-    user: Pick<User, 'id' | 'name' | 'avatar'>
-  })[]
+    user: Pick<User, 'id' | 'name' | 'avatar'>;
+  })[];
   collaborators: (ProjectCollaborator & {
-    user: Pick<User, 'id' | 'name' | 'avatar'>
-  })[]
+    user: Pick<User, 'id' | 'name' | 'avatar'>;
+  })[];
   _count: {
-    comments: number
-    projectLikes: number
-    collaborators: number
-  }
-}
+    comments: number;
+    projectLikes: number;
+    collaborators: number;
+  };
+};
 
-export type StudentProfile = Pick<User, 
-  'id' | 'name' | 'email' | 'avatar' | 'bio' | 'location' | 'githubUrl' | 
-  'linkedinUrl' | 'portfolioUrl' | 'currentJob' | 'currentCompany' | 
-  'expertise' | 'yearsExp' | 'status' | 'createdAt'
+export type StudentProfile = Pick<
+  User,
+  | 'id'
+  | 'name'
+  | 'email'
+  | 'avatar'
+  | 'bio'
+  | 'location'
+  | 'githubUrl'
+  | 'linkedinUrl'
+  | 'portfolioUrl'
+  | 'currentJob'
+  | 'currentCompany'
+  | 'expertise'
+  | 'yearsExp'
+  | 'status'
+  | 'createdAt'
 > & {
-  projectProfile?: ProjectProfileWithDetails
+  projectProfile?: ProjectProfileWithDetails;
   _count: {
-    posts: number
-    comments: number
-    projectLikes: number
-  }
-}
+    posts: number;
+    comments: number;
+    projectLikes: number;
+  };
+};
 
 // Form types for creating/editing
 export type CreateProjectProfileData = {
-  bio?: string
-  headline?: string
-  location?: string
-  website?: string
-  resume?: string
-  theme?: string
-  isPublic?: boolean
-}
+  bio?: string;
+  headline?: string;
+  location?: string;
+  website?: string;
+  resume?: string;
+  theme?: string;
+  isPublic?: boolean;
+};
 
 export type CreateProjectData = {
-  title: string
-  description: string
-  summary?: any // Plate.js editor content (Value type)
-  shortDesc?: string
-  images?: string[]
-  demoUrl?: string
-  githubUrl?: string
-  techStack: string[]
-  features?: string[]
-  challenges?: string
-  solutions?: string
-  status?: ProjectStatus
-  startDate?: Date
-  endDate?: Date
-  isPublic?: boolean
+  title: string;
+  description: string;
+  summary?: any; // Plate.js editor content (Value type)
+  shortDesc?: string;
+  images?: string[];
+  demoUrl?: string;
+  githubUrl?: string;
+  techStack: string[];
+  features?: string[];
+  challenges?: string;
+  solutions?: string;
+  status?: ProjectStatus;
+  startDate?: Date;
+  endDate?: Date;
+  isPublic?: boolean;
   // GitHub import metadata (optional)
   githubImportData?: {
-    importedAt: Date
-    stars: number
-    forks: number
-    size: number
-    language?: string
-    topics?: string[]
-    lastUpdated: Date
-  }
-}
+    importedAt: Date;
+    stars: number;
+    forks: number;
+    size: number;
+    language?: string;
+    topics?: string[];
+    lastUpdated: Date;
+  };
+};
 
 export type AddSkillData = {
-  skillId: string
-  proficiency: SkillLevel
-  yearsExp?: number
-  isHighlight?: boolean
-}
+  skillId: string;
+  proficiency: SkillLevel;
+  yearsExp?: number;
+  isHighlight?: boolean;
+};
 
 export type AddExperienceData = {
-  type: ExperienceType
-  title: string
-  company: string
-  location?: string
-  description?: string
-  startDate: Date
-  endDate?: Date
-  isCurrent?: boolean
-}
+  type: ExperienceType;
+  title: string;
+  company: string;
+  location?: string;
+  description?: string;
+  startDate: Date;
+  endDate?: Date;
+  isCurrent?: boolean;
+};
 
 // Filter and search types
 export type ProjectFilter = {
-  techStack?: string[]
-  status?: ProjectStatus[]
-  featured?: boolean
-  search?: string
-}
+  techStack?: string[];
+  status?: ProjectStatus[];
+  featured?: boolean;
+  search?: string;
+};
 
 export type StudentFilter = {
-  skills?: string[]
-  location?: string
-  experience?: number // minimum years
-  availability?: boolean
-  search?: string
-}
+  skills?: string[];
+  location?: string;
+  experience?: number; // minimum years
+  availability?: boolean;
+  search?: string;
+};
 
 // Stats types
 export type ProjectProfileStats = {
-  totalViews: number
-  totalLikes: number
-  totalComments: number
-  featuredProjects: number
-  skillsCount: number
-  experienceYears?: number
-}
+  totalViews: number;
+  totalLikes: number;
+  totalComments: number;
+  featuredProjects: number;
+  skillsCount: number;
+  experienceYears?: number;
+};
 
 export type PlatformStats = {
-  totalStudents: number
-  totalProjects: number
-  totalSkills: number
-  featuredProjects: number
-  activeStudents: number
-  newThisMonth: number
-}
+  totalStudents: number;
+  totalProjects: number;
+  totalSkills: number;
+  featuredProjects: number;
+  activeStudents: number;
+  newThisMonth: number;
+};
 
 // Constants
 export const PROJECT_STATUSES = [
@@ -174,14 +190,14 @@ export const PROJECT_STATUSES = [
   { value: 'COMPLETED', label: 'Completed', color: 'green' },
   { value: 'PAUSED', label: 'Paused', color: 'orange' },
   { value: 'ARCHIVED', label: 'Archived', color: 'gray' },
-] as const
+] as const;
 
 export const SKILL_LEVELS = [
   { value: 'BEGINNER', label: 'Beginner', color: 'blue' },
   { value: 'INTERMEDIATE', label: 'Intermediate', color: 'green' },
   { value: 'ADVANCED', label: 'Advanced', color: 'orange' },
   { value: 'EXPERT', label: 'Expert', color: 'red' },
-] as const
+] as const;
 
 export const EXPERIENCE_TYPES = [
   { value: 'WORK', label: 'Work Experience', icon: 'briefcase' },
@@ -189,11 +205,11 @@ export const EXPERIENCE_TYPES = [
   { value: 'VOLUNTEER', label: 'Volunteer Work', icon: 'heart' },
   { value: 'PROJECT', label: 'Personal Project', icon: 'code' },
   { value: 'INTERNSHIP', label: 'Internship', icon: 'user-check' },
-] as const
+] as const;
 
 export const SKILL_CATEGORIES = [
   'Frontend',
-  'Backend', 
+  'Backend',
   'Mobile',
   'Database',
   'DevOps',
@@ -203,16 +219,20 @@ export const SKILL_CATEGORIES = [
   'Data Science',
   'Machine Learning',
   'Tools',
-  'Other'
-] as const
+  'Other',
+] as const;
 
 export const PROJECT_THEMES = [
   { value: 'default', label: 'Default', preview: '/themes/default.jpg' },
   { value: 'minimal', label: 'Minimal', preview: '/themes/minimal.jpg' },
   { value: 'dark', label: 'Dark', preview: '/themes/dark.jpg' },
   { value: 'creative', label: 'Creative', preview: '/themes/creative.jpg' },
-  { value: 'professional', label: 'Professional', preview: '/themes/professional.jpg' },
-] as const
+  {
+    value: 'professional',
+    label: 'Professional',
+    preview: '/themes/professional.jpg',
+  },
+] as const;
 
 // Project Summary Templates
 export const PROJECT_SUMMARY_TEMPLATES = [
@@ -226,7 +246,7 @@ export const PROJECT_SUMMARY_TEMPLATES = [
         type: 'p',
         children: [{ text: 'Tell your project story...' }],
       },
-    ]
+    ],
   },
   {
     id: 'tech-project',
@@ -240,7 +260,11 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'Brief description of what the project does and why it exists.' }],
+        children: [
+          {
+            text: 'Brief description of what the project does and why it exists.',
+          },
+        ],
       },
       {
         type: 'h2',
@@ -248,7 +272,9 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'List the main technologies, frameworks, and tools used.' }],
+        children: [
+          { text: 'List the main technologies, frameworks, and tools used.' },
+        ],
       },
       {
         type: 'h2',
@@ -262,7 +288,7 @@ export const PROJECT_SUMMARY_TEMPLATES = [
             children: [{ text: 'Feature 1' }],
           },
           {
-            type: 'li', 
+            type: 'li',
             children: [{ text: 'Feature 2' }],
           },
         ],
@@ -273,7 +299,11 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'Describe the main challenges faced and how you solved them.' }],
+        children: [
+          {
+            text: 'Describe the main challenges faced and how you solved them.',
+          },
+        ],
       },
       {
         type: 'h2',
@@ -281,13 +311,17 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'What did you achieve? Any metrics, user feedback, or lessons learned?' }],
+        children: [
+          {
+            text: 'What did you achieve? Any metrics, user feedback, or lessons learned?',
+          },
+        ],
       },
-    ]
+    ],
   },
   {
     id: 'creative-project',
-    name: 'Creative Project', 
+    name: 'Creative Project',
     description: 'For design, art, and creative work',
     icon: 'palette',
     content: [
@@ -297,7 +331,11 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'What inspired this project? What was your creative vision?' }],
+        children: [
+          {
+            text: 'What inspired this project? What was your creative vision?',
+          },
+        ],
       },
       {
         type: 'h2',
@@ -305,7 +343,9 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'Walk through your creative process and methodology.' }],
+        children: [
+          { text: 'Walk through your creative process and methodology.' },
+        ],
       },
       {
         type: 'h2',
@@ -313,7 +353,9 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'What creative or technical challenges did you face?' }],
+        children: [
+          { text: 'What creative or technical challenges did you face?' },
+        ],
       },
       {
         type: 'h2',
@@ -323,7 +365,7 @@ export const PROJECT_SUMMARY_TEMPLATES = [
         type: 'p',
         children: [{ text: 'Present the final result and what you learned.' }],
       },
-    ]
+    ],
   },
   {
     id: 'research-project',
@@ -345,7 +387,9 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'Describe your research approach and methods used.' }],
+        children: [
+          { text: 'Describe your research approach and methods used.' },
+        ],
       },
       {
         type: 'h2',
@@ -353,7 +397,11 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'What did you discover? Include data, charts, or key insights.' }],
+        children: [
+          {
+            text: 'What did you discover? Include data, charts, or key insights.',
+          },
+        ],
       },
       {
         type: 'h2',
@@ -361,42 +409,46 @@ export const PROJECT_SUMMARY_TEMPLATES = [
       },
       {
         type: 'p',
-        children: [{ text: 'How can these findings be applied? What\'s the broader impact?' }],
+        children: [
+          {
+            text: "How can these findings be applied? What's the broader impact?",
+          },
+        ],
       },
-    ]
+    ],
   },
-] as const
+] as const;
 
-export type ProjectSummaryTemplate = (typeof PROJECT_SUMMARY_TEMPLATES)[number]
+export type ProjectSummaryTemplate = (typeof PROJECT_SUMMARY_TEMPLATES)[number];
 
 // GitHub import types
-export type ProjectCreationMode = 'manual' | 'github-import'
+export type ProjectCreationMode = 'manual' | 'github-import';
 
 export type GitHubImportPreview = {
-  title: string
-  description: string
-  shortDesc?: string
-  githubUrl: string
-  demoUrl?: string
-  techStack: string[]
-  features?: string[]
-  stars: number
-  forks: number
-  size: number
-  language?: string
-  topics?: string[]
-  lastUpdated: Date
-  isPrivate: boolean
-  isArchived: boolean
-  hasReadme: boolean
-  readmeSummary?: any // Plate.js format
-}
+  title: string;
+  description: string;
+  shortDesc?: string;
+  githubUrl: string;
+  demoUrl?: string;
+  techStack: string[];
+  features?: string[];
+  stars: number;
+  forks: number;
+  size: number;
+  language?: string;
+  topics?: string[];
+  lastUpdated: Date;
+  isPrivate: boolean;
+  isArchived: boolean;
+  hasReadme: boolean;
+  readmeSummary?: any; // Plate.js format
+};
 
 export type GitHubImportOptions = {
-  importTitle: boolean
-  importDescription: boolean
-  importTechStack: boolean
-  importFeatures: boolean
-  importDemoUrl: boolean
-  importReadmeSummary: boolean
-}
+  importTitle: boolean;
+  importDescription: boolean;
+  importTechStack: boolean;
+  importFeatures: boolean;
+  importDemoUrl: boolean;
+  importReadmeSummary: boolean;
+};

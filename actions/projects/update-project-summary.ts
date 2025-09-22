@@ -1,12 +1,17 @@
-'use server'
+'use server';
 
-import { revalidatePath } from 'next/cache'
-import { type Value } from 'platejs'
+import { revalidatePath } from 'next/cache';
 
-import { getCurrentUser } from '@/lib/auth/auth-utils'
-import { prisma } from '@/lib/db'
-import { logger } from '@/lib/logger'
-import { handlePrismaError, type ServerActionResult } from '@/lib/utils/server-action-utils'
+import { type Value } from 'platejs';
+
+import { getCurrentUser } from '@/lib/auth/auth-utils';
+import { prisma } from '@/lib/db';
+import { Prisma } from '@prisma/client';
+import { logger } from '@/lib/logger';
+import {
+  handlePrismaError,
+  type ServerActionResult,
+} from '@/lib/utils/server-action-utils';
 
 export async function updateProjectSummary(
   projectId: string,
@@ -14,51 +19,51 @@ export async function updateProjectSummary(
 ): Promise<ServerActionResult<{ id: string; updated: boolean }>> {
   try {
     // Get current user
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
     if (!user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: 'Authentication required',
+      };
     }
 
     // Verify the project exists and user owns it
-    const project = await prisma.projectShowcase.findFirst({
+    const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         projectProfile: {
-          userId: user.id
-        }
+          userId: user.id,
+        },
       },
       include: {
         projectProfile: {
           select: {
-            userId: true
-          }
-        }
-      }
-    })
+            userId: true,
+          },
+        },
+      },
+    });
 
     if (!project) {
       return {
         success: false,
-        error: 'Project not found or access denied'
-      }
+        error: 'Project not found or access denied',
+      };
     }
 
     // Update the project summary
-    await prisma.projectShowcase.update({
+    await prisma.project.update({
       where: { id: projectId },
       data: {
-        summary: summary as any, // Prisma handles JSON serialization
-        updatedAt: new Date()
-      }
-    })
+        summary: summary as Prisma.JsonValue, // Prisma handles JSON serialization
+        updatedAt: new Date(),
+      },
+    });
 
     // Revalidate relevant pages
-    revalidatePath('/projects')
-    revalidatePath(`/projects/${projectId}`)
-    revalidatePath('/projects/my')
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${projectId}`);
+    revalidatePath('/projects/my');
 
     logger.info('Project summary updated successfully', {
       action: 'update_project_summary',
@@ -66,28 +71,31 @@ export async function updateProjectSummary(
       resourceId: projectId,
       metadata: {
         userId: user.id,
-        summaryLength: JSON.stringify(summary).length
-      }
-    })
+        summaryLength: JSON.stringify(summary).length,
+      },
+    });
 
     return {
       success: true,
-      data: { id: projectId, updated: true }
-    }
-
+      data: { id: projectId, updated: true },
+    };
   } catch (error) {
-    const handledError = handlePrismaError(error as any)
+    const handledError = handlePrismaError(error as Error);
 
-    logger.error('Failed to update project summary', error instanceof Error ? error : new Error(String(error)), {
-      action: 'update_project_summary',
-      resource: 'project',
-      resourceId: projectId,
-      metadata: { error: handledError }
-    })
+    logger.error(
+      'Failed to update project summary',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        action: 'update_project_summary',
+        resource: 'project',
+        resourceId: projectId,
+        metadata: { error: handledError },
+      }
+    );
 
     return {
       success: false,
-      error: handledError
-    }
+      error: handledError,
+    };
   }
 }

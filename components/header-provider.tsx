@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface HeaderContextType {
-    isHeaderVisible: boolean
-    setHeaderVisible: (visible: boolean) => void
+  isHeaderVisible: boolean;
+  setHeaderVisible: (visible: boolean) => void;
 }
 
-const HeaderContext = createContext<HeaderContextType | undefined>(undefined)
+const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 
 export function HeaderProvider({ children }: { children: ReactNode }) {
-    const [isHeaderVisible, setHeaderVisible] = useState(true)
+  const [isHeaderVisible, setHeaderVisible] = useState(true);
 
-    return (
-        <HeaderContext.Provider value={{ isHeaderVisible, setHeaderVisible }}>
-            {children}
-        </HeaderContext.Provider>
-    )
+  return (
+    <HeaderContext.Provider value={{ isHeaderVisible, setHeaderVisible }}>
+      {children}
+    </HeaderContext.Provider>
+  );
 }
 
 export function useHeader() {
-    const context = useContext(HeaderContext)
-    if (context === undefined) {
-        throw new Error('useHeader must be used within a HeaderProvider')
-    }
-    return context
-} 
+  const context = useContext(HeaderContext);
+  if (context === undefined) {
+    throw new Error('useHeader must be used within a HeaderProvider');
+  }
+  return context;
+}
