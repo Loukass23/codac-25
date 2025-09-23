@@ -67,7 +67,7 @@ export const PlaceholderElement = withHOC(
     const imageRef = React.useRef<HTMLImageElement>(null);
 
     const { openFilePicker } = useFilePicker({
-      accept: currentContent.accept,
+      accept: currentContent?.accept,
       multiple: true,
       onFilesSelected: ({ plainFiles: updatedFiles }) => {
         const firstFile = updatedFiles[0];
@@ -84,9 +84,9 @@ export const PlaceholderElement = withHOC(
     const replaceCurrentPlaceholder = React.useCallback(
       (file: File) => {
         void uploadFile(file);
-        api.placeholder.addUploadingFile(element.id as string, file);
+        api.placeholder.addUploadingFile(element['id'] as string, file);
       },
-      [api.placeholder, element.id, uploadFile]
+      [api.placeholder, element['id'], uploadFile]
     );
 
     React.useEffect(() => {
@@ -102,10 +102,10 @@ export const PlaceholderElement = withHOC(
           initialHeight: imageRef.current?.height,
           initialWidth: imageRef.current?.width,
           isUpload: true,
-          name: element.mediaType === KEYS.file ? uploadedFile.name : '',
-          placeholderId: element.id as string,
+          name: element.mediaType === KEYS.file ? uploadedFile?.name : '',
+          placeholderId: element['id'] as string,
           type: element.mediaType,
-          url: uploadedFile.url,
+          url: uploadedFile?.url,
         };
 
         editor.tf.insertNodes(node, { at: path });
@@ -113,9 +113,9 @@ export const PlaceholderElement = withHOC(
         updateUploadHistory(editor, node);
       });
 
-      api.placeholder.removeUploadingFile(element.id as string);
+      api.placeholder.removeUploadingFile(element['id'] as string);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [uploadedFile, element.id]);
+    }, [uploadedFile, element['id']]);
 
     // React dev mode will call React.useEffect twice
     const isReplaced = React.useRef(false);
@@ -126,7 +126,7 @@ export const PlaceholderElement = withHOC(
 
       isReplaced.current = true;
       const currentFiles = api.placeholder.getUploadingFile(
-        element.id as string
+        element['id'] as string
       );
 
       if (!currentFiles) return;
@@ -147,11 +147,11 @@ export const PlaceholderElement = withHOC(
             contentEditable={false}
           >
             <div className='relative mr-3 flex text-muted-foreground/80 [&_svg]:size-6'>
-              {currentContent.icon}
+              {currentContent?.icon}
             </div>
             <div className='text-sm whitespace-nowrap text-muted-foreground'>
               <div>
-                {loading ? uploadingFile?.name : currentContent.content}
+                {loading ? uploadingFile?.name : currentContent?.content}
               </div>
 
               {loading && !isImage && (
@@ -244,9 +244,8 @@ function formatBytes(
 
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
-  return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
-    sizeType === 'accurate'
+  return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${sizeType === 'accurate'
       ? (accurateSizes[i] ?? 'Bytest')
       : (sizes[i] ?? 'Bytes')
-  }`;
+    }`;
 }

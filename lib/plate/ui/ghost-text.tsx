@@ -11,7 +11,7 @@ export function GhostText() {
   const isSuggested = usePluginOption(
     CopilotPlugin,
     'isSuggested',
-    element.id as string
+    element['id'] as string
   );
 
   if (!isSuggested) return null;

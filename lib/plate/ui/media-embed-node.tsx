@@ -10,7 +10,6 @@ import type { PlateElementProps } from 'platejs/react';
 import { PlateElement, withHOC } from 'platejs/react';
 import * as React from 'react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
-import { Tweet } from 'react-tweet';
 
 import { cn } from '@/lib/utils';
 
@@ -32,7 +31,6 @@ export const MediaEmbedElement = withHOC(
       isTweet,
       isVideo,
       isYoutube,
-      readOnly,
       selected,
     } = useMediaState({
       urlParsers: [parseTwitterUrl, parseVideoUrl],
@@ -106,18 +104,7 @@ export const MediaEmbedElement = withHOC(
                 )
               ) : null}
 
-              {isTweet && (
-                <div
-                  className={cn(
-                    '[&_.react-tweet-theme]:my-0',
-                    !readOnly &&
-                      selected &&
-                      '[&_.react-tweet-theme]:ring-2 [&_.react-tweet-theme]:ring-ring [&_.react-tweet-theme]:ring-offset-2'
-                  )}
-                >
-                  <Tweet id={embed!.id} />
-                </div>
-              )}
+
 
               <ResizeHandle
                 className={mediaResizeHandleVariants({ direction: 'right' })}

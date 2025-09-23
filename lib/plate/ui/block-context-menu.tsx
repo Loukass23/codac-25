@@ -78,9 +78,9 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
         onContextMenu={event => {
           const dataset = (event.target as HTMLElement).dataset;
           const disabled =
-            dataset?.slateEditor === 'true' ||
+            dataset?.['slateEditor'] === 'true' ||
             readOnly || // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-            dataset?.plateOpenContextMenu === 'false';
+            dataset?.['plateOpenContextMenu'] === 'false';
 
           if (disabled) return event.preventDefault();
 

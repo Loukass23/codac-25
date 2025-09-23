@@ -6,7 +6,7 @@ import { TElement } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
 import { useMemo } from 'react';
 
-import { PlateEditorStatic } from '@/components/editor/plate-editor-2';
+import { PlateStaticEditor } from '@/components/editor/plate-editor-static';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -120,8 +120,8 @@ export function PlateLMSWrapper({
           <div className='lg:col-span-3'>
             <Card>
               <CardContent>
-                <PlateEditorStatic
-                  plateValue={plateValue || []}
+                <PlateStaticEditor
+                  initialValue={plateValue || []}
                   className='prose prose-lg max-w-none dark:prose-invert'
                 />
               </CardContent>

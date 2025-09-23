@@ -53,7 +53,7 @@ export const ImageElement = withHOC(
                   focused && selected && 'ring-2 ring-ring ring-offset-2',
                   isDragging && 'opacity-50'
                 )}
-                alt={props.attributes.alt as string | undefined}
+                alt={props.attributes?.['alt'] as string | undefined}
               />
               <ResizeHandle
                 className={mediaResizeHandleVariants({
@@ -63,7 +63,7 @@ export const ImageElement = withHOC(
               />
             </Resizable>
 
-            <Caption style={{ width }} align={align}>
+            <Caption style={{ width }} align={align as 'left' | 'center' | 'right'}>
               <CaptionTextarea
                 readOnly={readOnly}
                 onFocus={e => {

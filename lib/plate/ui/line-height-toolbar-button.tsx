@@ -25,7 +25,7 @@ export function LineHeightToolbarButton(props: DropdownMenuProps) {
 
   const value = useSelectionFragmentProp({
     defaultValue: defaultNodeValue,
-    getProp: node => node.lineHeight,
+    getProp: node => node?.['lineHeight'],
   });
 
   const [open, setOpen] = React.useState(false);

@@ -17,7 +17,6 @@ import { AudioElementStatic } from './ui/media-audio-node-static';
 import { FileElementStatic } from './ui/media-file-node-static';
 import { ImageElementStatic } from './ui/media-image-node-static';
 import { VideoElementStatic } from './ui/media-video-node-static';
-import { MentionElementStatic } from './ui/mention-node-static';
 import { ParagraphElementStatic } from './ui/paragraph-node-static';
 import { TableElementStatic } from './ui/table-node-static';
 import { TocElementStatic } from './ui/toc-node-static';
@@ -60,7 +59,6 @@ export const staticComponents = {
 
   // Links and mentions
   a: LinkElementStatic,
-  mention: MentionElementStatic,
 
   // Advanced elements
   callout: CalloutElementStatic,

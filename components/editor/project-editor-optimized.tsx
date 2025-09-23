@@ -2,15 +2,15 @@
 
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { Value } from 'platejs';
+import type { Value } from 'platejs';
 import { Plate, usePlateEditor, useEditorRef, useEditorSelector } from 'platejs/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { logger } from '@/lib/logger';
-import { BasicNodesKit } from '@/lib/plate/plugins/basic-nodes-kit';
-import { MarkdownKit } from '@/lib/plate/plugins/markdown-kit';
 import { Editor, EditorContainer } from '@/lib/plate/ui/editor';
+import { jsonToPlateValue } from '@/lib/plate/utils';
+
 import { EditorKit } from './editor-kit';
 
 interface ProjectEditorOptimizedProps {
@@ -18,7 +18,7 @@ interface ProjectEditorOptimizedProps {
   projectId: string;
   onSave?: (value: Value) => Promise<void>;
   autoSave?: boolean;
-  autoSaveInterval?: number; // in milliseconds
+  autoSaveInterval?: number; // in millisecond=
   showBackButton?: boolean;
   backLink?: string;
 }
@@ -165,16 +165,62 @@ export function ProjectEditorOptimized({
   showBackButton = false,
   backLink,
 }: ProjectEditorOptimizedProps) {
+  // Validate and normalize initial value
+  const normalizedValue = useMemo((): Value => {
+    try {
+      // If initialValue is empty or invalid, provide a default structure
+      if (!initialValue || !Array.isArray(initialValue) || initialValue.length === 0) {
+        return [
+          {
+            type: 'p',
+            children: [{ text: '' }],
+          },
+        ] as Value;
+      }
+
+      // Use the improved jsonToPlateValue function for validation
+      return jsonToPlateValue(initialValue);
+    } catch (error) {
+      logger.error(
+        'Failed to normalize initial value for Plate.js editor',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          action: 'normalize_plate_value',
+          metadata: { projectId, initialValueType: typeof initialValue },
+        }
+      );
+
+      // Return a safe default structure
+      return [
+        {
+          type: 'p',
+          children: [{ text: '' }],
+        },
+      ] as Value;
+    }
+  }, [initialValue, projectId]);
+
   // Create editor with uncontrolled state
   const editor = usePlateEditor({
     plugins: [...EditorKit],
-    value: initialValue,
+    value: normalizedValue,
   });
+
+  // Log editor creation for debugging
+  useEffect(() => {
+    logger.debug('Plate.js editor created', {
+      action: 'create_plate_editor',
+      metadata: {
+        projectId,
+        initialValueLength: initialValue?.length || 0,
+        normalizedValueLength: normalizedValue.length,
+      },
+    });
+  }, [editor, projectId, initialValue?.length, normalizedValue.length]);
 
   return (
     <div className='h-screen flex flex-col'>
-      <Plate editor={editor}
-      >
+      <Plate editor={editor} key={`editor-${projectId}`}>
         <SaveManager
           projectId={projectId}
           onSave={onSave}

@@ -111,7 +111,7 @@ export const TableElement = withHOC(
       props: tableProps,
     } = useTableElement();
 
-    const isSelectingTable = useBlockSelected(props.element.id as string);
+    const isSelectingTable = useBlockSelected(props.element['id'] as string);
 
     const content = (
       <PlateElement
@@ -521,10 +521,10 @@ export function TableCellElement({
   const readOnly = useReadOnly();
   const element = props.element;
 
-  const tableId = useElementSelector(([node]) => node.id as string, [], {
+  const tableId = useElementSelector(([node]) => node['id'] as string, [], {
     key: KEYS.table,
   });
-  const rowId = useElementSelector(([node]) => node.id as string, [], {
+  const rowId = useElementSelector(([node]) => node['id'] as string, [], {
     key: KEYS.tr,
   });
   const isSelectingTable = useBlockSelected(tableId);
