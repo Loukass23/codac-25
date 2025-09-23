@@ -16,11 +16,11 @@ import { SuggestionPlugin } from '@platejs/suggestion/react';
 import { TablePlugin } from '@platejs/table/react';
 import { insertToc } from '@platejs/toc';
 import {
+  KEYS,
+  PathApi,
   type NodeEntry,
   type Path,
   type TElement,
-  KEYS,
-  PathApi,
 } from 'platejs';
 import type { PlateEditor } from 'platejs/react';
 
@@ -90,7 +90,7 @@ export const insertBlock = (editor: PlateEditor, type: string) => {
       });
     }
     if (getBlockType(block[0]) !== type) {
-      editor.getApi(SuggestionPlugin).suggestion.withoutSuggestions(() => {
+      editor.getApi(SuggestionPlugin)?.suggestion?.withoutSuggestions?.(() => {
         editor.tf.removeNodes({ previousEmptyBlock: true });
       });
     }

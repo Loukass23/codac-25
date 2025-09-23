@@ -112,34 +112,32 @@ export function AIMenu() {
   };
 
   // Only use useEditorChat if chat is properly configured
-  if (chat && chat.messages !== undefined) {
-    useEditorChat({
-      chat: chat as any, // Type assertion to bypass the partial type issue
-      onOpenBlockSelection: (blocks: NodeEntry[]) => {
-        show(editor.api.toDOMNode(blocks.at(-1)![0])!);
-      },
-      onOpenChange: open => {
-        if (!open) {
-          setAnchorElement(null);
-          setInput('');
-        }
-      },
-      onOpenCursor: () => {
-        const [ancestor] = editor.api.block({ highest: true })!;
+  const editorChat = useEditorChat({
+    chat: chat as any, // Type assertion to bypass the partial type issue
+    onOpenBlockSelection: (blocks: NodeEntry[]) => {
+      show(editor.api.toDOMNode(blocks.at(-1)![0])!);
+    },
+    onOpenChange: open => {
+      if (!open) {
+        setAnchorElement(null);
+        setInput('');
+      }
+    },
+    onOpenCursor: () => {
+      const [ancestor] = editor.api.block({ highest: true })!;
 
-        if (!editor.api.isAt({ end: true }) && !editor.api.isEmpty(ancestor)) {
-          editor
-            .getApi(BlockSelectionPlugin)
-            .blockSelection.set(ancestor.id as string);
-        }
+      if (!editor.api.isAt({ end: true }) && !editor.api.isEmpty(ancestor)) {
+        editor
+          .getApi(BlockSelectionPlugin)
+          .blockSelection.set(ancestor['id'] as string);
+      }
 
-        show(editor.api.toDOMNode(ancestor)!);
-      },
-      onOpenSelection: () => {
-        show(editor.api.toDOMNode(editor.api.blocks().at(-1)![0])!);
-      },
-    });
-  }
+      show(editor.api.toDOMNode(ancestor)!);
+    },
+    onOpenSelection: () => {
+      show(editor.api.toDOMNode(editor.api.blocks().at(-1)![0])!);
+    },
+  });
 
   useHotkeys('esc', () => {
     api.aiChat.stop();
@@ -155,12 +153,12 @@ export function AIMenu() {
       let anchorNode = editor.api.node({
         at: [],
         reverse: true,
-        match: n => !!n[KEYS.suggestion] && !!n[getSuggestionKeys().draft],
+        match: n => !!n[KEYS.suggestion] && !!n[getSuggestionKeys()['draft']],
       });
 
       anchorNode ??= editor
         .getApi(BlockSelectionPlugin)
-        .blockSelection.getNodes({ selectionFallback: true, sort: true })
+        .blockSelection.getNodes({ sort: true })
         .at(-1);
 
       if (!anchorNode) return;
@@ -207,7 +205,7 @@ export function AIMenu() {
           {isLoading ? (
             <div className='flex grow items-center gap-2 p-2 text-sm text-muted-foreground select-none'>
               <Loader2Icon className='size-4 animate-spin' />
-              {messages.length > 1 ? 'Editing...' : 'Thinking...'}
+              {messages?.length > 1 ? 'Editing...' : 'Thinking...'}
             </div>
           ) : (
             <CommandPrimitive.Input
@@ -224,7 +222,7 @@ export function AIMenu() {
                 }
                 if (isHotkey('enter')(e) && !e.shiftKey && !value) {
                   e.preventDefault();
-                  void api.aiChat.submit(input);
+                  void api.aiChat.submit({ input });
                   setInput('');
                 }
               }}
@@ -282,7 +280,7 @@ const aiChatItems = {
     label: 'Accept',
     value: 'accept',
     onSelect: ({ aiEditor, editor }) => {
-      const { mode, toolName } = editor.getOptions(AIChatPlugin);
+      const { mode, toolName } = editor.getOptions(AIChatPlugin) as { mode: string; toolName: string };
 
       if (mode === 'chat' && toolName === 'generate') {
         return editor
@@ -299,7 +297,8 @@ const aiChatItems = {
     label: 'Comment',
     value: 'comment',
     onSelect: ({ editor, input }) => {
-      editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         mode: 'insert',
         prompt:
           'Please comment on the following content and provide reasonable and meaningful feedback.',
@@ -318,7 +317,8 @@ const aiChatItems = {
 
       const isEmpty = NodeApi.string(ancestorNode[0]).trim().length === 0;
 
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         mode: 'insert',
         prompt: isEmpty
           ? `<Document>
@@ -345,7 +345,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Emojify',
     value: 'emojify',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Emojify',
         toolName: 'edit',
       });
@@ -356,7 +357,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Explain',
     value: 'explain',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: {
           default: 'Explain {editor}',
           selecting: 'Explain',
@@ -370,7 +372,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Fix spelling & grammar',
     value: 'fixSpelling',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Fix spelling and grammar',
         toolName: 'edit',
       });
@@ -381,7 +384,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Generate Markdown sample',
     value: 'generateMarkdownSample',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Generate a markdown sample',
         toolName: 'generate',
       });
@@ -392,7 +396,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Generate MDX sample',
     value: 'generateMdxSample',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Generate a mdx sample',
         toolName: 'generate',
       });
@@ -403,7 +408,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Improve writing',
     value: 'improveWriting',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Improve the writing',
         toolName: 'edit',
       });
@@ -425,7 +431,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Make longer',
     value: 'makeLonger',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Make longer',
         toolName: 'edit',
       });
@@ -436,7 +443,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Make shorter',
     value: 'makeShorter',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Make shorter',
         toolName: 'edit',
       });
@@ -455,7 +463,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Simplify language',
     value: 'simplifyLanguage',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         prompt: 'Simplify the language',
         toolName: 'edit',
       });
@@ -466,7 +475,8 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     label: 'Add a summary',
     value: 'summarize',
     onSelect: ({ editor, input }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit(input, {
+      void editor.getApi(AIChatPlugin).aiChat.submit({
+        input,
         mode: 'insert',
         prompt: {
           default: 'Summarize {editor}',
@@ -641,7 +651,7 @@ export function AILoadingBar() {
     if (type === 'reject') {
       editor
         .getTransforms(commentPlugin)
-        .comment.unsetMark({ transient: true });
+        .comment.unsetMark({ id: 'transient' });
     }
 
     api.aiChat.hide();

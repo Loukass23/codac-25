@@ -21,18 +21,20 @@ interface BreadcrumbConfig {
 
 const ROUTE_CONFIG: BreadcrumbConfig = {
   '/': { label: '', href: '/' },
-  '/lms': { label: 'Learning Management', href: '/lms' },
+  '/lms': { label: 'Learning', href: '/lms' },
   '/community': { label: 'Community', href: '/community' },
   '/community/cohorts': { label: 'Cohorts', href: '/community/cohorts' },
   '/community/students': { label: 'Students', href: '/community/students' },
-  '/community/instructors': {
-    label: 'Instructors',
-    href: '/community/instructors',
+  '/community/mentors': {
+    label: 'Mentors',
+    href: '/community/mentors',
   },
-  '/community/mentors': { label: 'Mentors', href: '/community/mentors' },
   '/projects': { label: 'Projects', href: '/projects' },
+  '/projects/my': { label: 'My Projects', href: '/projects/my' },
+  '/project/[id]': { label: 'Project', href: '/project/[id]' },
+  '/project/[id]/edit': { label: 'Edit Project', href: '/project/[id]/edit' },
   '/career': { label: 'Career Services', href: '/career' },
-  '/career/jobs': { label: 'Job Board', href: '/career/jobs' },
+  '/career/jobs': { label: 'Jobs', href: '/career/jobs' },
   '/mentorship': { label: 'Mentorship', href: '/mentorship' },
   '/profile': { label: 'Profile', href: '/profile' },
   '/profile/settings': { label: 'Settings' },

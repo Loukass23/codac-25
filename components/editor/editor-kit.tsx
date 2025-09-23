@@ -60,6 +60,7 @@ export const EditorKit = [
 
   // Collaboration
   ...CommentKit,
+  // ...SuggestionKit,
 
   // Editing
   ...SlashKit,

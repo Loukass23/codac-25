@@ -1,39 +1,57 @@
 'use client';
 
-import { VariantProps } from 'class-variance-authority';
 import { Value } from 'platejs';
-import { Plate, usePlateEditor } from 'platejs/react';
+import { Plate, usePlateEditor, useEditorRef, useEditorSelector, useEditorState } from 'platejs/react';
 
-import { MarkdownKit } from '@/lib/plate/plugins/markdown-kit';
 import { Editor, EditorContainer } from '@/lib/plate/ui/editor';
 
 import { EditorKit } from './editor-kit';
-import { editorVariants } from './editor-variants';
 
 interface PlateEditorProps {
   initialValue?: Value;
-  className?: string;
 }
 const errorValue = [
   { type: 'p', children: [{ text: 'Error loading content' }] },
 ];
-
-export function PlateEditor({
-  initialValue = errorValue,
-  variant = 'default',
-  className,
-  ...props
-}: PlateEditorProps & VariantProps<typeof editorVariants>) {
+export function PlateEditor({ initialValue = errorValue }: PlateEditorProps) {
+  // const value = normalizeNodeId(initialValue ?? errorValue);
   const editor = usePlateEditor({
-    plugins: [...EditorKit, ...MarkdownKit],
+    plugins: EditorKit,
     value: initialValue,
+
+
   });
 
+  const handleChange = (value: Value) => {
+    const isAstChange = editor.operations.some(
+      op => 'set_selection' !== op.type
+    )
+    if (isAstChange) {
+      // Save the value to Local Storage.
+      const content = JSON.stringify(value)
+      localStorage.setItem('content', content)
+    }
+  };
+
   return (
-    <Plate editor={editor} {...props}>
+    <Plate editor={editor}
+
+    // onChange={handleChange}
+    >
+      {/* <SaveToDatabase /> */}
       <EditorContainer>
         <Editor variant={'none'} />
       </EditorContainer>
     </Plate>
   );
 }
+
+const SaveToDatabase = () => {
+  const editor = useEditorRef();
+  const hasSelection = useEditorSelector((editor) => !!editor.selection, []);
+  const editorState = useEditorState();
+  console.log(editorState);
+  console.log(hasSelection);
+  console.log(editor);
+  // ...
+};

@@ -26,6 +26,10 @@ export default async function ProjectEditPage({ params }: ProjectPageProps) {
   }
 
   const plateValue = jsonToPlateValue(project.summary);
+  return (
+    <div className='min-h-screen bg-background'>
+      <PlateEditor initialValue={plateValue} />
+    </div>
+  );
 
-  return <PlateEditor initialValue={plateValue} />;
 }
