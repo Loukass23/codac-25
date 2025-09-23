@@ -17,7 +17,7 @@ const errorValue = [
 
 export function PlateStaticEditor({
   initialValue = errorValue,
-  variant = 'default',
+  variant = 'fullWidth',
   className,
   ...props
 }: PlateStaticEditorProps & VariantProps<typeof editorVariants>) {

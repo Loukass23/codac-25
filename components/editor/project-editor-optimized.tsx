@@ -3,7 +3,7 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Value } from 'platejs';
-import { Plate, usePlateEditor } from 'platejs/react';
+import { Plate, usePlateEditor, useEditorRef, useEditorSelector } from 'platejs/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -11,6 +11,7 @@ import { logger } from '@/lib/logger';
 import { BasicNodesKit } from '@/lib/plate/plugins/basic-nodes-kit';
 import { MarkdownKit } from '@/lib/plate/plugins/markdown-kit';
 import { Editor, EditorContainer } from '@/lib/plate/ui/editor';
+import { EditorKit } from './editor-kit';
 
 interface ProjectEditorOptimizedProps {
   initialValue?: Value;
@@ -22,37 +23,43 @@ interface ProjectEditorOptimizedProps {
   backLink?: string;
 }
 
-export function ProjectEditorOptimized({
-  initialValue = [],
+// Save functionality component using proper Plate.js hooks
+function SaveManager({
   projectId,
   onSave,
-  autoSave = true,
-  autoSaveInterval = 30000, // 30 seconds
-  showBackButton = false,
+  autoSave,
+  autoSaveInterval,
+  showBackButton,
   backLink,
-}: ProjectEditorOptimizedProps) {
-  // Use refs for uncontrolled state management
-  const editorRef = useRef<any>(null);
-  const lastSavedRef = useRef<Value>(initialValue);
+  children,
+}: {
+  projectId: string;
+  onSave?: (value: Value) => Promise<void>;
+  autoSave: boolean;
+  autoSaveInterval: number;
+  showBackButton: boolean;
+  backLink?: string;
+  children: (props: {
+    isSaving: boolean;
+    lastSaved: Date | null;
+    hasUnsavedChanges: boolean;
+    handleSave: () => Promise<void>;
+    showBackButton: boolean;
+    backLink?: string;
+  }) => React.ReactNode;
+}) {
+  const editor = useEditorRef();
+  const lastSavedRef = useRef<Value>([]);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Only track UI state, not editor content
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Create editor with uncontrolled state
-  const editor = usePlateEditor({
-    plugins: [...BasicNodesKit, ...MarkdownKit],
-    value: initialValue,
-  });
+  // Get current editor value using useEditorSelector for performance
+  const currentValue = useEditorSelector((editor) => editor.children, []);
 
-  // Store editor reference
-  useEffect(() => {
-    editorRef.current = editor;
-  }, [editor]);
-
-  // Optimized save function using refs
+  // Optimized save function
   const saveContent = useCallback(
     async (value: Value) => {
       if (!onSave || isSaving) return;
@@ -89,7 +96,7 @@ export function ProjectEditorOptimized({
     [onSave, isSaving, projectId]
   );
 
-  // Debounced auto-save using refs
+  // Debounced auto-save
   const debouncedSave = useCallback(
     (value: Value) => {
       if (!autoSave || !onSave) return;
@@ -109,23 +116,22 @@ export function ProjectEditorOptimized({
     [autoSave, onSave, autoSaveInterval, saveContent]
   );
 
-  // Track changes without re-rendering
-  const handleChange = useCallback(
-    ({ value }: { value: Value }) => {
+  // Track changes and trigger auto-save
+  useEffect(() => {
+    if (currentValue && currentValue !== lastSavedRef.current) {
       setHasUnsavedChanges(true);
-      debouncedSave(value);
-    },
-    [debouncedSave]
-  );
+      debouncedSave(currentValue);
+    }
+  }, [currentValue, debouncedSave]);
 
   // Manual save function
   const handleSave = useCallback(async () => {
-    if (!editorRef.current) return;
+    if (!editor) return;
 
-    const currentValue = editorRef.current.children;
+    const currentValue = editor.children;
     await saveContent(currentValue);
     toast.success('Project saved successfully!');
-  }, [saveContent]);
+  }, [editor, saveContent]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -137,59 +143,102 @@ export function ProjectEditorOptimized({
   }, []);
 
   return (
+    <>
+      {children({
+        isSaving,
+        lastSaved,
+        hasUnsavedChanges,
+        handleSave,
+        showBackButton,
+        backLink,
+      })}
+    </>
+  );
+}
+
+export function ProjectEditorOptimized({
+  initialValue = [],
+  projectId,
+  onSave,
+  autoSave = true,
+  autoSaveInterval = 30000, // 30 seconds
+  showBackButton = false,
+  backLink,
+}: ProjectEditorOptimizedProps) {
+  // Create editor with uncontrolled state
+  const editor = usePlateEditor({
+    plugins: [...EditorKit],
+    value: initialValue,
+  });
+
+  return (
     <div className='h-screen flex flex-col'>
-      {/* Save status indicator */}
-      <div className='flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-        <div className='flex items-center gap-4'>
-          {showBackButton && backLink && (
-            <Link
-              href={backLink}
-              className='flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
-            >
-              <ArrowLeft className='w-4 h-4' />
-              Back to View
-            </Link>
+      <Plate editor={editor}
+      >
+        <SaveManager
+          projectId={projectId}
+          onSave={onSave}
+          autoSave={autoSave}
+          autoSaveInterval={autoSaveInterval}
+          showBackButton={showBackButton}
+          backLink={backLink}
+        >
+          {({ isSaving, lastSaved, hasUnsavedChanges, handleSave, showBackButton, backLink }) => (
+            <>
+              {/* Save status indicator */}
+              <div className='flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+                <div className='flex items-center gap-4'>
+                  {showBackButton && backLink && (
+                    <Link
+                      href={backLink}
+                      className='flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+                    >
+                      <ArrowLeft className='w-4 h-4' />
+                      Back to View
+                    </Link>
+                  )}
+
+                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                    {isSaving && (
+                      <span className='flex items-center gap-1'>
+                        <div className='h-2 w-2 animate-pulse rounded-full bg-blue-500' />
+                        Saving...
+                      </span>
+                    )}
+                    {!isSaving && lastSaved && (
+                      <span>Last saved: {lastSaved.toLocaleTimeString()}</span>
+                    )}
+                    {hasUnsavedChanges && !isSaving && (
+                      <span className='text-amber-600'>Unsaved changes</span>
+                    )}
+                  </div>
+                </div>
+
+                {onSave && (
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving || !hasUnsavedChanges}
+                    className='rounded-md bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50'
+                  >
+                    {isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                )}
+              </div>
+
+              {/* Editor - takes full remaining space */}
+              <div className='flex-1'>
+                <EditorContainer className='h-full'>
+                  <Editor
+                    variant='fullWidth'
+                    placeholder='Describe your project...'
+                    className='h-full'
+                  />
+                </EditorContainer>
+              </div>
+            </>
           )}
-
-          <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-            {isSaving && (
-              <span className='flex items-center gap-1'>
-                <div className='h-2 w-2 animate-pulse rounded-full bg-blue-500' />
-                Saving...
-              </span>
-            )}
-            {!isSaving && lastSaved && (
-              <span>Last saved: {lastSaved.toLocaleTimeString()}</span>
-            )}
-            {hasUnsavedChanges && !isSaving && (
-              <span className='text-amber-600'>Unsaved changes</span>
-            )}
-          </div>
-        </div>
-
-        {onSave && (
-          <button
-            onClick={handleSave}
-            disabled={isSaving || !hasUnsavedChanges}
-            className='rounded-md bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50'
-          >
-            {isSaving ? 'Saving...' : 'Save'}
-          </button>
-        )}
-      </div>
-
-      {/* Editor - takes full remaining space */}
-      <div className='flex-1 overflow-hidden'>
-        <Plate editor={editor} onChange={handleChange}>
-          <EditorContainer className='h-full'>
-            <Editor
-              variant='demo'
-              placeholder='Describe your project...'
-              className='h-full'
-            />
-          </EditorContainer>
-        </Plate>
-      </div>
+        </SaveManager>
+      </Plate>
     </div>
   );
 }

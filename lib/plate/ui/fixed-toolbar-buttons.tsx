@@ -11,13 +11,11 @@ import {
   PaintBucketIcon,
   StrikethroughIcon,
   UnderlineIcon,
-  WandSparklesIcon,
 } from 'lucide-react';
 import { KEYS } from 'platejs';
 import { useEditorReadOnly } from 'platejs/react';
 import * as React from 'react';
 
-import { AIToolbarButton } from './ai-toolbar-button';
 import { AlignToolbarButton } from './align-toolbar-button';
 import { CommentToolbarButton } from './comment-toolbar-button';
 import { EmojiToolbarButton } from './emoji-toolbar-button';
@@ -39,7 +37,6 @@ import {
   TodoListToolbarButton,
 } from './list-toolbar-button';
 import { MarkToolbarButton } from './mark-toolbar-button';
-import { MediaToolbarButton } from './media-toolbar-button';
 import { ModeToolbarButton } from './mode-toolbar-button';
 import { MoreToolbarButton } from './more-toolbar-button';
 import { TableToolbarButton } from './table-toolbar-button';
@@ -51,34 +48,16 @@ export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
 
   return (
-    <div className='flex w-full'>
+    <>
       {!readOnly && (
         <>
+          {/* Core editing tools - always visible */}
           <ToolbarGroup>
             <UndoToolbarButton />
             <RedoToolbarButton />
           </ToolbarGroup>
 
-          <ToolbarGroup>
-            <AIToolbarButton tooltip='AI commands'>
-              <WandSparklesIcon />
-            </AIToolbarButton>
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <ExportToolbarButton>
-              <ArrowUpToLineIcon />
-            </ExportToolbarButton>
-
-            <ImportToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <InsertToolbarButton />
-            <TurnIntoToolbarButton />
-            <FontSizeToolbarButton />
-          </ToolbarGroup>
-
+          {/* Essential formatting - always visible */}
           <ToolbarGroup>
             <MarkToolbarButton nodeType={KEYS.bold} tooltip='Bold (⌘+B)'>
               <BoldIcon />
@@ -94,7 +73,10 @@ export function FixedToolbarButtons() {
             >
               <UnderlineIcon />
             </MarkToolbarButton>
+          </ToolbarGroup>
 
+          {/* Advanced formatting - visible on small screens and up */}
+          <ToolbarGroup>
             <MarkToolbarButton
               nodeType={KEYS.strikethrough}
               tooltip='Strikethrough (⌘+⇧+M)'
@@ -105,7 +87,10 @@ export function FixedToolbarButtons() {
             <MarkToolbarButton nodeType={KEYS.code} tooltip='Code (⌘+E)'>
               <Code2Icon />
             </MarkToolbarButton>
+          </ToolbarGroup>
 
+          {/* Colors - visible on small screens and up */}
+          <ToolbarGroup>
             <FontColorToolbarButton nodeType={KEYS.color} tooltip='Text color'>
               <BaselineIcon />
             </FontColorToolbarButton>
@@ -118,42 +103,68 @@ export function FixedToolbarButtons() {
             </FontColorToolbarButton>
           </ToolbarGroup>
 
-          <ToolbarGroup>
-            <AlignToolbarButton />
-
+          {/* Lists - visible on medium screens and up */}
+          <ToolbarGroup className='hidden sm:flex'>
             <NumberedListToolbarButton />
             <BulletedListToolbarButton />
             <TodoListToolbarButton />
-            <ToggleToolbarButton />
           </ToolbarGroup>
 
-          <ToolbarGroup>
-            <LinkToolbarButton />
-            <TableToolbarButton />
-            <EmojiToolbarButton />
+          {/* Alignment - visible on medium screens and up */}
+          <ToolbarGroup className='hidden sm:flex'>
+            <AlignToolbarButton />
           </ToolbarGroup>
 
-          <ToolbarGroup>
-            <MediaToolbarButton nodeType={KEYS.img} />
-            <MediaToolbarButton nodeType={KEYS.video} />
-            <MediaToolbarButton nodeType={KEYS.audio} />
-            <MediaToolbarButton nodeType={KEYS.file} />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <LineHeightToolbarButton />
+          {/* Indentation - visible on medium screens and up */}
+          <ToolbarGroup className='hidden sm:flex'>
             <OutdentToolbarButton />
             <IndentToolbarButton />
           </ToolbarGroup>
 
+          {/* Toggle - visible on medium screens and up */}
+          <ToolbarGroup className='hidden sm:flex'>
+            <ToggleToolbarButton />
+          </ToolbarGroup>
+
+          {/* Links and tables - visible on large screens and up */}
+          <ToolbarGroup className='hidden md:flex'>
+            <LinkToolbarButton />
+            <TableToolbarButton />
+          </ToolbarGroup>
+
+          {/* Insert and turn into - visible on large screens and up */}
+          <ToolbarGroup className='hidden md:flex'>
+            <InsertToolbarButton />
+            <TurnIntoToolbarButton />
+            <FontSizeToolbarButton />
+          </ToolbarGroup>
+
+          {/* Export/Import - visible on large screens and up */}
+          <ToolbarGroup className='hidden md:flex'>
+            <ExportToolbarButton>
+              <ArrowUpToLineIcon />
+            </ExportToolbarButton>
+            <ImportToolbarButton />
+          </ToolbarGroup>
+
+          {/* Line height - visible on large screens and up */}
+          <ToolbarGroup className='hidden md:flex'>
+            <LineHeightToolbarButton />
+          </ToolbarGroup>
+
+          {/* Emoji - visible on large screens and up */}
+          <ToolbarGroup className='hidden md:flex'>
+            <EmojiToolbarButton />
+          </ToolbarGroup>
+
+          {/* More button - always visible to access hidden tools */}
           <ToolbarGroup>
             <MoreToolbarButton />
           </ToolbarGroup>
         </>
       )}
 
-      <div className='grow' />
-
+      {/* Right side tools - always visible */}
       <ToolbarGroup>
         <MarkToolbarButton nodeType={KEYS.highlight} tooltip='Highlight'>
           <HighlighterIcon />
@@ -164,6 +175,6 @@ export function FixedToolbarButtons() {
       <ToolbarGroup>
         <ModeToolbarButton />
       </ToolbarGroup>
-    </div>
+    </>
   );
 }
