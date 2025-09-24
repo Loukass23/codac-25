@@ -12,6 +12,7 @@ const prisma = new PrismaClient();
 interface AttackOnTitanUser {
     name: string;
     email: string;
+    username: string;
     role: UserRole;
     status: UserStatus;
     cohort: string;
@@ -98,6 +99,7 @@ export async function seedAttackOnTitan() {
                         role: userData.role as UserRole,
                         status: userData.status as UserStatus,
                         cohortId: cohort?.id,
+                        username: userData.username,
                         bio: userData.bio,
                         image: userImageBase64,
                         githubUrl: userData.githubUrl,
@@ -115,6 +117,7 @@ export async function seedAttackOnTitan() {
         // Create admin user
         await prisma.user.create({
             data: {
+                username: 'admin',
                 email: 'admin@codac.academy',
                 name: 'Admin User',
                 password: defaultPassword,

@@ -123,12 +123,23 @@ export async function seedProjects() {
           }
         }
 
+        // Create document for project summary
+        const document = await prisma.document.create({
+          data: {
+            content: projectData.summary,
+            title: `${projectData.title} - Project Summary`,
+            description: projectData.shortDesc,
+            documentType: 'project_summary',
+            authorId: user.id,
+            isPublished: projectData.isPublic,
+          },
+        });
+
         return prisma.project.create({
           data: {
             title: projectData.title,
             description: projectData.description,
             shortDesc: projectData.shortDesc,
-            summary: projectData.summary,
             techStack: projectData.techStack,
             features: projectData.features,
             challenges: projectData.challenges,
@@ -144,6 +155,7 @@ export async function seedProjects() {
             likes: projectData.likes,
             views: projectData.views,
             projectProfileId: projectProfile.id,
+            documentId: document.id,
           },
         });
       })
@@ -182,10 +194,21 @@ export async function cleanProjects() {
       )
     );
 
+    // First delete projects (this will cascade to documents)
     await prisma.project.deleteMany({
       where: {
         title: {
           in: projectsData.map(p => p.title),
+        },
+      },
+    });
+
+    // Also clean up any orphaned project summary documents
+    await prisma.document.deleteMany({
+      where: {
+        documentType: 'project_summary',
+        title: {
+          in: projectsData.map(p => `${p.title} - Project Summary`),
         },
       },
     });

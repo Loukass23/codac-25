@@ -1,7 +1,7 @@
 'use client';
 
-import { Search, Grid, List , Filter } from 'lucide-react';
-import { useState } from 'react';
+import { Search, Grid, List, Filter } from 'lucide-react';
+import { use, useState } from 'react';
 
 import { Grid as LayoutGrid, Section } from '@/components/layout';
 import { ProjectCard } from '@/components/projects/project-card';
@@ -15,22 +15,25 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import { ProjectDTO } from '@/data/projects/get-projects';
 import { useUrlFilters, type FilterState } from '@/lib/utils/url-utils';
-import {
-  PROJECT_STATUSES,
-  SKILL_CATEGORIES,
-  type ProjectShowcaseWithStats,
-} from '@/types/portfolio';
 
-interface ProjectsClientProps {
-  projects: ProjectShowcaseWithStats[];
+import { ProjectStatus } from '@prisma/client';
+import { SkillLevel } from '@prisma/client';
+
+interface ProjectsListProps {
+  _projectsPromise: Promise<ProjectDTO[]>;
   initialFilters: FilterState;
 }
 
-export function ProjectsList({ projects }: ProjectsClientProps) {
+export function ProjectsList({
+  _projectsPromise,
+  initialFilters,
+}: ProjectsListProps) {
   const { updateFilters, clearAllFilters, getCurrentFilters } = useUrlFilters();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  const projects = use(_projectsPromise);
   // Get current filter state from URL
   const currentFilters = getCurrentFilters();
   const {
@@ -124,28 +127,26 @@ export function ProjectsList({ projects }: ProjectsClientProps) {
                   <div className='space-y-2'>
                     <h5 className='text-sm font-medium'>Status</h5>
                     <div className='grid grid-cols-2 gap-2'>
-                      {PROJECT_STATUSES.map(status => (
+                      {Object.values(ProjectStatus).map(status => (
                         <div
-                          key={status.value}
+                          key={status}
                           className='flex items-center space-x-2'
                         >
                           <Checkbox
-                            id={`status-${status.value}`}
-                            checked={selectedStatus.includes(status.value)}
+                            id={`status-${status}`}
+                            checked={selectedStatus.includes(status)}
                             onCheckedChange={checked => {
                               const newStatus = checked
-                                ? [...selectedStatus, status.value]
-                                : selectedStatus.filter(
-                                    s => s !== status.value
-                                  );
+                                ? [...selectedStatus, status]
+                                : selectedStatus.filter(s => s !== status);
                               updateFilters({ status: newStatus });
                             }}
                           />
                           <label
-                            htmlFor={`status-${status.value}`}
+                            htmlFor={`status-${status}`}
                             className='text-sm'
                           >
-                            {status.label}
+                            {status}
                           </label>
                         </div>
                       ))}
@@ -158,26 +159,26 @@ export function ProjectsList({ projects }: ProjectsClientProps) {
                   <div className='space-y-2'>
                     <h5 className='text-sm font-medium'>Technology</h5>
                     <div className='grid grid-cols-2 gap-2 max-h-48 overflow-y-auto'>
-                      {SKILL_CATEGORIES.map(category => (
+                      {Object.values(SkillLevel).map(skillLevel => (
                         <div
-                          key={category}
+                          key={skillLevel}
                           className='flex items-center space-x-2'
                         >
                           <Checkbox
-                            id={`tech-${category}`}
-                            checked={selectedTech.includes(category)}
+                            id={`tech-${skillLevel}`}
+                            checked={selectedTech.includes(skillLevel)}
                             onCheckedChange={checked => {
                               const newTech = checked
-                                ? [...selectedTech, category]
-                                : selectedTech.filter(t => t !== category);
+                                ? [...selectedTech, skillLevel]
+                                : selectedTech.filter(t => t !== skillLevel);
                               updateFilters({ tech: newTech });
                             }}
                           />
                           <label
-                            htmlFor={`tech-${category}`}
+                            htmlFor={`tech-${skillLevel}`}
                             className='text-sm'
                           >
-                            {category}
+                            {skillLevel}
                           </label>
                         </div>
                       ))}
@@ -239,8 +240,8 @@ export function ProjectsList({ projects }: ProjectsClientProps) {
             ))}
             {selectedStatus.map(status => (
               <Badge key={status} variant='secondary' className='gap-1'>
-                {PROJECT_STATUSES.find(s => s.value === status)?.label ||
-                  status}
+                {/* {Object.values(ProjectStatus).find(s => s === status)?.label ||
+                  status} */}
                 <button
                   onClick={() =>
                     updateFilters({

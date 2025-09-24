@@ -26,13 +26,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  PROJECT_STATUSES,
-  type ProjectShowcaseWithStats,
-} from '@/types/portfolio';
+
+import { ProjectDTO } from '@/data/projects/get-projects';
 
 interface ProjectCardProps {
-  project: ProjectShowcaseWithStats;
+  project: ProjectDTO;
   showEditActions?: boolean;
   variant?: 'card' | 'list';
 }
@@ -42,7 +40,6 @@ export function ProjectCard({
   showEditActions = false,
   variant = 'card',
 }: ProjectCardProps) {
-  const statusConfig = PROJECT_STATUSES.find(s => s.value === project.status);
   const primaryImage =
     project.images && Array.isArray(project.images) && project.images.length > 0
       ? String(project.images[0])
@@ -78,7 +75,7 @@ export function ProjectCard({
                   </Link>
                 </h3>
                 <p className='text-sm text-muted-foreground line-clamp-2 mb-3'>
-                  {project.shortDesc || project.description}
+                  {project.shortDesc ?? project.description}
                 </p>
               </div>
               {showEditActions && (
@@ -101,23 +98,6 @@ export function ProjectCard({
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              )}
-            </div>
-
-            {/* Status and Featured Badges */}
-            <div className='flex items-center gap-2 mb-3'>
-              <Badge
-                variant={
-                  statusConfig?.color === 'green' ? 'default' : 'secondary'
-                }
-                className='text-xs'
-              >
-                {statusConfig?.label || project.status}
-              </Badge>
-              {project.isFeatured && (
-                <Badge variant='outline' className='text-xs'>
-                  Featured
-                </Badge>
               )}
             </div>
 
@@ -158,15 +138,6 @@ export function ProjectCard({
               <div className='flex items-center gap-4 text-xs text-muted-foreground'>
                 {/* Engagement Stats */}
                 <div className='flex items-center gap-3'>
-                  <ProjectLikeButton
-                    projectId={project.id}
-                    initialIsLiked={project.isLiked || false}
-                    initialLikesCount={project.likes}
-                    size='sm'
-                    variant='button'
-                    showCount={true}
-                    className='text-xs h-auto p-1'
-                  />
                   <div className='flex items-center gap-1'>
                     <MessageSquare className='h-3 w-3' />
                     <span>{project._count.comments}</span>
@@ -268,21 +239,6 @@ export function ProjectCard({
             </DropdownMenu>
           )}
         </div>
-
-        {/* Status Badge */}
-        <div className='flex items-center gap-2'>
-          <Badge
-            variant={statusConfig?.color === 'green' ? 'default' : 'secondary'}
-            className='text-xs'
-          >
-            {statusConfig?.label || project.status}
-          </Badge>
-          {project.isFeatured && (
-            <Badge variant='outline' className='text-xs'>
-              Featured
-            </Badge>
-          )}
-        </div>
       </CardHeader>
 
       <CardContent className='pb-3'>
@@ -313,7 +269,7 @@ export function ProjectCard({
           {/* Author Info */}
           <div className='flex items-center gap-2 text-xs text-muted-foreground'>
             <Avatar className='h-5 w-5'>
-              <AvatarImage src={project.projectProfile.user.avatar || ''} />
+              <AvatarImage src={project?.projectProfile?.user.avatar || ''} />
               <AvatarFallback className='text-xs'>
                 {project.projectProfile.user.name?.charAt(0) || 'U'}
               </AvatarFallback>
@@ -327,15 +283,6 @@ export function ProjectCard({
         <div className='flex items-center justify-between w-full text-xs text-muted-foreground'>
           {/* Engagement Stats */}
           <div className='flex items-center gap-4'>
-            <ProjectLikeButton
-              projectId={project.id}
-              initialIsLiked={project.isLiked || false}
-              initialLikesCount={project.likes}
-              size='sm'
-              variant='button'
-              showCount={true}
-              className='text-xs h-auto p-1'
-            />
             <div className='flex items-center gap-1'>
               <MessageSquare className='h-3 w-3' />
               <span>{project._count.comments}</span>

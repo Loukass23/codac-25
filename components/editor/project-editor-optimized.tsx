@@ -3,7 +3,12 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { Value } from 'platejs';
-import { Plate, usePlateEditor, useEditorRef, useEditorSelector } from 'platejs/react';
+import {
+  Plate,
+  usePlateEditor,
+  useEditorRef,
+  useEditorSelector,
+} from 'platejs/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -57,7 +62,7 @@ function SaveManager({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Get current editor value using useEditorSelector for performance
-  const currentValue = useEditorSelector((editor) => editor.children, []);
+  const currentValue = useEditorSelector(editor => editor.children, []);
 
   // Optimized save function
   const saveContent = useCallback(
@@ -169,7 +174,11 @@ export function ProjectEditorOptimized({
   const normalizedValue = useMemo((): Value => {
     try {
       // If initialValue is empty or invalid, provide a default structure
-      if (!initialValue || !Array.isArray(initialValue) || initialValue.length === 0) {
+      if (
+        !initialValue ||
+        !Array.isArray(initialValue) ||
+        initialValue.length === 0
+      ) {
         return [
           {
             type: 'p',
@@ -229,7 +238,14 @@ export function ProjectEditorOptimized({
           showBackButton={showBackButton}
           backLink={backLink}
         >
-          {({ isSaving, lastSaved, hasUnsavedChanges, handleSave, showBackButton, backLink }) => (
+          {({
+            isSaving,
+            lastSaved,
+            hasUnsavedChanges,
+            handleSave,
+            showBackButton,
+            backLink,
+          }) => (
             <>
               {/* Save status indicator */}
               <div className='flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>

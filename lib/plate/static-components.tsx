@@ -1,26 +1,26 @@
 import * as React from 'react';
 
-import { BlockListStatic } from './ui/block-list-static';
-import { BlockquoteElementStatic } from './ui/blockquote-node-static';
-import { CalloutElementStatic } from './ui/callout-node-static';
-import { CodeBlockElementStatic } from './ui/code-block-node-static';
+import { BlockListStatic } from '@/components/ui/block-list-static';
+import { BlockquoteElementStatic } from '@/components/ui/blockquote-node-static';
+import { CalloutElementStatic } from '@/components/ui/callout-node-static';
+import { CodeBlockElementStatic } from '@/components/ui/code-block-node-static';
 import {
   ColumnElementStatic,
   ColumnGroupElementStatic,
-} from './ui/column-node-static';
-import { DateElementStatic } from './ui/date-node-static';
-import { EquationElementStatic } from './ui/equation-node-static';
-import { HeadingElementStatic } from './ui/heading-node-static';
-import { HrElementStatic } from './ui/hr-node-static';
-import { LinkElementStatic } from './ui/link-node-static';
-import { AudioElementStatic } from './ui/media-audio-node-static';
-import { FileElementStatic } from './ui/media-file-node-static';
-import { ImageElementStatic } from './ui/media-image-node-static';
-import { VideoElementStatic } from './ui/media-video-node-static';
-import { ParagraphElementStatic } from './ui/paragraph-node-static';
-import { TableElementStatic } from './ui/table-node-static';
-import { TocElementStatic } from './ui/toc-node-static';
-import { ToggleElementStatic } from './ui/toggle-node-static';
+} from '@/components/ui/column-node-static';
+import { DateElementStatic } from '@/components/ui/date-node-static';
+import { EquationElementStatic } from '@/components/ui/equation-node-static';
+import { HeadingElementStatic } from '@/components/ui/heading-node-static';
+import { HrElementStatic } from '@/components/ui/hr-node-static';
+import { LinkElementStatic } from '@/components/ui/link-node-static';
+import { AudioElementStatic } from '@/components/ui/media-audio-node-static';
+import { FileElementStatic } from '@/components/ui/media-file-node-static';
+import { ImageElementStatic } from '@/components/ui/media-image-node-static';
+import { VideoElementStatic } from '@/components/ui/media-video-node-static';
+import { ParagraphElementStatic } from '@/components/ui/paragraph-node-static';
+import { TableElementStatic } from '@/components/ui/table-node-static';
+import { TocElementStatic } from '@/components/ui/toc-node-static';
+import { ToggleElementStatic } from '@/components/ui/toggle-node-static';
 
 // Map plugin keys to their static rendering components
 export const staticComponents = {

@@ -1,14 +1,9 @@
-import { VariantProps } from 'class-variance-authority';
 import { createStaticEditor, PlateStatic, Value } from 'platejs';
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit';
-import { editorVariants } from '@/components/editor/editor-variants';
 import { staticComponents } from '@/lib/plate/static-components';
-import { cn } from '@/lib/utils';
 interface PlateStaticEditorProps {
   initialValue?: Value;
-  className?: string;
-  variant?: string;
 }
 
 const errorValue = [
@@ -17,10 +12,8 @@ const errorValue = [
 
 export function PlateStaticEditor({
   initialValue = errorValue,
-  variant = 'fullWidth',
-  className,
   ...props
-}: PlateStaticEditorProps & VariantProps<typeof editorVariants>) {
+}: PlateStaticEditorProps) {
   // Use createStaticEditor for proper static rendering
   const editor = createStaticEditor({
     plugins: [...BaseEditorKit],
@@ -30,8 +23,8 @@ export function PlateStaticEditor({
 
   return (
     <PlateStatic
+      className='prose prose-lg max-w-none dark:prose-invert'
       editor={editor}
-      className={cn(editorVariants({ variant }), className)}
       {...props}
     />
   );

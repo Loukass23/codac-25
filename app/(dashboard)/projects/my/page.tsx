@@ -1,16 +1,13 @@
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
-import { Grid, PageContainer, PageHeader, Section } from '@/components/layout';
-import { ProjectCard } from '@/components/projects/project-card';
+import { PageContainer, PageHeader, Section } from '@/components/layout';
+import { ProjectsList } from '@/components/projects/projects-list';
 import { Button } from '@/components/ui/button';
-import { getUserProjects } from '@/data/projects/get-user-projects';
-import { requireServerAuth } from '@/lib/auth/auth-server';
+import { getUserProjects } from '@/data/projects/get-projects';
 
 export default async function MyProjectsPage() {
-  const user = await requireServerAuth();
-
-  const projects = await getUserProjects(user.id);
+  const projects = getUserProjects();
 
   return (
     <PageContainer>
@@ -29,7 +26,17 @@ export default async function MyProjectsPage() {
       </div>
 
       <Section>
-        {projects.length === 0 ? (
+        <ProjectsList
+          _projectsPromise={projects}
+          initialFilters={{
+            search: '',
+            tech: [],
+            status: [],
+            featured: false,
+            view: 'grid',
+          }}
+        />
+        {/* {projects.length === 0 ? (
           <div className='text-center py-12'>
             <div className='text-lg mb-4'>No projects yet</div>
             <p className='text-muted-foreground mb-6'>
@@ -52,7 +59,7 @@ export default async function MyProjectsPage() {
               />
             ))}
           </Grid>
-        )}
+        )} */}
       </Section>
     </PageContainer>
   );

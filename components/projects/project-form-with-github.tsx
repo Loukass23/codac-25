@@ -50,7 +50,7 @@ import {
   type ProjectCreationMode,
 } from '@/types/portfolio';
 
-import { GitHubImportTab } from '../editor/github-import-tab';
+import { GitHubImportTab } from './github-import-tab';
 import { ProjectSummaryEditor } from '../editor/project-summary-editor';
 
 // Validation schema

@@ -1,8 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
-
-import { PlateLMSWrapper } from '@/components/editor/plate-lms-wrapper';
+import { PlateLMSWrapper } from '@/components/lms/plate-lms-wrapper';
 import { LMSSkeleton } from '@/components/lms/lms-skeleton';
 import { auth } from '@/lib/auth/auth';
 import { parseMarkdownFile } from '@/lib/plate/markdown-parser';

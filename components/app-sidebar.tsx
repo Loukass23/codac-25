@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Users,
@@ -8,11 +8,12 @@ import {
   GraduationCap,
   MessageCircle,
   User2,
-} from "lucide-react";
-import Link from "next/link";
-import type { User } from "next-auth";
-import { useSession } from "next-auth/react";
-import * as React from "react";
+  Book,
+} from 'lucide-react';
+import Link from 'next/link';
+import type { User } from 'next-auth';
+import { useSession } from 'next-auth/react';
+import * as React from 'react';
 
 import {
   Sidebar,
@@ -22,117 +23,121 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { useTotalUnreadCount } from "@/hooks/use-total-unread-count";
+} from '@/components/ui/sidebar';
+import { useTotalUnreadCount } from '@/hooks/use-total-unread-count';
 
-import CodacLogo from "./codac-logo";
-import { NavSecondary } from "./nav-secondary";
-import { NavTop, NavigationGroup } from "./nav-top";
-import { NavUser } from "./nav-user";
+import CodacLogo from './codac-logo';
+import { NavSecondary } from './nav-secondary';
+import { NavTop, NavigationGroup } from './nav-top';
+import { NavUser } from './nav-user';
 
 const buildNavigationData = (role?: string): NavigationGroup[] => {
   // Build career items based on role
   const careerItems = [
     {
-      title: "Jobs",
-      url: "/career/jobs",
+      title: 'Jobs',
+      url: '/career/jobs',
     },
   ];
 
   // Add career admin items for authorized roles
-  if (role === "ADMIN" || role === "MENTOR") {
+  if (role === 'ADMIN' || role === 'MENTOR') {
     careerItems.push({
-      title: "Post Job",
-      url: "/career/jobs/post",
+      title: 'Post Job',
+      url: '/career/jobs/post',
     });
   }
 
   // Build learning items based on role
   const learningItems = [
-
     {
-      title: "LMS",
-      url: "/lms/welcome",
+      title: 'LMS',
+      url: '/lms/welcome',
     },
   ];
 
-  if (role === "ADMIN") {
+  if (role === 'ADMIN') {
     learningItems.push({
-      title: "Attendance",
-      url: "/attendance",
+      title: 'Attendance',
+      url: '/attendance',
       // icon: ClipboardCheck, // Removed to fix type error: 'icon' does not exist in type
     });
   }
 
   return [
     {
-      title: "Overview",
+      title: 'Overview',
       icon: LayoutDashboard,
       items: [
         {
-          title: "Dashboard",
-          url: "/home",
-        }, {
-          title: "Showcase",
-          url: "/showcase",
+          title: 'Dashboard',
+          url: '/home',
+        },
+        {
+          title: 'Showcase',
+          url: '/showcase',
         },
       ],
     },
     {
-      title: "Projects",
+      title: 'Projects',
       icon: Code2,
       items: [
         {
-          title: "My Projects",
-          url: "/projects/my",
+          title: 'My Projects',
+          url: '/projects/my',
         },
         {
-          title: "Browse Projects",
-          url: "/projects",
+          title: 'Browse Projects',
+          url: '/projects',
         },
-
       ],
     },
     {
-      title: "Community",
+      title: 'Community',
       icon: Users,
       items: [
         {
-          title: "Community",
-          url: "/community",
+          title: 'Community',
+          url: '/community',
         },
         {
-          title: "Cohorts",
-          url: "/community/cohorts",
+          title: 'Cohorts',
+          url: '/community/cohorts',
         },
       ],
     },
     {
-      title: "Career",
+      title: 'Career',
       icon: Briefcase,
       items: careerItems,
     },
-    ...(learningItems.length > 0 ? [{
-      title: "Learning",
-      icon: GraduationCap,
-      items: learningItems,
-    }] : []),
-
-
-
-
+    ...(learningItems.length > 0
+      ? [
+          {
+            title: 'Learning',
+            icon: GraduationCap,
+            items: learningItems,
+          },
+        ]
+      : []),
   ];
 };
 
 const navSecondaryItems = [
   {
-    title: "Chat",
-    url: "/chat",
+    title: 'Docs',
+    url: '/docs',
+    icon: Book,
+  },
+  {
+    title: 'Chat',
+    url: '/chat',
     icon: MessageCircle,
   },
   {
-    title: "Profile",
-    url: "/profile",
+    title: 'Profile',
+    url: '/profile',
     icon: User2,
   },
 ];
@@ -153,21 +158,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [session, totalUnreadCount]);
 
   return (
-    <Sidebar variant="sidebar" collapsible="icon" {...props}>
+    <Sidebar variant='sidebar' collapsible='icon' {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1 group-data-[collapsible=icon]:!justify-center"
+              className='data-[slot=sidebar-menu-button]:!p-1 group-data-[collapsible=icon]:!justify-center'
             >
-              <Link href="/" className="flex items-center justify-center group-data-[collapsible=icon]:w-full">
+              <Link
+                href='/'
+                className='flex items-center justify-center group-data-[collapsible=icon]:w-full'
+              >
                 <CodacLogo
-                  size="sm"
-                  className="group-data-[collapsible=icon]:scale-70"
+                  size='sm'
+                  className='group-data-[collapsible=icon]:scale-70'
                 />
-                <div className="flex-1 group-data-[collapsible=icon]:group-data-[state=collapsed]:hidden">
-                  <span className="animate-in fade-in duration-300 font-codac-brand text-4xl uppercase tracking-wider text-secondary-foreground/80">
+                <div className='flex-1 group-data-[collapsible=icon]:group-data-[state=collapsed]:hidden'>
+                  <span className='animate-in fade-in duration-300 font-codac-brand text-4xl uppercase tracking-wider text-secondary-foreground/80'>
                     codac
                   </span>
                 </div>
@@ -176,11 +184,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="px-0 flex flex-col">
-        <div className="flex-1">
+      <SidebarContent className='px-0 flex flex-col'>
+        <div className='flex-1'>
           <NavTop groups={navGroups} />
         </div>
-        <div className="mt-auto">
+        <div className='mt-auto'>
           <NavSecondary items={navSecondaryItems} />
         </div>
       </SidebarContent>

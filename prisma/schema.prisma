@@ -1,3 +1,7 @@
+// =============================================================================
+// PRISMA SCHEMA - CODAC LEARNING MANAGEMENT SYSTEM
+// =============================================================================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,7 +12,135 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// NextAuth Models
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum UserRole {
+  STUDENT
+  ALUMNI
+  MENTOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+}
+
+enum PostType {
+  DISCUSSION
+  QUESTION
+  SHOWCASE
+  JOB_POSTING
+  EVENT
+  ANNOUNCEMENT
+}
+
+enum MentorshipStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  DECLINED
+}
+
+enum MentorSessionStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  DECLINED
+}
+
+enum AchievementType {
+  COURSE_COMPLETION
+  STREAK
+  PARTICIPATION
+  SKILL_MASTERY
+  COMMUNITY_CONTRIBUTION
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  PAUSED
+  ARCHIVED
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ExperienceType {
+  WORK
+  EDUCATION
+  VOLUNTEER
+  PROJECT
+  INTERNSHIP
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum JobLevel {
+  ENTRY
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum JobApplicationStatus {
+  PENDING
+  REVIEWED
+  INTERVIEW
+  REJECTED
+  ACCEPTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT_SICK
+  ABSENT_EXCUSED
+  ABSENT_UNEXCUSED
+}
+
+enum ConversationType {
+  DIRECT
+  GROUP
+  CHANNEL
+}
+
+enum ParticipantRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum NotificationType {
+  DIRECT_MESSAGE
+  GROUP_MESSAGE
+  CHANNEL_MESSAGE
+  MENTION
+  CONVERSATION_INVITE
+  SYSTEM
+}
+
+// =============================================================================
+// AUTHENTICATION & USER MANAGEMENT
+// =============================================================================
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -48,32 +180,30 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// User Management
 model User {
   id            String    @id @default(cuid())
   name          String?
+  username      String   @unique 
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String? // For credentials authentication
-
-  // Student Profile fields
-  bio            String? // User bio
-  avatar         String? // User avatar URL or base64 data
-  role           UserRole   @default(STUDENT)
-  status         UserStatus @default(ACTIVE)
-  cohortId       String?
-  cohort         Cohort?    @relation(fields: [cohortId], references: [id])
-  startDate      DateTime? // Course start date (for STUDENT users)
-  endDate        DateTime? // Course end date (replaces graduationDate for STUDENT users)
-  linkedinUrl    String?
-  githubUrl      String?
-  portfolioUrl   String?
-  currentJob     String?
+  bio           String? // User bio
+  avatar        String? // User avatar URL or base64 data
+  role          UserRole  @default(STUDENT)
+  status        UserStatus @default(ACTIVE)
+  cohortId      String?
+  cohort        Cohort?   @relation(fields: [cohortId], references: [id])
+  startDate     DateTime? // Course start date (for STUDENT users)
+  endDate       DateTime? // Course end date (replaces graduationDate for STUDENT users)
+  linkedinUrl   String?
+  githubUrl     String?
+  portfolioUrl  String?
+  currentJob    String?
   currentCompany String?
-  location       String?
-  expertise      Json? // Array of expertise areas
-  yearsExp       Int? // Years of professional experience
+  location      String?
+  expertise     Json? // Array of expertise areas
+  yearsExp      Int? // Years of professional experience
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,23 +212,24 @@ model User {
   accounts Account[]
   sessions Session[]
 
-
+  // User Management Relations
+  userImage UserImage?
   achievements UserAchievement[]
   quizResults  QuizResult[]
+  attendanceRecords Attendance[]
 
   // Community Relations
   posts             CommunityPost[]
   comments          Comment[]
+  documentDiscussions DocumentDiscussion[]
+  documentComments  DocumentComment[]
   likes             Like[]
   mentorships       Mentorship[]    @relation("Mentor")
   menteeMentorships Mentorship[]    @relation("Mentee")
 
-  // Document Relations removed
-
   // Job Relations
   postedJobs      Job[]            @relation("PostedJobs")
   jobApplications JobApplication[] @relation("JobApplications")
-
 
   // Project Relations
   projectProfile    ProjectProfile?
@@ -113,21 +244,27 @@ model User {
   // Notification Relations
   notifications            Notification[]
   notificationPreferences  NotificationPreference?
-  // Attendance Relations (only for STUDENT users)
-  attendanceRecords        Attendance[]
 
+  // Document Relations
+  documents Document[]
 
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([cohortId])
   @@map("users")
 }
 
 model UserImage {
   id          String  @id @default(cuid())
-  userId      String
+  userId      String  @unique
   data        Bytes?
   contentType String?
   hash        String?
 
-  @@index([userId], map: "IX_UserImage_userId")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_images")
 }
 
 model Cohort {
@@ -147,20 +284,110 @@ model Cohort {
   students          User[]
   attendanceRecords Attendance[]
 
+  @@index([slug])
   @@map("cohorts")
 }
 
+// =============================================================================
+// DOCUMENT MANAGEMENT
+// =============================================================================
 
+model Document {
+  id          String @id @default(cuid())
+  content     Json   // Plate.js Value content
+  title       String?
+  description String?
+  
+  // Document metadata
+  version     Int    @default(1) // For versioning support
+  isPublished Boolean @default(false)
+  isArchived  Boolean @default(false)
+  
+  // Document type and context
+  documentType String // 'project_summary', 'community_post', 'lesson_content', etc.
+  
+  // Relations
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Polymorphic relations - can be linked to various entities
+  projectId String? // If this document belongs to a project
+  
+  // Document discussions
+  documentDiscussions DocumentDiscussion[]
+  
+  // Community post relation
+  communityPost CommunityPost?
+  
+  // Project relation
+  project Project?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@index([authorId])
+  @@index([documentType])
+  @@index([isPublished])
+  @@index([projectId])
+  @@map("documents")
+}
 
+model DocumentDiscussion {
+  id        String @id @default(cuid())
+  isResolved Boolean @default(false)
+  documentContent String? // The text content that was discussed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Comments in this discussion
+  comments DocumentComment[]
 
+  @@index([documentId])
+  @@index([userId])
+  @@map("document_discussions")
+}
 
+model DocumentComment {
+  id        String @id @default(cuid())
+  contentRich Json   // Plate.js rich content (Value type) - matches TComment.contentRich
+  isEdited Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  discussionId String
+  discussion   DocumentDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-// Community Features
+  parentId String?
+  parent   DocumentComment?  @relation("DocumentCommentThread", fields: [parentId], references: [id])
+  replies  DocumentComment[] @relation("DocumentCommentThread")
+
+  @@index([discussionId])
+  @@index([userId])
+  @@index([parentId])
+  @@map("document_comments")
+}
+
+// =============================================================================
+// COMMUNITY FEATURES
+// =============================================================================
+
 model CommunityPost {
   id          String   @id @default(cuid())
   title       String
-  content     Json // Rich content
+  content     String?  // Plain text content (optional, can use document instead)
+  documentId  String?  @unique // Optional rich content document
+  document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
   type        PostType @default(DISCUSSION)
   isPublished Boolean  @default(true)
   isPinned    Boolean  @default(false)
@@ -176,6 +403,10 @@ model CommunityPost {
   likes    Like[]
   tags     PostTag[]
 
+  @@index([authorId])
+  @@index([type])
+  @@index([isPublished])
+  @@index([isPinned])
   @@map("community_posts")
 }
 
@@ -191,8 +422,6 @@ model Comment {
   postId String?
   post   CommunityPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  // documentId and document relation removed
-
   parentId String?
   parent   Comment?  @relation("CommentThread", fields: [parentId], references: [id])
   replies  Comment[] @relation("CommentThread")
@@ -200,6 +429,9 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([authorId])
+  @@index([postId])
+  @@index([parentId])
   @@map("comments")
 }
 
@@ -215,10 +447,25 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
   @@map("likes")
 }
 
-// Mentorship System
+model PostTag {
+  id    String @id @default(cuid())
+  name  String @unique
+  color String @default("#3B82F6")
+
+  posts CommunityPost[]
+
+  @@map("post_tags")
+}
+
+// =============================================================================
+// MENTORSHIP SYSTEM
+// =============================================================================
+
 model Mentorship {
   id      String           @id @default(cuid())
   status  MentorshipStatus @default(PENDING)
@@ -237,10 +484,12 @@ model Mentorship {
   sessions MentorSession[]
 
   @@unique([mentorId, menteeId])
+  @@index([mentorId])
+  @@index([menteeId])
+  @@index([status])
   @@map("mentorships")
 }
 
-// Mentor Session Booking Model
 model MentorSession {
   id           String              @id @default(cuid())
   status       MentorSessionStatus @default(PENDING)
@@ -256,10 +505,16 @@ model MentorSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([mentorshipId])
+  @@index([status])
+  @@index([scheduledFor])
   @@map("mentor_sessions")
 }
 
-// Gamification & Achievements
+// =============================================================================
+// GAMIFICATION & ACHIEVEMENTS
+// =============================================================================
+
 model Achievement {
   id          String          @id @default(cuid())
   title       String
@@ -274,6 +529,7 @@ model Achievement {
   // Relations
   userAchievements UserAchievement[]
 
+  @@index([type])
   @@map("achievements")
 }
 
@@ -287,29 +543,15 @@ model UserAchievement {
   achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
 
   @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
   @@map("user_achievements")
 }
 
+// =============================================================================
+// PROJECT PORTFOLIO SYSTEM
+// =============================================================================
 
-
-
-
-// Supporting Models
-
-
-model PostTag {
-  id    String @id @default(cuid())
-  name  String @unique
-  color String @default("#3B82F6")
-
-  posts CommunityPost[]
-
-  @@map("post_tags")
-}
-
-// Document functionality removed
-
-// Project Showcase Models
 model ProjectProfile {
   id          String  @id @default(cuid())
   bio         String?
@@ -332,66 +574,16 @@ model ProjectProfile {
   skills   ProjectSkill[]
   experiences Experience[]
 
+  @@index([userId])
+  @@index([isPublic])
+  @@index([isActive])
   @@map("project_profiles")
 }
-
-
-model Skill {
-  id          String @id @default(cuid())
-  name        String @unique
-  category    String // e.g., "Frontend", "Backend", "Database", "DevOps"
-  icon        String? // Icon name or URL
-  color       String @default("#3B82F6") // Display color
-
-  createdAt DateTime @default(now())
-
-  // Relations
-  projectSkills ProjectSkill[]
-
-  @@map("skills")
-}
-
-model ProjectSkill {
-  id          String     @id @default(cuid())
-  proficiency SkillLevel @default(INTERMEDIATE)
-  yearsExp    Int? // Years of experience
-  isHighlight Boolean    @default(false) // Featured skill
-
-  projectProfileId String
-  skillId          String
-  projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
-  skill            Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
-
-  @@unique([projectProfileId, skillId])
-  @@map("project_skills")
-}
-
-model Experience {
-  id          String         @id @default(cuid())
-  type        ExperienceType
-  title       String // Job title or degree
-  company     String // Company name or institution
-  location    String?
-  description String?
-  startDate   DateTime
-  endDate     DateTime?
-  isCurrent   Boolean        @default(false)
-
-  projectProfileId String
-  projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("experiences")
-}
-
 
 model Project {
   id            String   @id @default(cuid())
   title         String
   description   String
-  summary       Json? // Rich Plate.js content for detailed project summary
   shortDesc     String? // Brief description for cards
   images        Json? // Array of image URLs
   demoUrl       String? // Live demo URL
@@ -414,13 +606,21 @@ model Project {
   // Relations
   projectProfileId String
   projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
+  
+  // Document relation for rich content (replaces summary field)
+  documentId String? @unique
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  
   comments    ProjectComment[]
   projectLikes ProjectLike[]
   collaborators ProjectCollaborator[]
 
+  @@index([projectProfileId])
+  @@index([status])
+  @@index([isFeatured])
+  @@index([isPublic])
   @@map("projects")
 }
-
 
 model ProjectComment {
   id      String @id @default(cuid())
@@ -439,6 +639,9 @@ model ProjectComment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([authorId])
+  @@index([projectId])
+  @@index([parentId])
   @@map("project_comments")
 }
 
@@ -447,12 +650,14 @@ model ProjectLike {
 
   userId    String
   projectId String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
   @@unique([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
   @@map("project_likes")
 }
 
@@ -462,108 +667,76 @@ model ProjectCollaborator {
 
   userId    String
   projectId String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
   @@unique([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
   @@map("project_collaborators")
 }
 
-// Enums
-enum UserRole {
-  STUDENT
-  ALUMNI
-  MENTOR
-  ADMIN
+model Skill {
+  id          String @id @default(cuid())
+  name        String @unique
+  category    String // e.g., "Frontend", "Backend", "Database", "DevOps"
+  icon        String? // Icon name or URL
+  color       String @default("#3B82F6") // Display color
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  projectSkills ProjectSkill[]
+
+  @@index([category])
+  @@map("skills")
 }
 
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  GRADUATED
+model ProjectSkill {
+  id          String     @id @default(cuid())
+  proficiency SkillLevel @default(INTERMEDIATE)
+  yearsExp    Int? // Years of experience
+  isHighlight Boolean    @default(false) // Featured skill
+
+  projectProfileId String
+  skillId          String
+  projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
+  skill            Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([projectProfileId, skillId])
+  @@index([projectProfileId])
+  @@index([skillId])
+  @@map("project_skills")
 }
 
-enum CourseCategory {
-  WEB_DEVELOPMENT
-  DATA_SCIENCE
-  UX_UI_DESIGN
-  DIGITAL_MARKETING
-  CAREER_DEVELOPMENT
-  SOFT_SKILLS
+model Experience {
+  id          String         @id @default(cuid())
+  type        ExperienceType
+  title       String // Job title or degree
+  company     String // Company name or institution
+  location    String?
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean        @default(false)
+
+  projectProfileId String
+  projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectProfileId])
+  @@index([type])
+  @@map("experiences")
 }
 
-enum LessonType {
-  TEXT
-  VIDEO
-  INTERACTIVE
-  QUIZ
-  EXERCISE
-}
+// =============================================================================
+// JOB BOARD
+// =============================================================================
 
-enum AssignmentType {
-  PROJECT
-  QUIZ
-  EXERCISE
-  PRESENTATION
-  PEER_REVIEW
-}
-
-enum LessonProgressStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-}
-
-enum SubmissionStatus {
-  DRAFT
-  SUBMITTED
-  GRADED
-  RETURNED
-}
-
-enum PostType {
-  DISCUSSION
-  QUESTION
-  SHOWCASE
-  JOB_POSTING
-  EVENT
-  ANNOUNCEMENT
-}
-
-enum MentorshipStatus {
-  PENDING
-  ACTIVE
-  COMPLETED
-  DECLINED
-}
-
-enum MentorSessionStatus {
-  PENDING
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-  DECLINED
-}
-
-enum AchievementType {
-  COURSE_COMPLETION
-  STREAK
-  PARTICIPATION
-  SKILL_MASTERY
-  COMMUNITY_CONTRIBUTION
-}
-
-enum ResourceType {
-  LINK
-  FILE
-  VIDEO
-}
-
-// Document-related enums removed
-
-// Job Board Models
 model Job {
   id          String    @id @default(cuid())
   title       String
@@ -590,10 +763,14 @@ model Job {
   postedBy     User?            @relation("PostedJobs", fields: [postedById], references: [id], onDelete: SetNull)
   applications JobApplication[]
 
+  @@index([postedById])
+  @@index([type])
+  @@index([level])
+  @@index([isActive])
+  @@index([featured])
+  @@index([expiresAt])
   @@map("jobs")
 }
-
-
 
 model JobApplication {
   id          String               @id @default(cuid())
@@ -610,33 +787,15 @@ model JobApplication {
   user   User   @relation("JobApplications", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([jobId, userId])
+  @@index([jobId])
+  @@index([userId])
+  @@index([status])
   @@map("job_applications")
 }
 
-enum JobType {
-  FULL_TIME
-  PART_TIME
-  CONTRACT
-  INTERNSHIP
-  FREELANCE
-}
-
-enum JobLevel {
-  ENTRY
-  JUNIOR
-  MID
-  SENIOR
-  LEAD
-  EXECUTIVE
-}
-
-enum JobApplicationStatus {
-  PENDING
-  REVIEWED
-  INTERVIEW
-  REJECTED
-  ACCEPTED
-}
+// =============================================================================
+// QUIZ SYSTEM
+// =============================================================================
 
 model Quiz {
   id         String     @id @default(cuid())
@@ -648,6 +807,10 @@ model Quiz {
   updatedAt  DateTime   @updatedAt
 
   quizResults QuizResult[]
+
+  @@index([topic])
+  @@index([difficulty])
+  @@map("quizzes")
 }
 
 model Question {
@@ -659,6 +822,9 @@ model Question {
   quizId        String
   quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
+
+  @@index([quizId])
+  @@map("questions")
 }
 
 model QuizResult {
@@ -671,31 +837,15 @@ model QuizResult {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([quizId])
+  @@map("quiz_results")
 }
 
-// New Portfolio-related Enums
-enum ProjectStatus {
-  PLANNING
-  IN_PROGRESS
-  COMPLETED
-  PAUSED
-  ARCHIVED
-}
-
-enum SkillLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  EXPERT
-}
-
-enum ExperienceType {
-  WORK
-  EDUCATION
-  VOLUNTEER
-  PROJECT
-  INTERNSHIP
-}
+// =============================================================================
+// ATTENDANCE SYSTEM
+// =============================================================================
 
 model Attendance {
   id     String           @id @default(cuid())
@@ -712,30 +862,16 @@ model Attendance {
   updatedAt DateTime @updatedAt
 
   @@unique([studentId, date]) // One attendance record per student per day
+  @@index([studentId])
+  @@index([cohortId])
+  @@index([date])
+  @@index([status])
   @@map("attendance")
 }
 
-enum AttendanceStatus {
-  PRESENT
-  ABSENT_SICK
-  ABSENT_EXCUSED
-  ABSENT_UNEXCUSED
-}
-
-
-
-// Chat System Models
-enum ConversationType {
-  DIRECT
-  GROUP
-  CHANNEL
-}
-
-enum ParticipantRole {
-  OWNER
-  ADMIN
-  MEMBER
-}
+// =============================================================================
+// CHAT SYSTEM
+// =============================================================================
 
 model ChatMessage {
   id             String   @id @default(cuid())
@@ -751,6 +887,9 @@ model ChatMessage {
   user User @relation("UserChatMessages", fields: [userId], references: [id], onDelete: Cascade)
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([conversationId])
+  @@index([createdAt])
   @@map("chat_messages")
 }
 
@@ -766,6 +905,7 @@ model Conversation {
   participants ConversationParticipant[]
   messages     ChatMessage[]
 
+  @@index([type])
   @@map("conversations")
 }
 
@@ -782,11 +922,15 @@ model ConversationParticipant {
   user         User         @relation("UserConversations", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
   @@map("conversation_participants")
 }
 
+// =============================================================================
+// NOTIFICATION SYSTEM
+// =============================================================================
 
-// Chat Notification System Models
 model Notification {
   id        String   @id @default(cuid())
   type      NotificationType
@@ -809,6 +953,7 @@ model Notification {
   
   @@index([userId, isRead])
   @@index([userId, createdAt])
+  @@index([type])
   @@map("notifications")
 }
 
@@ -838,14 +983,4 @@ model NotificationPreference {
   
   @@unique([userId])
   @@map("notification_preferences")
-}
-
-// Add this enum
-enum NotificationType {
-  DIRECT_MESSAGE
-  GROUP_MESSAGE
-  CHANNEL_MESSAGE
-  MENTION
-  CONVERSATION_INVITE
-  SYSTEM
 }

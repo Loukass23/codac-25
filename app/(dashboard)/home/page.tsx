@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/card';
 import { getProjectStats } from '@/data/projects/get-project-stats';
 import { getFeaturedProjects } from '@/data/projects/get-projects';
-import { getUserProjects } from '@/data/projects/get-user-projects';
+import { getUserProjects } from '@/data/projects/get-projects';
 import { getUser } from '@/data/user/get-user';
 import { requireServerAuth } from '@/lib/auth/auth-server';
 
@@ -52,7 +52,7 @@ export default async function DashboardPage() {
 
   try {
     [userProjects, featuredProjects, stats] = await Promise.all([
-      getUserProjects(user.id),
+      getUserProjects(),
       getFeaturedProjects(3),
       getProjectStats(),
     ]);

@@ -38,6 +38,7 @@ export async function getServerAuth() {
                 status: true,
                 cohortId: true,
                 emailVerified: true,
+                avatar: true,
             }
         });
 

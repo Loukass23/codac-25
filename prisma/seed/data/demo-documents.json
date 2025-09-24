@@ -1,0 +1,1005 @@
+[
+  {
+    "title": "Getting Started with React Hooks",
+    "description": "A comprehensive guide to understanding and using React Hooks effectively",
+    "documentType": "lesson_content",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Getting Started with React Hooks"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "React Hooks revolutionized how we write React components by allowing us to use state and other React features in functional components. In this guide, we'll explore the most commonly used hooks and how to implement them effectively."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "What are React Hooks?"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Hooks are functions that let you \"hook into\" React state and lifecycle features from function components. They were introduced in React 16.8 and allow you to use state without writing a class."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Common Hooks"
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "useState"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "The useState hook allows you to add state to functional components:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "javascript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "import React, { useState } from 'react';\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>\n        Click me\n      </button>\n    </div>\n  );\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "useEffect"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "The useEffect hook lets you perform side effects in functional components:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "javascript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "import React, { useState, useEffect } from 'react';\n\nfunction Example() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    document.title = `You clicked ${count} times`;\n  });\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>\n        Click me\n      </button>\n    </div>\n  );\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Best Practices"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Only call hooks at the top level of your React function"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Don't call hooks inside loops, conditions, or nested functions"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Always use the dependency array in useEffect to avoid infinite loops"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-1",
+        "isResolved": false,
+        "documentContent": "React Hooks revolutionized how we write React components",
+        "authorEmail": "mikasa.ackerman@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great explanation! The examples really help clarify how hooks work. I especially appreciate the best practices section."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "mikasa.ackerman@codac.academy",
+            "isEdited": false
+          }
+        ]
+      },
+      {
+        "id": "discussion-2",
+        "isResolved": true,
+        "documentContent": "What are React Hooks?",
+        "authorEmail": "armin.arlert@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Could you add more examples of custom hooks? I'd love to see how to create reusable logic with hooks."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "armin.arlert@codac.academy",
+            "isEdited": false
+          },
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Absolutely! I'll add a section on custom hooks in the next update. Custom hooks are a powerful way to share stateful logic between components."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "eren.yeager@codac.academy",
+            "parentId": null,
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "TypeScript Best Practices for React Development",
+    "description": "Essential TypeScript patterns and practices for building robust React applications",
+    "documentType": "lesson_content",
+    "authorEmail": "levi.ackerman@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "TypeScript Best Practices for React Development"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "TypeScript brings static type checking to JavaScript, making your React applications more maintainable and less error-prone. Here are the essential patterns and practices every React developer should know."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Component Props Typing"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Always define proper interfaces for your component props:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "interface ButtonProps {\n  label: string;\n  onClick: () => void;\n  disabled?: boolean;\n  variant?: 'primary' | 'secondary';\n}\n\nconst Button: React.FC<ButtonProps> = ({ \n  label, \n  onClick, \n  disabled = false, \n  variant = 'primary' \n}) => {\n  return (\n    <button \n      className={`btn btn-${variant}`}\n      onClick={onClick}\n      disabled={disabled}\n    >\n      {label}\n    </button>\n  );\n};"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "State Management with TypeScript"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Use generic types for useState to ensure type safety:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "interface User {\n  id: string;\n  name: string;\n  email: string;\n  avatar?: string;\n}\n\nconst UserProfile: React.FC = () => {\n  const [user, setUser] = useState<User | null>(null);\n  const [loading, setLoading] = useState<boolean>(false);\n  const [error, setError] = useState<string | null>(null);\n\n  const fetchUser = async (id: string): Promise<void> => {\n    setLoading(true);\n    try {\n      const response = await fetch(`/api/users/${id}`);\n      const userData: User = await response.json();\n      setUser(userData);\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'Unknown error');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  // Component JSX...\n};"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Event Handler Typing"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Properly type your event handlers to avoid runtime errors:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {\n  setValue(event.target.value);\n};\n\nconst handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {\n  event.preventDefault();\n  // Handle form submission\n};\n\nconst handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {\n  event.stopPropagation();\n  // Handle button click\n};"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-3",
+        "isResolved": false,
+        "documentContent": "Component Props Typing",
+        "authorEmail": "historia.reiss@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "This is excellent! The examples are very practical. I've been struggling with TypeScript event handlers, and this clarifies everything."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "historia.reiss@codac.academy",
+            "isEdited": false
+          }
+        ]
+      },
+      {
+        "id": "discussion-4",
+        "isResolved": false,
+        "documentContent": "State Management with TypeScript",
+        "authorEmail": "jean.kirstein@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Could you add more examples of generic components? I'd like to see how to create reusable components with TypeScript generics."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "jean.kirstein@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Building Scalable React Applications",
+    "description": "Architecture patterns and best practices for building large-scale React applications",
+    "documentType": "lesson_content",
+    "authorEmail": "erwin.smith@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Building Scalable React Applications"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "As React applications grow in complexity, maintaining a scalable architecture becomes crucial. This guide covers essential patterns and practices for building applications that can grow with your team and requirements."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Folder Structure"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Organize your codebase with a clear, scalable folder structure:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "text",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "src/\n├── components/          # Reusable UI components\n│   ├── ui/              # Basic UI elements\n│   └── features/        # Feature-specific components\n├── pages/               # Page components\n├── hooks/               # Custom React hooks\n├── services/            # API and external services\n├── store/               # State management\n├── utils/               # Utility functions\n├── types/               # TypeScript type definitions\n└── constants/           # Application constants"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Component Design Principles"
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "Single Responsibility Principle"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Each component should have a single, well-defined responsibility. Break down complex components into smaller, focused pieces."
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "Composition over Inheritance"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Use composition to build complex UIs from simple components rather than creating deep inheritance hierarchies."
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "// Good: Composition\nconst UserCard = ({ user }: { user: User }) => (\n  <Card>\n    <CardHeader>\n      <Avatar src={user.avatar} />\n      <CardTitle>{user.name}</CardTitle>\n    </CardHeader>\n    <CardContent>\n      <UserStats stats={user.stats} />\n    </CardContent>\n  </Card>\n);\n\n// Avoid: Deep inheritance\nclass UserCard extends BaseCard extends GenericCard extends Component { ... }"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "State Management Strategies"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Choose the right state management solution based on your application's needs:"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Local state (useState, useReducer) for component-specific data"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Context API for shared data within component trees"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Redux Toolkit for complex global state management"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "React Query for server state management"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-5",
+        "isResolved": false,
+        "documentContent": "Folder Structure",
+        "authorEmail": "hange.zoë@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "This is a comprehensive guide! The folder structure example is exactly what I needed for my current project."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "hange.zoë@codac.academy",
+            "isEdited": false
+          }
+        ]
+      },
+      {
+        "id": "discussion-6",
+        "isResolved": false,
+        "documentContent": "Component Design Principles",
+        "authorEmail": "sasha.braus@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great content! Could you add more details about testing strategies for scalable applications?"
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "sasha.braus@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Modern CSS Techniques for React Developers",
+    "description": "Advanced CSS techniques and modern styling approaches for React applications",
+    "documentType": "lesson_content",
+    "authorEmail": "mikasa.ackerman@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Modern CSS Techniques for React Developers"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Modern web development requires a deep understanding of CSS techniques that work well with React. This guide covers the most effective approaches for styling React applications."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "CSS-in-JS vs Traditional CSS"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Both approaches have their place in modern React development. Choose based on your team's preferences and project requirements."
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "Styled Components"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "import styled from 'styled-components';\n\nconst Button = styled.button<{ variant: 'primary' | 'secondary' }>`\n  background: ${props => props.variant === 'primary' ? '#007bff' : '#6c757d'};\n  color: white;\n  border: none;\n  padding: 12px 24px;\n  border-radius: 4px;\n  cursor: pointer;\n  transition: background-color 0.2s;\n\n  &:hover {\n    opacity: 0.9;\n  }\n\n  &:disabled {\n    opacity: 0.6;\n    cursor: not-allowed;\n  }\n`;\n\n// Usage\n<Button variant=\"primary\" onClick={handleClick}>\n  Click me\n</Button>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "CSS Modules"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "// Button.module.css\n.button {\n  background: #007bff;\n  color: white;\n  border: none;\n  padding: 12px 24px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n.button:hover {\n  opacity: 0.9;\n}\n\n// Button.tsx\nimport styles from './Button.module.css';\n\nconst Button: React.FC<ButtonProps> = ({ children, onClick }) => (\n  <button className={styles.button} onClick={onClick}>\n    {children}\n  </button>\n);"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Tailwind CSS Integration"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Tailwind CSS provides utility-first styling that works exceptionally well with React components:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "const Card: React.FC<CardProps> = ({ title, children, className = '' }) => (\n  <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>\n    {title && (\n      <h3 className=\"text-xl font-semibold mb-4 text-gray-800\">\n        {title}\n      </h3>\n    )}\n    <div className=\"text-gray-600\">\n      {children}\n    </div>\n  </div>\n);"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Responsive Design Patterns"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Create responsive layouts that work across all device sizes:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "const Grid: React.FC<GridProps> = ({ children }) => (\n  <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">\n    {children}\n  </div>\n);\n\nconst Container: React.FC<ContainerProps> = ({ children }) => (\n  <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">\n    {children}\n  </div>\n);"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-7",
+        "isResolved": false,
+        "documentContent": "CSS-in-JS vs Traditional CSS",
+        "authorEmail": "armin.arlert@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Love the comparison between different CSS approaches! This helps me understand when to use each one."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "armin.arlert@codac.academy",
+            "isEdited": false
+          }
+        ]
+      },
+      {
+        "id": "discussion-8",
+        "isResolved": false,
+        "documentContent": "Tailwind CSS Integration",
+        "authorEmail": "jean.kirstein@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "The Tailwind examples are great! I've been wanting to learn Tailwind CSS and this gives me a good starting point."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "jean.kirstein@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Performance Optimization in React",
+    "description": "Techniques and strategies for optimizing React application performance",
+    "documentType": "lesson_content",
+    "authorEmail": "hange.zoë@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Performance Optimization in React"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Performance is crucial for user experience. This guide covers the most effective techniques for optimizing React applications, from component-level optimizations to bundle size reduction."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Component Optimization"
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "React.memo"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Use React.memo to prevent unnecessary re-renders:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "const ExpensiveComponent = React.memo<Props>(({ data, onUpdate }) => {\n  return (\n    <div>\n      {data.map(item => (\n        <Item key={item.id} data={item} onUpdate={onUpdate} />\n      ))}\n    </div>\n  );\n}, (prevProps, nextProps) => {\n  // Custom comparison function\n  return prevProps.data.length === nextProps.data.length &&\n         prevProps.onUpdate === nextProps.onUpdate;\n});"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "useMemo and useCallback"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Optimize expensive calculations and function references:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "const DataProcessor: React.FC<Props> = ({ items, filter }) => {\n  // Memoize expensive calculation\n  const processedData = useMemo(() => {\n    return items\n      .filter(item => item.category === filter)\n      .sort((a, b) => a.name.localeCompare(b.name))\n      .map(item => ({\n        ...item,\n        processed: true\n      }));\n  }, [items, filter]);\n\n  // Memoize callback functions\n  const handleItemClick = useCallback((id: string) => {\n    console.log('Item clicked:', id);\n    // Handle click logic\n  }, []);\n\n  return (\n    <div>\n      {processedData.map(item => (\n        <Item \n          key={item.id} \n          data={item} \n          onClick={handleItemClick} \n        />\n      ))}\n    </div>\n  );\n};"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Bundle Optimization"
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "Code Splitting"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "import { lazy, Suspense } from 'react';\n\n// Lazy load components\nconst HeavyComponent = lazy(() => import('./HeavyComponent'));\nconst AdminPanel = lazy(() => import('./AdminPanel'));\n\nconst App: React.FC = () => {\n  const [showAdmin, setShowAdmin] = useState(false);\n\n  return (\n    <div>\n      <Suspense fallback={<div>Loading...</div>}>\n        <HeavyComponent />\n      </Suspense>\n      \n      {showAdmin && (\n        <Suspense fallback={<div>Loading admin panel...</div>}>\n          <AdminPanel />\n        </Suspense>\n      )}\n    </div>\n  );\n};"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "Dynamic Imports"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "const loadChartLibrary = async () => {\n  const { Chart } = await import('chart.js');\n  return Chart;\n};\n\nconst ChartComponent: React.FC = () => {\n  const [Chart, setChart] = useState<any>(null);\n\n  useEffect(() => {\n    loadChartLibrary().then(setChart);\n  }, []);\n\n  if (!Chart) return <div>Loading chart...</div>;\n\n  // Render chart with loaded library\n  return <div>Chart component</div>;\n};"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Performance Monitoring"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Use React DevTools Profiler and browser performance tools to identify bottlenecks:"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Profile component render times"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Monitor bundle size with webpack-bundle-analyzer"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Use Lighthouse for overall performance audits"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-9",
+        "isResolved": false,
+        "documentContent": "useMemo and useCallback",
+        "authorEmail": "eren.yeager@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Excellent performance guide! The useMemo and useCallback examples are exactly what I needed to optimize my components."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "eren.yeager@codac.academy",
+            "isEdited": false
+          }
+        ]
+      },
+      {
+        "id": "discussion-10",
+        "isResolved": false,
+        "documentContent": "Code Splitting",
+        "authorEmail": "levi.ackerman@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "The code splitting examples are very practical. I've been struggling with bundle size and this gives me concrete solutions."
+                  }
+                ]
+              }
+            ],
+            "authorEmail": "levi.ackerman@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  }
+]

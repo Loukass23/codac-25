@@ -2,11 +2,11 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import type { ProjectShowcaseWithDetails } from '@/types/portfolio';
+import { Project } from '@prisma/client';
 
 export async function getProjectById(
   projectId: string
-): Promise<ProjectShowcaseWithDetails | null> {
+): Promise<Project | null> {
   try {
     const project = await prisma.project.findUnique({
       where: { id: projectId },
@@ -101,7 +101,7 @@ export async function getProjectById(
         );
       });
 
-    return project as ProjectShowcaseWithDetails;
+    return project as Project;
   } catch (error) {
     logger.error(
       'Failed to get project by ID',

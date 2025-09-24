@@ -2,6 +2,7 @@
   {
     "name": "Eren Yeager",
     "email": "eren.yeager@codac.academy",
+    "username": "eren.yeager",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -13,6 +14,7 @@
   {
     "name": "Mikasa Ackerman",
     "email": "mikasa.ackerman@codac.academy",
+    "username": "mikasa.ackerman",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -24,6 +26,7 @@
   {
     "name": "Armin Arlert",
     "email": "armin.arlert@codac.academy",
+    "username": "armin.arlert",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -35,6 +38,7 @@
   {
     "name": "Jean Kirstein",
     "email": "jean.kirstein@codac.academy",
+    "username": "jean.kirstein",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -46,6 +50,7 @@
   {
     "name": "Connie Springer",
     "email": "connie.springer@codac.academy",
+    "username": "connie.springer",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -57,6 +62,7 @@
   {
     "name": "Sasha Blouse",
     "email": "sasha.blouse@codac.academy",
+    "username": "sasha.blouse",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -68,6 +74,7 @@
   {
     "name": "Historia Reiss",
     "email": "historia.reiss@codac.academy",
+    "username": "historia.reiss",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -79,6 +86,7 @@
   {
     "name": "Ymir",
     "email": "ymir@codac.academy",
+    "username": "ymir",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -90,6 +98,7 @@
   {
     "name": "Reiner Braun",
     "email": "reiner.braun@codac.academy",
+    "username": "reiner.braun",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -101,6 +110,7 @@
   {
     "name": "Bertholdt Hoover",
     "email": "bertholdt.hoover@codac.academy",
+    "username": "bertholdt.hoover",
     "role": "STUDENT",
     "status": "ACTIVE",
     "cohort": "scouts",
@@ -112,6 +122,7 @@
   {
     "name": "Levi Ackerman",
     "email": "levi.ackerman@codac.academy",
+    "username": "levi.ackerman",
     "role": "MENTOR",
     "status": "ACTIVE",
     "cohort": "mentors",
@@ -123,6 +134,7 @@
   {
     "name": "Hange Zoë",
     "email": "hange.zoe@codac.academy",
+    "username": "hange.zoe",
     "role": "MENTOR",
     "status": "ACTIVE",
     "cohort": "mentors",
@@ -134,6 +146,7 @@
   {
     "name": "Erwin Smith",
     "email": "erwin.smith@codac.academy",
+    "username": "erwin.smith",
     "role": "MENTOR",
     "status": "ACTIVE",
     "cohort": "mentors",
@@ -145,6 +158,7 @@
   {
     "name": "Kenny Ackerman",
     "email": "kenny.ackerman@codac.academy",
+    "username": "kenny.ackerman",
     "role": "ADMIN",
     "status": "ACTIVE",
     "cohort": "mentors",
@@ -156,6 +170,7 @@
   {
     "name": "Marco Bott",
     "email": "marco.bott@alumni.codac.academy",
+    "username": "marco.bott",
     "role": "ALUMNI",
     "status": "GRADUATED",
     "cohort": "scouts",
@@ -171,6 +186,7 @@
   {
     "name": "Annie Leonhart",
     "email": "annie.leonhart@alumni.codac.academy",
+    "username": "annie.leonhart",
     "role": "ALUMNI",
     "status": "GRADUATED",
     "cohort": "scouts",

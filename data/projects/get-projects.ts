@@ -1,15 +1,31 @@
 'use server';
 
+import { Project, ProjectLike, ProjectProfile, User } from '@prisma/client';
+
+import { requireAuth } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import type {
   ProjectFilter,
-  ProjectShowcaseWithStats,
 } from '@/types/portfolio';
+
+
+export type ProjectDTO = Project & {
+  projectProfile: ProjectProfile & {
+    user: Pick<User, 'id' | 'name' | 'avatar'>;
+  };
+  projectLikes: ProjectLike[];
+  _count: {
+    comments: number;
+    projectLikes: number;
+    collaborators: number;
+  };
+};
 
 export async function getAllProjects(
   filter: ProjectFilter = {}
-): Promise<ProjectShowcaseWithStats[]> {
+): Promise<ProjectDTO[]> {
+
   try {
     // For public projects, we don't need authentication
     const userId = null;
@@ -81,10 +97,10 @@ export async function getAllProjects(
       ...project,
       isLiked: userId ? project.projectLikes.length > 0 : false,
       // Remove the projectLikes array from the response (we only needed it for the check)
-      projectLikes: undefined,
+      projectLikes: [],
     }));
 
-    return projectsWithLikeStatus as ProjectShowcaseWithStats[];
+    return projectsWithLikeStatus as ProjectDTO[];
   } catch (error) {
     logger.error(
       'Failed to get projects',
@@ -94,9 +110,11 @@ export async function getAllProjects(
   }
 }
 
+
+
 export async function getFeaturedProjects(
   limit = 6
-): Promise<ProjectShowcaseWithStats[]> {
+): Promise<ProjectDTO[]> {
   try {
     // For public projects, we don't need authentication
     const userId = null;
@@ -138,19 +156,63 @@ export async function getFeaturedProjects(
       take: limit,
     });
 
-    // Add isLiked property to each project
-    const projectsWithLikeStatus = projects.map(project => ({
-      ...project,
-      isLiked: userId ? project.projectLikes.length > 0 : false,
-      // Remove the projectLikes array from the response (we only needed it for the check)
-      projectLikes: undefined,
-    }));
 
-    return projectsWithLikeStatus as ProjectShowcaseWithStats[];
+
+    return projects as ProjectDTO[];
   } catch (error) {
     logger.error(
       'Failed to get featured projects',
       error instanceof Error ? error : new Error(String(error))
+    );
+    return [];
+  }
+}
+
+export async function getUserProjects(
+): Promise<ProjectDTO[]> {
+  const user = await requireAuth();
+  const userId = user.id;
+
+  try {
+
+    const projects = await prisma.project.findMany({
+      where: {
+        projectProfile: {
+          userId: userId,
+        },
+      },
+      include: {
+        projectProfile: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            projectLikes: true,
+            collaborators: true,
+          },
+        },
+      },
+      orderBy: [{ isFeatured: 'desc' }, { updatedAt: 'desc' }],
+    });
+
+    return projects as ProjectDTO[];
+  } catch (error) {
+    logger.error(
+      'Failed to get user projects',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        action: 'get_user_projects',
+        metadata: { userId },
+      }
     );
     return [];
   }

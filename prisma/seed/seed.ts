@@ -11,6 +11,7 @@ import { seedAttackOnTitan, cleanAttackOnTitan } from './seeders/attack-on-titan
 import { seedJobs, cleanJobs } from './seeders/jobs';
 // import { seedLMSContent, cleanLMSContent } from './seeders/lms-content';
 import { seedProjects, cleanProjects } from './seeders/projects';
+import { seedDocuments, cleanDocuments } from './seeders/documents';
 import { seedChatData, cleanChatData } from './seeders/chat';
 
 const prisma = new PrismaClient();
@@ -53,6 +54,13 @@ const seedOptions: SeedOption[] = [
         cleanAction: cleanProjects,
     },
     {
+        id: 'documents',
+        name: 'Demo Documents',
+        description: 'Create demo documents with rich content and comments',
+        action: seedDocuments,
+        cleanAction: cleanDocuments,
+    },
+    {
         id: 'chat-data',
         name: 'Chat Data',
         description: 'Import chat conversations, participants, and messages from exported data',
@@ -82,13 +90,13 @@ async function seedAll() {
     logger.info('🌱 Starting complete database seeding...');
 
     try {
-        // Seed in order: courses -> users -> content -> chats -> jobs -> projects
+        // Seed in order: courses -> users -> content -> chats -> jobs -> projects -> documents
         // await seedLMSContent();
         await seedAttackOnTitan();
         await seedChatData();
         await seedJobs();
         await seedProjects();
-        await seedChatData();
+        await seedDocuments();
 
         logger.info('✅ Complete seeding finished successfully!');
 
@@ -102,6 +110,7 @@ async function seedAll() {
 
         console.log('  • Job postings');
         console.log('  • Demo project showcases');
+        console.log('  • Demo documents with rich content and comments');
         console.log('  • Chat conversations and messages');
         console.log('\n🔐 Default login credentials:');
         console.log('  • Email: admin@codac.academy');
@@ -120,7 +129,7 @@ async function cleanAll() {
 
     try {
         // Clean in reverse order
-        await cleanChatData();
+        await cleanDocuments();
         await cleanProjects();
         await cleanJobs();
         await cleanChatData();

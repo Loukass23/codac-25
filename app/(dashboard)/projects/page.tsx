@@ -5,8 +5,8 @@ import { ProjectsList } from '@/components/projects/projects-list';
 import { getAllProjects } from '@/data/projects/get-projects';
 import type { ProjectFilter } from '@/types/portfolio';
 
-// Dynamic rendering to support user-specific like states
-export const dynamic = 'force-dynamic';
+// // Dynamic rendering to support user-specific like states
+// export const dynamic = 'force-dynamic';
 
 interface ProjectsPageProps {
   searchParams: Promise<{
@@ -39,7 +39,7 @@ export default async function ProjectsPage({
   };
 
   // Load projects with applied filters
-  const projects = await getAllProjects(filter);
+  const _projectPromise = getAllProjects(filter);
 
   return (
     <PageContainer>
@@ -50,7 +50,7 @@ export default async function ProjectsPage({
       />
 
       <ProjectsList
-        projects={projects}
+        _projectsPromise={_projectPromise}
         initialFilters={{
           search: params.search || '',
           tech: Array.isArray(params.tech)
