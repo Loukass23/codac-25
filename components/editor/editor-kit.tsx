@@ -17,7 +17,6 @@ import { CommentKit } from '@/components/editor/plugins/comment-kit';
 import { CopilotKit } from '@/components/editor/plugins/copilot-kit';
 import { CursorOverlayKit } from '@/components/editor/plugins/cursor-overlay-kit';
 import { DateKit } from '@/components/editor/plugins/date-kit';
-import { DiscussionKit } from '@/components/editor/plugins/discussion-kit';
 import { DndKit } from '@/components/editor/plugins/dnd-kit';
 import { DocxKit } from '@/components/editor/plugins/docx-kit';
 import { EmojiKit } from '@/components/editor/plugins/emoji-kit';
@@ -37,6 +36,7 @@ import { SuggestionKit } from '@/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@/components/editor/plugins/table-kit';
 import { TocKit } from '@/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@/components/editor/plugins/toggle-kit';
+import { DiscussionKit } from './plugins/discussion-kit';
 
 export const EditorKit = [
   ...CopilotKit,

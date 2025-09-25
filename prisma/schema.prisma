@@ -294,7 +294,7 @@ model Cohort {
 
 model Document {
   id          String @id @default(cuid())
-  content     Json   // Plate.js Value content
+  content     Json @default("[]")   // Plate.js Value content
   title       String?
   description String?
   

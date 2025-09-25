@@ -1,4 +1,5 @@
 import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -11,10 +12,13 @@ export default function DocumentNotFound() {
         </CardHeader>
         <CardContent className='space-y-4'>
           <p className='text-muted-foreground'>
-            The document you're looking for doesn't exist or you don't have
+            The document you&apos;re looking for doesn&apos;t exist or you don&apos;t have
             permission to view it.
           </p>
           <div className='flex space-x-2'>
+            <Button asChild variant='ghost'>
+              <Link href='/docs'>Browse Documents</Link>
+            </Button>
             <Button asChild>
               <Link href='/projects'>Browse Projects</Link>
             </Button>

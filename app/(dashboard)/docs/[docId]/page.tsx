@@ -1,54 +1,34 @@
-import { notFound } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
-
-import { DocumentCommentsDisplay } from '@/components/document/document-comments-display';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { getDocumentComments } from '@/data/projects/get-document-comments';
-import { getDocumentById } from '@/data/projects/get-documents';
-import { requireServerAuth } from '@/lib/auth/auth-server';
-
-import { DocumentEditorWrapper } from '../../../../components/editor/document-editor-wrapper';
 import { Suspense } from 'react';
+
+import { DocumentEditorWrapper } from '@/components/editor/document-editor-wrapper';
+import { Separator } from '@/components/ui/separator';
+
+
+import { getDocumentById, getDocumentDiscussionsByDocumentId } from '@/data/documents/get-document';
+import { requireServerAuth } from '@/lib/auth/auth-server';
+import { DiscussionEditorExample } from '@/components/editor/discussion-editor-example';
+import { AsyncEditor } from '@/components/editor/async-editor';
+
 
 interface DocumentPageProps {
   params: Promise<{
-    username: string;
     docId: string;
   }>;
 }
 
 export default async function DocumentPage({ params }: DocumentPageProps) {
   const { docId } = await params;
+
+  const _documentPromise = getDocumentById(docId);
+  const _documentDiscussionsPromise = getDocumentDiscussionsByDocumentId(docId);
   const user = await requireServerAuth();
-  if (!user) {
-    notFound();
-  }
-
-  // Fetch the document and comments in parallel
-  const [document, comments] = await Promise.all([
-    getDocumentById(docId),
-    getDocumentComments(docId),
-  ]);
-
-  if (!document) {
-    notFound();
-  }
-  console.log(comments);
-  // Check if user has access to view this document
-  // For now, we'll allow access to published documents or if user is the author
-  const canView = document.isPublished || document.author.id === user.id;
-
-  if (!canView) {
-    notFound();
-  }
 
   return (
     <div className=''>
       <div className='space-y-6'>
         {/* Document Header */}
         <div className='space-y-4'>
-          <div className='space-y-2'>
+          {/* <div className='space-y-2'>
             <h1 className='text-3xl font-bold tracking-tight'>
               {document.title || 'Untitled Document'}
             </h1>
@@ -57,10 +37,10 @@ export default async function DocumentPage({ params }: DocumentPageProps) {
                 {document.description}
               </p>
             )}
-          </div>
+          </div> */}
 
           {/* Document Metadata */}
-          <div className='flex items-center justify-between'>
+          {/* <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-4'>
               <div className='flex items-center space-x-2'>
                 {document.author.avatar ? (
@@ -100,21 +80,28 @@ export default async function DocumentPage({ params }: DocumentPageProps) {
               )}
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <Separator />
+          <Separator />
 
-        {/* Document Content */}
-        <Suspense fallback={<div>Loading...</div>}>
-          <DocumentEditorWrapper
-            documentId={document.id}
-            initialValue={document.content}
-            currentUser={user}
-          />
-        </Suspense>
+          {/* Document Content */}
+          <Suspense fallback={<div>Loading...</div>}>
+            {/* <DiscussionEditorExample
+              documentId={docId}
+              user={user}
+              _documentPromise={_documentPromise}
 
-        {/* Document Footer */}
-        <div className='text-xs text-muted-foreground space-y-1'>
+            /> */}
+            {/* <DocumentEditorWrapper
+              _documentPromise={_documentPromise}
+              _documentDiscussionsPromise={_documentDiscussionsPromise}
+              userId={user.id}
+            /> */}
+            <AsyncEditor documentId={docId} />
+          </Suspense>
+
+          {/* Document Footer */}
+          {/* <div className='text-xs text-muted-foreground space-y-1'>
           <p>Version {document.version}</p>
           <p>
             Last updated{' '}
@@ -128,12 +115,14 @@ export default async function DocumentPage({ params }: DocumentPageProps) {
               <span className='font-medium'>{document.project.title}</span>
             </p>
           )}
-        </div>
+        </div> */}
 
-        {/* Comments Section */}
-        <Separator />
-        {/* <DocumentCommentsDisplay comments={comments} documentId={document.id} /> */}
+          {/* Comments Section */}
+          <Separator />
+          {/* <DocumentDiscussionContainer _discussionPromise={_documentDiscussionPromise} /> */}
+        </div>
       </div>
     </div>
   );
 }
+

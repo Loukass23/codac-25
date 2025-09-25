@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { updateProjectSummary } from '../../actions/projects/update-project-summary';
 import { jsonToPlateValue } from '../../lib/plate/utils';
-import { PlateEditor } from '../editor/plate-editor';
+import { PlateEditor } from '../editor/plate-editor2';
 
 function ProjectContent({
   _projectPromise,
@@ -15,7 +15,7 @@ function ProjectContent({
   _projectPromise: Promise<Project>;
 }) {
   const project = use(_projectPromise);
-  const plateValue = jsonToPlateValue(project.summary);
+  // const plateValue = jsonToPlateValue(project.documentId?.content ?? []);
   const handleSave = async (value: Value) => {
     try {
       const result = await updateProjectSummary(project.id, value);
@@ -32,7 +32,7 @@ function ProjectContent({
 
   return (
     <div>
-      <PlateEditor initialValue={plateValue} onSave={handleSave} />
+      {/* <PlateEditor initialValue={plateValue} onSave={handleSave} /> */}
       {/* <ProjectSummaryEditor projectId={project.id} initialValue={plateValue} /> */}
     </div>
   );

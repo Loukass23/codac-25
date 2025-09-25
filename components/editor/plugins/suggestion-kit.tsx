@@ -19,7 +19,7 @@ import {
   SuggestionLineBreak,
 } from '@/components/ui/suggestion-node';
 
-import { discussionPlugin } from './discussion-kit';
+import { discussionPlugin } from './discussion-plugin-config';
 
 export type SuggestionConfig = ExtendConfig<
   BaseSuggestionConfig,

@@ -46,6 +46,7 @@ import { TableToolbarButton } from './table-toolbar-button';
 import { ToggleToolbarButton } from './toggle-toolbar-button';
 import { ToolbarGroup } from './toolbar';
 import { TurnIntoToolbarButton } from './turn-into-toolbar-button';
+import { SuggestionToolbarButton } from './suggestion-toolbar-button';
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
@@ -55,6 +56,8 @@ export function FixedToolbarButtons() {
       {!readOnly && (
         <>
           <ToolbarGroup>
+            <SuggestionToolbarButton />
+            <CommentToolbarButton />
             <UndoToolbarButton />
             <RedoToolbarButton />
           </ToolbarGroup>
@@ -158,7 +161,7 @@ export function FixedToolbarButtons() {
         <MarkToolbarButton nodeType={KEYS.highlight} tooltip="Highlight">
           <HighlighterIcon />
         </MarkToolbarButton>
-        <CommentToolbarButton />
+
       </ToolbarGroup>
 
       <ToolbarGroup>

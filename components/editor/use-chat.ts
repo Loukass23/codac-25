@@ -14,7 +14,7 @@ import { type PlateEditor, useEditorRef, usePluginOption } from 'platejs/react';
 
 import { aiChatPlugin } from '@/components/editor/plugins/ai-kit';
 
-import { discussionPlugin } from './plugins/discussion-kit';
+import { discussionPlugin } from './plugins/discussion-plugin-config';
 
 export type ToolName = 'comment' | 'edit' | 'generate';
 

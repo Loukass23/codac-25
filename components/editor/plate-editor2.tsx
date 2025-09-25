@@ -1,40 +1,93 @@
 'use client';
-
+import { normalizeNodeId, Value } from 'platejs';
+import { Plate, usePlateEditor, createPlateEditor, createPlatePlugin, useEditorPlugin } from 'platejs/react';
 import * as React from 'react';
-
-import { normalizeNodeId } from 'platejs';
-import { Plate, usePlateEditor } from 'platejs/react';
 
 import { EditorKit } from '@/components/editor/editor-kit';
 import { SettingsDialog } from '@/components/editor/settings-dialog';
 import { Editor, EditorContainer } from '@/components/ui/editor';
-import { discussionPlugin } from './plugins/discussion-kit';
 
-export function PlateEditor() {
-  const MyPlugin = discussionPlugin.configure({
-    options: {
-      currentUserId: 'Lucas',
+import { discussionPlugin, UserData, TDiscussion } from './plugins/discussion-kit';
+import { TDiscussionConfig } from './plugins/discussion-plugin-config';
+import { suggestionPlugin } from './plugins/suggestion-kit';
+import { SaveManager } from './save-manager';
+import { commentPlugin } from './plugins/comment-kit';
+import { FixedToolbarKit } from './plugins/fixed-toolbar-kit';
+import { BlockDiscussion } from '../ui/block-discussion';
+import { useEffect } from 'react';
+
+
+export function PlateEditor({
+  initialValue = defaultValue,
+  onSave,
+  discussionPluginOptions,
+}: {
+  initialValue?: Value;
+  onSave: (value: Value) => void;
+  discussionPluginOptions: TDiscussionConfig
+}) {
+  console.log('discussionPluginOptions', discussionPluginOptions);
+
+  const editor = createPlateEditor({
+    // plugins: EditorKit,
+    plugins: [...EditorKit],
+
+    override: {
+      [discussionPlugin.key]: {
+
+        options: {
+          currentUserId: discussionPluginOptions.currentUserId,
+          discussions: discussionPluginOptions.discussions,
+          users: discussionPluginOptions.users,
+        },
+      }
     },
+
+
+
+
+    value: initialValue,
+
   });
 
-  const editor = usePlateEditor({
-    plugins: [MyPlugin, ...EditorKit],
-    value,
-  });
+  useEffect(() => {
+    if (editor && discussionPluginOptions) {
+      const plugin = editor.getPlugin(discussionPlugin);
+      // Set the current user
+      plugin.configure({
+        options: {
+          currentUserId: discussionPluginOptions.currentUserId,
+          discussions: discussionPluginOptions.discussions,
+          users: discussionPluginOptions.users,
+        }
+      });
+      // Load discussions
+      // plugin.transforms.discussion.loadDiscussions();
+    }
+  }, [editor, discussionPluginOptions.currentUserId]);
 
   return (
     <Plate editor={editor}>
+      <SaveManager onSave={onSave} />
+      <Testing />
+      <div className='flex-1'>
+        <EditorContainer>
+          <Editor variant='fullWidth' />
+        </EditorContainer>
 
-      <EditorContainer>
-        <Editor variant="demo" />
-      </EditorContainer>
-
-      <SettingsDialog />
+        <SettingsDialog />
+      </div>
     </Plate>
   );
 }
 
-const value = normalizeNodeId([
+const Testing = () => {
+  const { editor, plugin, type } = useEditorPlugin(discussionPlugin);
+  console.log('plugin', plugin);
+  return <div>Testing</div>;
+}
+
+const defaultValue = normalizeNodeId([
   {
     children: [{ text: 'Welcome to the Plate Playground!' }],
     type: 'h1',

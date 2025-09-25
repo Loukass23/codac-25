@@ -1,11 +1,13 @@
 'use server';
 
+
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { JsonValue } from '@prisma/client/runtime/library';
 
 export interface DocumentWithAuthor {
     id: string;
-    content: any; // Plate.js Value type
+    content: JsonValue; // Plate.js Value type
     title: string | null;
     description: string | null;
     documentType: string;
@@ -28,7 +30,7 @@ export interface DocumentWithAuthor {
 
 export async function getDocumentById(
     documentId: string
-): Promise<DocumentWithAuthor | null> {
+): Promise<DocumentWithAuthor> {
     try {
         const document = await prisma.document.findUnique({
             where: { id: documentId },
@@ -49,16 +51,15 @@ export async function getDocumentById(
             },
         });
 
-        return document;
+        return document as DocumentWithAuthor;
     } catch (error) {
-        logger.error('Failed to fetch document by ID', {
-            action: 'get_document_by_id',
+        logger.error('Failed to fetch document by ID', error instanceof Error ? error : new Error(String(error)), {
+
             metadata: {
                 documentId,
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
-        return null;
+        return [];
     }
 }
 
@@ -92,11 +93,9 @@ export async function getDocumentsByProject(
 
         return documents;
     } catch (error) {
-        logger.error('Failed to fetch documents by project', {
-            action: 'get_documents_by_project',
+        logger.error('Failed to fetch documents by project', error instanceof Error ? error : new Error(String(error)), {
             metadata: {
                 projectId,
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
         return [];

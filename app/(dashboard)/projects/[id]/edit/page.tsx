@@ -7,6 +7,7 @@ import ProjectContent from '@/components/projects/project-content';
 import { updateProjectSummary } from '../../../../../actions/projects/update-project-summary';
 
 import { Value } from 'platejs';
+import { requireServerAuth } from '@/lib/auth/auth-server';
 
 interface ProjectPageProps {
   params: {
@@ -17,6 +18,8 @@ interface ProjectPageProps {
 export default async function ProjectEditPage({ params }: ProjectPageProps) {
   const { id } = await params;
   const projectPromise = getProjectById(id) as Promise<Project>;
+
+
 
   if (!projectPromise) {
     notFound();
