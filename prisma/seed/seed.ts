@@ -8,11 +8,12 @@ import { logger } from '../../lib/logger';
 
 // Import all seeder modules
 import { seedAttackOnTitan, cleanAttackOnTitan } from './seeders/attack-on-titan';
+import { seedChatData, cleanChatData } from './seeders/chat';
+import { seedDocumentFolders } from './seeders/document-folders';
+import { seedDocuments, cleanDocuments } from './seeders/documents';
 import { seedJobs, cleanJobs } from './seeders/jobs';
 // import { seedLMSContent, cleanLMSContent } from './seeders/lms-content';
 import { seedProjects, cleanProjects } from './seeders/projects';
-import { seedDocuments, cleanDocuments } from './seeders/documents';
-import { seedChatData, cleanChatData } from './seeders/chat';
 
 const prisma = new PrismaClient();
 
@@ -61,6 +62,12 @@ const seedOptions: SeedOption[] = [
         cleanAction: cleanDocuments,
     },
     {
+        id: 'document-folders',
+        name: 'Document Folders',
+        description: 'Create nested folder structure for organizing documents',
+        action: () => seedDocumentFolders(prisma),
+    },
+    {
         id: 'chat-data',
         name: 'Chat Data',
         description: 'Import chat conversations, participants, and messages from exported data',
@@ -90,13 +97,14 @@ async function seedAll() {
     logger.info('🌱 Starting complete database seeding...');
 
     try {
-        // Seed in order: courses -> users -> content -> chats -> jobs -> projects -> documents
+        // Seed in order: courses -> users -> content -> chats -> jobs -> projects -> documents -> folders
         // await seedLMSContent();
         await seedAttackOnTitan();
         await seedChatData();
         await seedJobs();
         await seedProjects();
         await seedDocuments();
+        await seedDocumentFolders(prisma);
 
         logger.info('✅ Complete seeding finished successfully!');
 
@@ -111,6 +119,7 @@ async function seedAll() {
         console.log('  • Job postings');
         console.log('  • Demo project showcases');
         console.log('  • Demo documents with rich content and comments');
+        console.log('  • Nested folder structure for document organization');
         console.log('  • Chat conversations and messages');
         console.log('\n🔐 Default login credentials:');
         console.log('  • Email: admin@codac.academy');
@@ -288,8 +297,8 @@ ${seedOptions.map((opt, i) => `  ${i + 1}. ${opt.name} - ${opt.description}`).jo
 
 Examples:
   tsx prisma/seed/seed.ts all                # Seed everything
-  tsx prisma/seed/seed.ts 1,4                # Seed Attack on Titan + Quizzes
-  tsx prisma/seed/seed.ts 2                  # Seed only Black Owls
+  tsx prisma/seed/seed.ts 1,3                # Seed Attack on Titan + Demo Projects
+  tsx prisma/seed/seed.ts 2                  # Seed only Job Postings
 `);
 }
 

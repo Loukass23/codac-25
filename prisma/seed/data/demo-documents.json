@@ -162,7 +162,32 @@
                 ]
               }
             ],
-            "authorEmail": "mikasa.ackerman@codac.academy",
+            "isEdited": false
+          },
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great explanation! The examples really help clarify how hooks work. I especially appreciate the best practices section."
+                  }
+                ]
+              }
+            ],
+            "isEdited": false
+          },
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great explanation! The examples really help clarify how hooks work. I especially appreciate the best practices section."
+                  }
+                ]
+              }
+            ],
             "isEdited": false
           }
         ]
@@ -184,7 +209,7 @@
                 ]
               }
             ],
-            "authorEmail": "armin.arlert@codac.academy",
+            "userId": "armin.arlert@codac.academy",
             "isEdited": false
           },
           {
@@ -198,7 +223,7 @@
                 ]
               }
             ],
-            "authorEmail": "eren.yeager@codac.academy",
+            "userId": "eren.yeager@codac.academy",
             "parentId": null,
             "isEdited": false
           }
@@ -338,7 +363,7 @@
                 ]
               }
             ],
-            "authorEmail": "historia.reiss@codac.academy",
+            "userId": "historia.reiss@codac.academy",
             "isEdited": false
           }
         ]
@@ -360,7 +385,7 @@
                 ]
               }
             ],
-            "authorEmail": "jean.kirstein@codac.academy",
+            "userId": "jean.kirstein@codac.academy",
             "isEdited": false
           }
         ]
@@ -533,7 +558,7 @@
         "id": "discussion-5",
         "isResolved": false,
         "documentContent": "Folder Structure",
-        "authorEmail": "hange.zoë@codac.academy",
+        "authorEmail": "hange.zoe@codac.academy",
         "comments": [
           {
             "contentRich": [
@@ -546,7 +571,7 @@
                 ]
               }
             ],
-            "authorEmail": "hange.zoë@codac.academy",
+            "authorEmail": "hange.zoe@codac.academy",
             "isEdited": false
           }
         ]
@@ -555,7 +580,7 @@
         "id": "discussion-6",
         "isResolved": false,
         "documentContent": "Component Design Principles",
-        "authorEmail": "sasha.braus@codac.academy",
+        "authorEmail": "sasha.blouse@codac.academy",
         "comments": [
           {
             "contentRich": [
@@ -568,7 +593,7 @@
                 ]
               }
             ],
-            "authorEmail": "sasha.braus@codac.academy",
+            "authorEmail": "sasha.blouse@codac.academy",
             "isEdited": false
           }
         ]
@@ -770,7 +795,7 @@
     "title": "Performance Optimization in React",
     "description": "Techniques and strategies for optimizing React application performance",
     "documentType": "lesson_content",
-    "authorEmail": "hange.zoë@codac.academy",
+    "authorEmail": "hange.zoe@codac.academy",
     "isPublished": true,
     "content": [
       {

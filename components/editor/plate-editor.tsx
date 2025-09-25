@@ -1,32 +1,27 @@
 'use client';
-
-import * as React from 'react';
-
-import { normalizeNodeId } from 'platejs';
+import { Value, normalizeNodeId } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
+import * as React from 'react';
 
 import { EditorKit } from '@/components/editor/editor-kit';
 import { SettingsDialog } from '@/components/editor/settings-dialog';
 import { Editor, EditorContainer } from '@/components/ui/editor';
-import { discussionPlugin } from './plugins/discussion-kit';
+
+export type PlateEditorProps = {
+  initialValue?: Value;
+  onSave: (value: Value) => void;
+};
 
 export function PlateEditor() {
-  const MyPlugin = discussionPlugin.configure({
-    options: {
-      currentUserId: 'Lucas',
-    },
-  });
-
   const editor = usePlateEditor({
-    plugins: [MyPlugin, ...EditorKit],
+    plugins: [...EditorKit],
     value,
   });
 
   return (
     <Plate editor={editor}>
-
       <EditorContainer>
-        <Editor variant="demo" />
+        <Editor variant='fullWidth' />
       </EditorContainer>
 
       <SettingsDialog />

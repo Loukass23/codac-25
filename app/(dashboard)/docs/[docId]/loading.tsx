@@ -1,30 +1,172 @@
-import { Separator } from '@/components/ui/separator';
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from '@/components/ui/resizable';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function DocumentLoading() {
+const SIDE_PANEL_DEFAULT_SIZE = 15;
+const MAIN_PANEL_DEFAULT_SIZE = 100 - SIDE_PANEL_DEFAULT_SIZE;
+
+const SIDE_PANEL_MIN_SIZE = 10;
+const SIDE_PANEL_MAX_SIZE = 25;
+
+const MAIN_PANEL_MAX_SIZE = 100 - SIDE_PANEL_MIN_SIZE;
+const MAIN_PANEL_MIN_SIZE = 100 - SIDE_PANEL_MAX_SIZE;
+
+function VerticalToolbarSkeleton() {
   return (
-    <div className='container mx-auto px-4 py-8 max-w-4xl'>
-      <div className='space-y-6'>
-        <div className='space-y-2'>
-          <Skeleton className='h-8 w-3/4' />
-          <Skeleton className='h-4 w-1/2' />
-        </div>
-        <div className='flex items-center space-x-4'>
-          <Skeleton className='h-8 w-8 rounded-full' />
-          <div className='space-y-1'>
-            <Skeleton className='h-4 w-24' />
-            <Skeleton className='h-3 w-16' />
+    <div className='sticky top-0 left-0 z-50 h-full w-full rounded-l-lg border-r border-r-border bg-background/95 p-3 backdrop-blur-sm supports-backdrop-blur:bg-background/60 flex-col gap-2'>
+      <div className='flex h-full w-full flex-col gap-4'>
+        {/* Toolbar groups skeleton */}
+        <div className='flex flex-col gap-3'>
+          {/* First group - Save, Undo, Redo, Comments */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+          </div>
+
+          {/* Second group - AI, Export, Import */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+          </div>
+
+          {/* Third group - Text formatting */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+          </div>
+
+          {/* Fourth group - Alignment */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+          </div>
+
+          {/* Fifth group - Lists */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+          </div>
+
+          {/* Sixth group - Links, Table, Emoji */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+          </div>
+
+          {/* Seventh group - Media */}
+          <div className='flex flex-col gap-2'>
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
+            <Skeleton className='h-8 w-full rounded' />
           </div>
         </div>
-        <Separator />
-        <div className='space-y-4'>
-          <Skeleton className='h-4 w-full' />
-          <Skeleton className='h-4 w-full' />
-          <Skeleton className='h-4 w-3/4' />
-          <Skeleton className='h-4 w-full' />
-          <Skeleton className='h-4 w-2/3' />
+
+        {/* Spacer */}
+        <div className='flex-1' />
+
+        {/* Bottom group */}
+        <div className='flex flex-col gap-2'>
+          <Skeleton className='h-8 w-full rounded' />
         </div>
       </div>
+    </div>
+  );
+}
+
+function DocumentSkeleton() {
+  return (
+    <div className='flex flex-col h-full w-full'>
+      {/* Editor header skeleton */}
+      <div className='border-b bg-muted/30 px-4 py-2'>
+        <div className='flex items-center justify-between'>
+          <Skeleton className='h-6 w-32' />
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-6 w-16' />
+            <Skeleton className='h-6 w-20' />
+          </div>
+        </div>
+      </div>
+
+      {/* Editor content skeleton */}
+      <div className='flex-1 p-6'>
+        <div className='max-w-4xl mx-auto space-y-4'>
+          {/* Title skeleton */}
+          <Skeleton className='h-8 w-3/4' />
+
+          {/* Paragraph skeletons */}
+          <div className='space-y-3'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-5/6' />
+          </div>
+
+          {/* Another paragraph */}
+          <div className='space-y-3 mt-6'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-4/5' />
+          </div>
+
+          {/* List skeleton */}
+          <div className='space-y-2 mt-6'>
+            <Skeleton className='h-4 w-3/4' />
+            <Skeleton className='h-4 w-2/3' />
+            <Skeleton className='h-4 w-5/6' />
+          </div>
+
+          {/* More content */}
+          <div className='space-y-3 mt-8'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-3/4' />
+          </div>
+
+          {/* Code block skeleton */}
+          <div className='mt-8'>
+            <Skeleton className='h-32 w-full rounded-lg' />
+          </div>
+
+          {/* Final paragraph */}
+          <div className='space-y-3 mt-8'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-4/5' />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+export default function DocumentLoading() {
+  return (
+    <div className='min-h-screen bg-background'>
+      <ResizablePanelGroup direction='horizontal' className='h-full w-full'>
+        <ResizablePanel
+          defaultSize={SIDE_PANEL_DEFAULT_SIZE}
+          minSize={SIDE_PANEL_MIN_SIZE}
+          maxSize={SIDE_PANEL_MAX_SIZE}
+        >
+          <VerticalToolbarSkeleton />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel
+          defaultSize={MAIN_PANEL_DEFAULT_SIZE}
+          minSize={MAIN_PANEL_MIN_SIZE}
+          maxSize={MAIN_PANEL_MAX_SIZE}
+        >
+          <DocumentSkeleton />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

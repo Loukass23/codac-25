@@ -45,9 +45,9 @@ export function MentionElement(
         'inline-block rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm font-medium',
         !readOnly && 'cursor-pointer',
         selected && focused && 'ring-2 ring-ring',
-        element.children[0][KEYS.bold] === true && 'font-bold',
-        element.children[0][KEYS.italic] === true && 'italic',
-        element.children[0][KEYS.underline] === true && 'underline'
+        element?.children?.[0]?.[KEYS.bold] === true && 'font-bold',
+        element?.children?.[0]?.[KEYS.italic] === true && 'italic',
+        element?.children?.[0]?.[KEYS.underline] === true && 'underline'
       )}
       attributes={{
         ...props.attributes,
@@ -84,23 +84,23 @@ export function MentionInputElement(
   const [search, setSearch] = React.useState('');
 
   return (
-    <PlateElement {...props} as="span">
+    <PlateElement {...props} as='span'>
       <InlineCombobox
         value={search}
         element={element}
         setValue={setSearch}
         showTrigger={false}
-        trigger="@"
+        trigger='@'
       >
-        <span className="inline-block rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm ring-ring focus-within:ring-2">
+        <span className='inline-block rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm ring-ring focus-within:ring-2'>
           <InlineComboboxInput />
         </span>
 
-        <InlineComboboxContent className="my-1.5">
+        <InlineComboboxContent className='my-1.5'>
           <InlineComboboxEmpty>No results</InlineComboboxEmpty>
 
           <InlineComboboxGroup>
-            {MENTIONABLES.map((item) => (
+            {MENTIONABLES.map(item => (
               <InlineComboboxItem
                 key={item.key}
                 value={item.text}

@@ -1,14 +1,18 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-import { auth } from "@/lib/auth/auth";
+import { getLMSDocumentBySlug } from '@/data/documents/get-lms-documents';
+import { requireServerAuth } from '@/lib/auth/auth-server';
 
 export default async function LMSPage() {
-    const session = await auth();
+  const user = await requireServerAuth();
 
-    if (!session?.user) {
-        redirect("/auth/signin");
-    }
+  // Try to find the welcome document
+  const welcomeDoc = await getLMSDocumentBySlug('welcome');
 
-    // Redirect to the welcome page
-    redirect("/lms/welcome");
+  if (welcomeDoc) {
+    redirect('/lms/welcome');
+  }
+
+  // If no welcome document, redirect to a default LMS page
+  redirect('/lms');
 }

@@ -34,12 +34,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className='min-h-screen bg-background'>
-      {isOwner && <Button asChild>
-        <Link href={`/projects/${id}/edit`}>
-          Edit</Link>
-      </Button>}
+      {isOwner && (
+        <Button asChild>
+          <Link href={`/projects/${id}/edit`}>Edit</Link>
+        </Button>
+      )}
       <PlateStaticEditor initialValue={plateValue} />
-
     </div>
   );
 }

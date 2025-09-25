@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import {
   ArrowUpToLineIcon,
   BaselineIcon,
@@ -16,6 +14,7 @@ import {
 } from 'lucide-react';
 import { KEYS } from 'platejs';
 import { useEditorReadOnly } from 'platejs/react';
+import * as React from 'react';
 
 import { AIToolbarButton } from './ai-toolbar-button';
 import { AlignToolbarButton } from './align-toolbar-button';
@@ -42,20 +41,22 @@ import { MarkToolbarButton } from './mark-toolbar-button';
 import { MediaToolbarButton } from './media-toolbar-button';
 import { ModeToolbarButton } from './mode-toolbar-button';
 import { MoreToolbarButton } from './more-toolbar-button';
+import { SimpleSaveButton } from './simple-save-button';
+import { SuggestionToolbarButton } from './suggestion-toolbar-button';
 import { TableToolbarButton } from './table-toolbar-button';
 import { ToggleToolbarButton } from './toggle-toolbar-button';
 import { ToolbarGroup } from './toolbar';
 import { TurnIntoToolbarButton } from './turn-into-toolbar-button';
-import { SuggestionToolbarButton } from './suggestion-toolbar-button';
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
 
   return (
-    <div className="flex w-full">
+    <div className='flex w-full'>
       {!readOnly && (
         <>
           <ToolbarGroup>
+            <SimpleSaveButton />
             <SuggestionToolbarButton />
             <CommentToolbarButton />
             <UndoToolbarButton />
@@ -63,7 +64,7 @@ export function FixedToolbarButtons() {
           </ToolbarGroup>
 
           <ToolbarGroup>
-            <AIToolbarButton tooltip="AI commands">
+            <AIToolbarButton tooltip='AI commands'>
               <WandSparklesIcon />
             </AIToolbarButton>
           </ToolbarGroup>
@@ -83,39 +84,39 @@ export function FixedToolbarButtons() {
           </ToolbarGroup>
 
           <ToolbarGroup>
-            <MarkToolbarButton nodeType={KEYS.bold} tooltip="Bold (⌘+B)">
+            <MarkToolbarButton nodeType={KEYS.bold} tooltip='Bold (⌘+B)'>
               <BoldIcon />
             </MarkToolbarButton>
 
-            <MarkToolbarButton nodeType={KEYS.italic} tooltip="Italic (⌘+I)">
+            <MarkToolbarButton nodeType={KEYS.italic} tooltip='Italic (⌘+I)'>
               <ItalicIcon />
             </MarkToolbarButton>
 
             <MarkToolbarButton
               nodeType={KEYS.underline}
-              tooltip="Underline (⌘+U)"
+              tooltip='Underline (⌘+U)'
             >
               <UnderlineIcon />
             </MarkToolbarButton>
 
             <MarkToolbarButton
               nodeType={KEYS.strikethrough}
-              tooltip="Strikethrough (⌘+⇧+M)"
+              tooltip='Strikethrough (⌘+⇧+M)'
             >
               <StrikethroughIcon />
             </MarkToolbarButton>
 
-            <MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘+E)">
+            <MarkToolbarButton nodeType={KEYS.code} tooltip='Code (⌘+E)'>
               <Code2Icon />
             </MarkToolbarButton>
 
-            <FontColorToolbarButton nodeType={KEYS.color} tooltip="Text color">
+            <FontColorToolbarButton nodeType={KEYS.color} tooltip='Text color'>
               <BaselineIcon />
             </FontColorToolbarButton>
 
             <FontColorToolbarButton
               nodeType={KEYS.backgroundColor}
-              tooltip="Background color"
+              tooltip='Background color'
             >
               <PaintBucketIcon />
             </FontColorToolbarButton>
@@ -155,13 +156,12 @@ export function FixedToolbarButtons() {
         </>
       )}
 
-      <div className="grow" />
+      <div className='grow' />
 
       <ToolbarGroup>
-        <MarkToolbarButton nodeType={KEYS.highlight} tooltip="Highlight">
+        <MarkToolbarButton nodeType={KEYS.highlight} tooltip='Highlight'>
           <HighlighterIcon />
         </MarkToolbarButton>
-
       </ToolbarGroup>
 
       <ToolbarGroup>

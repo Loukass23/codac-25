@@ -27,7 +27,7 @@ interface DemoDocumentDiscussion {
 
 interface DemoDocumentComment {
     contentRich: any; // Plate.js content - matches TComment.contentRich
-    authorEmail: string;
+    userId: string; // This is actually an email address in the JSON data
     parentId?: string;
     isEdited?: boolean;
 }
@@ -86,7 +86,7 @@ export async function seedDocuments() {
 
                 // Create discussions for this document if they exist
                 if (documentData.discussions && documentData.discussions.length > 0) {
-                    logger.info(`💬 Creating discussions for document: ${document.title}`);
+                    logger.info(`💬 Creating ${documentData.discussions.length} discussions for document: ${document.title}`);
 
                     for (const discussionData of documentData.discussions) {
                         const discussionAuthor = users.find(u => u.email === discussionData.authorEmail);
@@ -111,9 +111,9 @@ export async function seedDocuments() {
                             logger.info(`💬 Creating ${discussionData.comments.length} comments for discussion: ${discussion.id}`);
 
                             for (const commentData of discussionData.comments) {
-                                const commentAuthor = users.find(u => u.email === commentData.authorEmail);
+                                const commentAuthor = users.find(u => u.email === commentData.userId);
                                 if (!commentAuthor) {
-                                    logger.warn(`Comment author not found for email: ${commentData.authorEmail}`);
+                                    logger.warn(`Comment author not found for email: ${commentData.userId}`);
                                     continue;
                                 }
 
@@ -129,6 +129,8 @@ export async function seedDocuments() {
                             }
                         }
                     }
+                } else {
+                    logger.info(`📄 No discussions found for document: ${document.title}`);
                 }
 
                 return document;
@@ -138,8 +140,14 @@ export async function seedDocuments() {
         // Filter out null results
         const validDocuments = createdDocuments.filter(d => d !== null);
 
+        // Count total discussions and comments created
+        const totalDiscussions = documentsData.reduce((sum, doc) => sum + (doc.discussions?.length ?? 0), 0);
+        const totalComments = documentsData.reduce((sum, doc) =>
+            sum + (doc.discussions?.reduce((discSum, disc) => discSum + (disc.comments?.length ?? 0), 0) ?? 0), 0
+        );
+
         logger.info(
-            `✅ Successfully created ${validDocuments.length} demo documents`
+            `✅ Successfully created ${validDocuments.length} demo documents with ${totalDiscussions} discussions and ${totalComments} comments`
         );
 
         console.log('\n🎉 Demo documents seeded successfully!');
@@ -148,6 +156,8 @@ export async function seedDocuments() {
         validDocuments.forEach(document => {
             console.log(`  • ${document?.title} (${document?.documentType})`);
         });
+        console.log(`💬 Created ${totalDiscussions} discussions with ${totalComments} comments`);
+
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error : new Error(String(error));

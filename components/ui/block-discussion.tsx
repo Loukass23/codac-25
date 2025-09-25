@@ -44,9 +44,11 @@ import {
   isResolvedSuggestion,
   useResolveSuggestion,
 } from './block-suggestion';
-import { Comment, CommentCreateForm } from './comment';
+import { Comment } from './comment';
+import { CommentWrapper } from '../editor/comment-wrapper';
+import { CommentCreateFormWrapper } from '../editor/comment-create-form-wrapper';
 
-export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
+export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = props => {
   const { editor, element } = props;
 
   const commentsApi = editor.getApi(CommentPlugin).comment;
@@ -71,7 +73,7 @@ export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
     return;
   }
 
-  return (props) => (
+  return props => (
     <BlockCommentContent
       blockPath={blockPath}
       commentNodes={commentNodes}
@@ -105,14 +107,13 @@ const BlockCommentContent = ({
   const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId');
   const activeSuggestion =
     activeSuggestionId &&
-    resolvedSuggestions.find((s) => s.suggestionId === activeSuggestionId);
+    resolvedSuggestions.find(s => s.suggestionId === activeSuggestionId);
 
   const commentingBlock = usePluginOption(commentPlugin, 'commentingBlock');
   const activeCommentId = usePluginOption(commentPlugin, 'activeId');
   const isCommenting = activeCommentId === getDraftCommentKey();
   const activeDiscussion =
-    activeCommentId &&
-    resolvedDiscussions.find((d) => d.id === activeCommentId);
+    activeCommentId && resolvedDiscussions.find(d => d.id === activeCommentId);
 
   const noneActive = !activeSuggestion && !activeDiscussion;
 
@@ -122,8 +123,8 @@ const BlockCommentContent = ({
   ].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
   const selected =
-    resolvedDiscussions.some((d) => d.id === activeCommentId) ||
-    resolvedSuggestions.some((s) => s.suggestionId === activeSuggestionId);
+    resolvedDiscussions.some(d => d.id === activeCommentId) ||
+    resolvedSuggestions.some(s => s.suggestionId === activeSuggestionId);
 
   const [_open, setOpen] = React.useState(selected);
 
@@ -175,41 +176,41 @@ const BlockCommentContent = ({
   ]);
 
   if (suggestionsCount + resolvedDiscussions.length === 0 && !draftCommentNode)
-    return <div className="w-full">{children}</div>;
+    return <div className='w-full'>{children}</div>;
 
   return (
-    <div className="flex w-full justify-between">
+    <div className='flex w-full justify-between'>
       <Popover
         open={open}
-        onOpenChange={(_open_) => {
+        onOpenChange={_open_ => {
           if (!_open_ && isCommenting && draftCommentNode) {
             editor.tf.unsetNodes(getDraftCommentKey(), {
               at: [],
               mode: 'lowest',
-              match: (n) => n[getDraftCommentKey()],
+              match: n => n[getDraftCommentKey()],
             });
           }
           setOpen(_open_);
         }}
       >
-        <div className="w-full">{children}</div>
+        <div className='w-full'>{children}</div>
         {anchorElement && (
           <PopoverAnchor
             asChild
-            className="w-full"
+            className='w-full'
             virtualRef={{ current: anchorElement }}
           />
         )}
 
         <PopoverContent
-          className="max-h-[min(50dvh,calc(-24px+var(--radix-popper-available-height)))] w-[380px] max-w-[calc(100vw-24px)] min-w-[130px] overflow-y-auto p-0 data-[state=closed]:opacity-0"
-          onCloseAutoFocus={(e) => e.preventDefault()}
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          align="center"
-          side="bottom"
+          className='max-h-[min(50dvh,calc(-24px+var(--radix-popper-available-height)))] w-[380px] max-w-[calc(100vw-24px)] min-w-[130px] overflow-y-auto p-0 data-[state=closed]:opacity-0'
+          onCloseAutoFocus={e => e.preventDefault()}
+          onOpenAutoFocus={e => e.preventDefault()}
+          align='center'
+          side='bottom'
         >
           {isCommenting ? (
-            <CommentCreateForm className="p-4" focusOnMount />
+            <CommentCreateFormWrapper className='p-4' focusOnMount />
           ) : (
             <React.Fragment>
               {noneActive ? (
@@ -250,27 +251,27 @@ const BlockCommentContent = ({
         </PopoverContent>
 
         {totalCount > 0 && (
-          <div className="relative left-0 size-0 select-none">
+          <div className='relative left-0 size-0 select-none'>
             <PopoverTrigger asChild>
               <Button
-                variant="ghost"
-                className="mt-1 ml-1 flex h-6 gap-1 !px-1.5 py-0 text-muted-foreground/80 hover:text-muted-foreground/80 data-[active=true]:bg-muted"
+                variant='ghost'
+                className='mt-1 ml-1 flex h-6 gap-1 !px-1.5 py-0 text-muted-foreground/80 hover:text-muted-foreground/80 data-[active=true]:bg-muted'
                 data-active={open}
                 contentEditable={false}
               >
                 {suggestionsCount > 0 && discussionsCount === 0 && (
-                  <PencilLineIcon className="size-4 shrink-0" />
+                  <PencilLineIcon className='size-4 shrink-0' />
                 )}
 
                 {suggestionsCount === 0 && discussionsCount > 0 && (
-                  <MessageSquareTextIcon className="size-4 shrink-0" />
+                  <MessageSquareTextIcon className='size-4 shrink-0' />
                 )}
 
                 {suggestionsCount > 0 && discussionsCount > 0 && (
-                  <MessagesSquareIcon className="size-4 shrink-0" />
+                  <MessagesSquareIcon className='size-4 shrink-0' />
                 )}
 
-                <span className="text-xs font-semibold">{totalCount}</span>
+                <span className='text-xs font-semibold'>{totalCount}</span>
               </Button>
             </PopoverTrigger>
           </div>
@@ -291,9 +292,9 @@ function BlockComment({
 
   return (
     <React.Fragment key={discussion.id}>
-      <div className="p-4">
+      <div className='p-4'>
         {discussion.comments.map((comment, index) => (
-          <Comment
+          <CommentWrapper
             key={comment.id ?? index}
             comment={comment}
             discussionLength={discussion.comments.length}
@@ -304,10 +305,10 @@ function BlockComment({
             showDocumentContent
           />
         ))}
-        <CommentCreateForm discussionId={discussion.id} />
+        <CommentCreateFormWrapper discussionId={discussion.id} />
       </div>
 
-      {!isLast && <div className="h-px w-full bg-muted" />}
+      {!isLast && <div className='h-px w-full bg-muted' />}
     </React.Fragment>
   );
 }

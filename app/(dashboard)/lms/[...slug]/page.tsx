@@ -1,10 +1,12 @@
 import { notFound, redirect } from 'next/navigation';
-import { Suspense } from 'react';
 
-import { PlateLMSWrapper } from '@/components/lms/plate-lms-wrapper';
-import { LMSSkeleton } from '@/components/lms/lms-skeleton';
-import { auth } from '@/lib/auth/auth';
-import { parseMarkdownFile } from '@/lib/plate/markdown-parser';
+import { DocumentStaticViewer } from '@/components/editor/document-static-viewer';
+import {
+  getLMSDocumentBySlug,
+  getRelatedLMSDocuments,
+  checkLMSDocumentAccess,
+} from '@/data/documents/get-lms-documents';
+import { requireServerAuth } from '@/lib/auth/auth-server';
 
 interface LMSContentPageProps {
   params: Promise<{
@@ -13,24 +15,56 @@ interface LMSContentPageProps {
 }
 
 export async function generateStaticParams() {
-  // Generate static params for all markdown files
-  const { getAllMarkdownFiles } = await import('@/lib/plate/markdown-parser');
-  const files = getAllMarkdownFiles();
+  // Generate static params for all LMS documents
+  const { getLMSNavigation } = await import(
+    '@/data/documents/get-lms-documents'
+  );
+  const navigation = await getLMSNavigation();
 
-  return files.map(file => ({
-    slug: file.replace('.md', '').split('/'),
-  }));
+  const params: { slug: string[] }[] = [];
+
+  function extractSlugs(
+    items: {
+      slug?: string;
+      children?: { slug?: string; children?: unknown[] }[];
+    }[]
+  ): void {
+    for (const item of items) {
+      if (item.slug) {
+        params.push({
+          slug: item.slug.split('/'),
+        });
+      }
+      if (item.children) {
+        extractSlugs(
+          item.children as {
+            slug?: string;
+            children?: { slug?: string; children?: unknown[] }[];
+          }[]
+        );
+      }
+    }
+  }
+
+  extractSlugs(navigation);
+  return params;
 }
 
 export async function generateMetadata({ params }: LMSContentPageProps) {
   try {
     const resolvedParams = await params;
-    const filePath = resolvedParams.slug.join('/') + '.md';
-    const parsedMarkdown = await parseMarkdownFile(filePath);
+    const slug = resolvedParams.slug.join('/');
+    const document = await getLMSDocumentBySlug(slug);
+    console.log('document', document);
+    if (!document) {
+      return {
+        title: 'Content Not Found',
+      };
+    }
 
     return {
-      title: parsedMarkdown.metadata.metaTitle || parsedMarkdown.metadata.title,
-      description: parsedMarkdown.metadata.metaDescription,
+      title: document.metaTitle ?? document.title ?? 'LMS Content',
+      description: document.metaDescription ?? document.description,
     };
   } catch {
     return {
@@ -40,61 +74,98 @@ export async function generateMetadata({ params }: LMSContentPageProps) {
 }
 
 export default async function LMSContentPage({ params }: LMSContentPageProps) {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect('/auth/signin');
-  }
+  const user = await requireServerAuth();
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug.join('/');
 
   try {
-    const resolvedParams = await params;
-    const filePath = resolvedParams.slug.join('/') + '.md';
-    const parsedMarkdown = await parseMarkdownFile(filePath);
+    const document = await getLMSDocumentBySlug(slug);
+
+    if (!document) {
+      notFound();
+    }
 
     // Check access permissions
-    const user = session.user;
-    const userRole = user.role || 'STUDENT';
-    const access = parsedMarkdown.metadata.access;
+    const userRole = user.role ?? 'STUDENT';
+    const hasAccess = checkLMSDocumentAccess(
+      document.access ?? 'public',
+      userRole
+    );
 
-    // Admin can access everything
-    if (userRole === 'ADMIN') {
-      // Allow access
-    } else if (access === 'public' || access === 'all') {
-      // Allow access
-    } else if (
-      (access === 'web' || access === 'data') &&
-      (userRole === 'STUDENT' || userRole === 'MENTOR')
-    ) {
-      // Students and mentors can access these
-      // Allow access
-    } else if (access === 'web' || access === 'data') {
-      // Deny access for other roles
-      redirect('/lms');
-    } else if (access === 'admin') {
-      // Only admin can access
-    } else {
-      // Default deny
+    if (!hasAccess) {
       redirect('/lms');
     }
 
-    const { metadata, plateValue } = parsedMarkdown;
+    // Get related documents for navigation
+    const { prev, next } = await getRelatedLMSDocuments(slug);
+
     return (
-      <Suspense fallback={<LMSSkeleton />}>
-        <PlateLMSWrapper
-          plateValue={plateValue}
-          title={metadata.title}
-          description={metadata.metaDescription || ''}
-          showEditButton={true}
-          editLink={`/lms/${resolvedParams.slug.join('/')}/edit`}
-          showNavigation={!!(metadata.prev || metadata.next)}
-          prevLink={metadata.prev ? `/lms/${metadata.prev}` : ''}
-          nextLink={metadata.next ? `/lms/${metadata.next}` : ''}
-          showTableOfContents={true}
-        />
-      </Suspense>
+      <div className='container mx-auto p-6'>
+        <div className='space-y-6'>
+          {/* Document header */}
+          <div className='space-y-2'>
+            <h1 className='text-4xl font-bold'>{document.title}</h1>
+            {document.description && (
+              <p className='text-lg text-muted-foreground'>
+                {document.description}
+              </p>
+            )}
+            <div className='flex items-center gap-4 text-sm text-muted-foreground'>
+              <span>LMS Content</span>
+              <span>
+                created: {new Date(document.createdAt).toLocaleDateString()}
+              </span>
+              <span>
+                updated: {new Date(document.updatedAt).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+
+          {/* Document content rendered statically */}
+          <div className='border rounded-lg'>
+            <div className='p-6'>
+              <DocumentStaticViewer
+                document={document}
+                className='prose max-w-none'
+                variant='server'
+              />
+            </div>
+          </div>
+
+          {/* Navigation */}
+          {(prev || next) && (
+            <div className='flex justify-between pt-6 border-t'>
+              {prev ? (
+                <a
+                  href={`/lms/${prev.slug}`}
+                  className='inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50'
+                >
+                  ← {prev.title ?? 'Previous'}
+                </a>
+              ) : (
+                <div />
+              )}
+              {next ? (
+                <a
+                  href={`/lms/${next.slug}`}
+                  className='inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50'
+                >
+                  {next.title ?? 'Next'} →
+                </a>
+              ) : (
+                <div />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     );
   } catch (error) {
-    console.error('Error loading content:', error);
+    // Log error in development only
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Error loading LMS content:', error);
+    }
     notFound();
   }
 }

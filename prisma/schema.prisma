@@ -247,6 +247,7 @@ model User {
 
   // Document Relations
   documents Document[]
+  documentFolders DocumentFolder[]
 
   @@index([email])
   @@index([role])
@@ -292,6 +293,38 @@ model Cohort {
 // DOCUMENT MANAGEMENT
 // =============================================================================
 
+model DocumentFolder {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  color       String @default("#3B82F6") // Hex color for folder
+  icon        String? // Icon name (e.g., "folder", "folder-open", etc.)
+  
+  // Hierarchy
+  parentId    String?
+  parent      DocumentFolder? @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    DocumentFolder[] @relation("FolderHierarchy")
+  
+  // Ownership
+  ownerId     String
+  owner       User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  // Documents in this folder
+  documents   Document[]
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Ordering within parent folder
+  sortOrder Int @default(0)
+  
+  @@index([ownerId])
+  @@index([parentId])
+  @@index([ownerId, parentId])
+  @@map("document_folders")
+}
+
 model Document {
   id          String @id @default(cuid())
   content     Json @default("[]")   // Plate.js Value content
@@ -304,11 +337,25 @@ model Document {
   isArchived  Boolean @default(false)
   
   // Document type and context
-  documentType String // 'project_summary', 'community_post', 'lesson_content', etc.
+  documentType String // 'project_summary', 'community_post', 'lesson_content', 'lms_content', etc.
+  
+  // LMS-specific fields
+  navTitle    String? // Navigation title for LMS
+  metaTitle   String? // SEO meta title
+  metaDescription String? // SEO meta description
+  access      String? // Access control: 'public', 'all', 'web', 'data', 'admin'
+  order       Int?    // Display order for LMS content
+  prev        String? // Previous content slug
+  next        String? // Next content slug
+  slug        String? // URL slug for LMS content
   
   // Relations
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Folder organization
+  folderId String?
+  folder   DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
   
   // Polymorphic relations - can be linked to various entities
   projectId String? // If this document belongs to a project
@@ -329,6 +376,10 @@ model Document {
   @@index([documentType])
   @@index([isPublished])
   @@index([projectId])
+  @@index([folderId])
+  @@index([slug])
+  @@index([access])
+  @@index([order])
   @@map("documents")
 }
 

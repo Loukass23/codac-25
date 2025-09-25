@@ -1,12 +1,12 @@
 export type ServerActionResult<T = unknown> = Promise<
   | {
-      success: true;
-      data?: T;
-    }
+    success: true;
+    data?: T;
+  }
   | {
-      success: false;
-      error: { form?: string; _errors?: string[] } & T;
-    }
+    success: false;
+    error: { form?: string; _errors?: string[] } | string;
+  }
 >;
 
 export type PlateContent = Array<{

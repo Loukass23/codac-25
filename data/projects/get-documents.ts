@@ -15,6 +15,7 @@ export interface DocumentWithAuthor {
     isPublished: boolean;
     isArchived: boolean;
     projectId: string | null;
+    folderId: string | null;
     createdAt: Date;
     updatedAt: Date;
     author: {
@@ -25,6 +26,11 @@ export interface DocumentWithAuthor {
     project?: {
         id: string;
         title: string;
+    } | null;
+    folder?: {
+        id: string;
+        name: string;
+        color: string;
     } | null;
 }
 
@@ -46,6 +52,13 @@ export async function getDocumentById(
                     select: {
                         id: true,
                         title: true,
+                    },
+                },
+                folder: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
                     },
                 },
             },
@@ -83,6 +96,13 @@ export async function getDocumentsByProject(
                     select: {
                         id: true,
                         title: true,
+                    },
+                },
+                folder: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
                     },
                 },
             },
@@ -126,6 +146,13 @@ export async function getDocumentsByType(
                     select: {
                         id: true,
                         title: true,
+                    },
+                },
+                folder: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
                     },
                 },
             },
@@ -183,6 +210,13 @@ export async function getUserDocuments(
                         title: true,
                     },
                 },
+                folder: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                    },
+                },
             },
             orderBy: {
                 createdAt: 'desc',
@@ -236,6 +270,13 @@ export async function getProjectSummaryDocument(
                     select: {
                         id: true,
                         title: true,
+                    },
+                },
+                folder: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
                     },
                 },
             },
