@@ -28,10 +28,8 @@ import { useEditorPlugin, usePluginOption } from 'platejs/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  type TDiscussion,
-  discussionPlugin,
-} from '@/components/editor/plugins/discussion-kit';
+import { type TDiscussion } from '@/components/editor/plugins/discussion-kit';
+import { discussionPlugin } from '@/components/editor/plugins/discussion-plugin-config';
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
 
 import {
@@ -141,7 +139,7 @@ export function BlockSuggestionCard({
         <div className="relative flex items-center">
           {/* Replace to your own backend or refer to potion */}
           <Avatar className="size-5">
-            <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+            <AvatarImage alt={userInfo?.name ?? ''} src={userInfo?.avatarUrl ?? ''} />
             <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
           </Avatar>
           <h4 className="mx-2 text-sm leading-none font-semibold">
