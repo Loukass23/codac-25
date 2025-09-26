@@ -1,12 +1,14 @@
+import type { Value } from 'platejs';
+
+import { DocumentStaticViewer } from '@/components/editor/document-static-viewer';
+import { MinimalStaticEditor } from '@/components/editor/minimal-static-editor';
 import { ServerStaticEditor } from '@/components/editor/server-static-editor';
 import { StaticEditor } from '@/components/editor/static-editor';
-import { MinimalStaticEditor } from '@/components/editor/minimal-static-editor';
-import { DocumentStaticViewer } from '@/components/editor/document-static-viewer';
 import {
   createOptimalStaticEditor,
   sanitizeForStatic,
 } from '@/lib/plate-static-utils';
-import type { Value } from 'platejs';
+
 
 // Example content with different complexity levels
 const simpleContent: Value = [

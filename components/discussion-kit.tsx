@@ -1,10 +1,10 @@
 'use client';
 
-import type { TComment } from '@/components/comment';
 
 import { createPlatePlugin } from 'platejs/react';
 
 import { BlockDiscussion } from '@/components/block-discussion';
+import type { TComment } from '@/components/comment';
 
 export interface TDiscussion {
   id: string;

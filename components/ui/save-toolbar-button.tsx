@@ -1,11 +1,12 @@
 'use client';
 
-import * as React from 'react';
 import { SaveIcon, CheckIcon, ClockIcon, AlertCircleIcon } from 'lucide-react';
 import { useEditorRef, usePluginOption } from 'platejs/react';
+import * as React from 'react';
+
+import { savePlugin } from '@/components/editor/plugins/save-kit';
 
 import { ToolbarButton } from './toolbar';
-import { savePlugin } from '@/components/editor/plugins/save-kit';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 

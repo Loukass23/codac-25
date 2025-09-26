@@ -18,8 +18,8 @@ import {
 // Re-export UserData for other components
 export type { UserData };
 
-import { TComment } from '../../ui/comment';
 import { BlockDiscussion } from '../../ui/block-discussion';
+import { TComment } from '../../ui/comment';
 
 export interface SimpleUser {
   id: string;
@@ -256,7 +256,7 @@ export const discussionPlugin = createPlatePlugin({
             // TODO: Add delete comment server action
             // For now, just update local state
             const [commentIdToDelete, discussionIdToUpdate] = args;
-            const discussions = getOption('discussions') as TDiscussion[];
+            const discussions = getOption('discussions');
             const updatedDiscussions = discussions.map(discussion => {
               if (discussion.id === discussionIdToUpdate) {
                 return {

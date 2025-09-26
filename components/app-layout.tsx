@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+
 import { AppHeaderClient } from "@/components/app-header-client";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 interface AppLayoutProps {
   children: React.ReactNode;

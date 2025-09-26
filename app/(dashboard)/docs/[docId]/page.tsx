@@ -1,5 +1,5 @@
-import { DocumentEditorController } from '@/components/editor/document-editor-controller';
 import { DocumentEditor } from '@/components/editor/document-editor';
+import { DocumentEditorController } from '@/components/editor/document-editor-controller';
 import {
   ResizablePanelGroup,
   ResizablePanel,

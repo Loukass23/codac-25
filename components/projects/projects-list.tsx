@@ -1,5 +1,6 @@
 'use client';
 
+import { ProjectStatus , SkillLevel } from '@prisma/client';
 import { Search, Grid, List, Filter } from 'lucide-react';
 import { use, useState } from 'react';
 
@@ -18,8 +19,7 @@ import { Separator } from '@/components/ui/separator';
 import { ProjectDTO } from '@/data/projects/get-projects';
 import { useUrlFilters, type FilterState } from '@/lib/utils/url-utils';
 
-import { ProjectStatus } from '@prisma/client';
-import { SkillLevel } from '@prisma/client';
+
 
 interface ProjectsListProps {
   _projectsPromise: Promise<ProjectDTO[]>;

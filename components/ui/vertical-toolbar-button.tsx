@@ -1,8 +1,10 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { ToolbarButton } from './toolbar';
 import * as React from 'react';
+
+import { cn } from '@/lib/utils';
+
+import { ToolbarButton } from './toolbar';
 
 interface VerticalToolbarButtonProps {
   children: React.ReactNode;

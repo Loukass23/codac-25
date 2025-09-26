@@ -1,6 +1,5 @@
 'use server';
 
-import type { DocumentWithAuthor } from '@/data/projects/get-documents';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 
@@ -18,93 +17,53 @@ export interface DocumentFolderWithChildren {
     documentCount: number;
 }
 
-export async function getUserFolders(userId: string): Promise<DocumentFolderWithChildren[]> {
-    try {
-        // Get all folders for the user
-        const folders = await prisma.documentFolder.findMany({
-            where: {
-                ownerId: userId,
-            },
-            include: {
-                documents: {
-                    select: {
-                        id: true,
-                    },
-                },
-            },
-            orderBy: [
-                { sortOrder: 'asc' },
-                { createdAt: 'asc' },
-            ],
-        });
-
-        // Get document counts for each folder
-        const folderDocumentCounts = await prisma.document.groupBy({
-            by: ['folderId'],
-            where: {
-                authorId: userId,
-                isArchived: false,
-            },
-            _count: {
-                folderId: true,
-            },
-        });
-
-        const documentCountMap = new Map<string, number>();
-        documentCountMap.set('', 0); // Root folder count
-
-        folderDocumentCounts.forEach((count) => {
-            documentCountMap.set(count.folderId ?? '', count._count.folderId);
-        });
-
-        // Build the folder tree
-        const folderMap = new Map<string, DocumentFolderWithChildren>();
-        const rootFolders: DocumentFolderWithChildren[] = [];
-
-        // First pass: create all folder objects
-        folders.forEach((folder) => {
-            const folderWithChildren: DocumentFolderWithChildren = {
-                id: folder.id,
-                name: folder.name,
-                description: folder.description,
-                color: folder.color,
-                icon: folder.icon,
-                parentId: folder.parentId,
-                sortOrder: folder.sortOrder,
-                createdAt: folder.createdAt,
-                updatedAt: folder.updatedAt,
-                children: [],
-                documentCount: documentCountMap.get(folder.id) ?? 0,
-            };
-            folderMap.set(folder.id, folderWithChildren);
-        });
-
-        // Second pass: build the tree structure
-        folders.forEach((folder) => {
-            const folderWithChildren = folderMap.get(folder.id)!;
-
-            if (folder.parentId) {
-                const parent = folderMap.get(folder.parentId);
-                if (parent) {
-                    parent.children.push(folderWithChildren);
-                }
-            } else {
-                rootFolders.push(folderWithChildren);
-            }
-        });
-
-        return rootFolders;
-    } catch (error) {
-        logger.error('Failed to fetch user folders', error instanceof Error ? error : new Error(String(error)), {
-            action: 'get_user_folders',
-            metadata: {
-                userId,
-                error: error instanceof Error ? error.message : 'Unknown error',
-            },
-        });
-        return [];
-    }
+export interface DocumentWithAuthor {
+    id: string;
+    content: any; // Plate.js Value type
+    title: string | null;
+    description: string | null;
+    documentType: string;
+    version: number;
+    isPublished: boolean;
+    isArchived: boolean;
+    projectId: string | null;
+    folderId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    author: {
+        id: string;
+        name: string | null;
+        avatar: string | null;
+    };
+    project?: {
+        id: string;
+        title: string;
+    } | null;
+    folder?: {
+        id: string;
+        name: string;
+        color: string;
+    } | null;
 }
+
+export interface FolderTreeItem {
+    id: string;
+    name: string;
+    type: 'folder' | 'document';
+    color?: string;
+    icon?: string | null;
+    documentCount?: number;
+    children?: string[];
+    documentType?: string;
+    isPublished?: boolean;
+    author?: {
+        id: string;
+        name: string | null;
+        avatar: string | null;
+    };
+}
+
+
 
 export async function getFolderById(folderId: string, userId: string): Promise<DocumentFolderWithChildren | null> {
     try {
@@ -210,5 +169,97 @@ export async function getDocumentsInFolder(
             },
         });
         return [];
+    }
+}
+
+export async function getFolderTreeWithDocuments(userId: string): Promise<{
+    items: Record<string, FolderTreeItem>;
+    rootIds: string[];
+}> {
+    try {
+        // Get all folders for the user
+        const folders = await prisma.documentFolder.findMany({
+            where: {
+                ownerId: userId,
+            },
+            orderBy: [
+                { sortOrder: 'asc' },
+                { createdAt: 'asc' },
+            ],
+        });
+
+        // Get all documents for the user
+        const documents = await prisma.document.findMany({
+            where: {
+                authorId: userId,
+                isArchived: false,
+            },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        avatar: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        // Build the tree structure
+        const items: Record<string, FolderTreeItem> = {};
+        const rootIds: string[] = [];
+
+        // Add folders to items
+        folders.forEach((folder) => {
+            const children: string[] = [];
+
+            // Add child folders
+            const childFolders = folders.filter(f => f.parentId === folder.id);
+            childFolders.forEach(child => children.push(child.id));
+
+            // Add documents in this folder
+            const folderDocuments = documents.filter(d => d.folderId === folder.id);
+            folderDocuments.forEach(doc => children.push(doc.id));
+
+            items[folder.id] = {
+                id: folder.id,
+                name: folder.name,
+                type: 'folder',
+                color: folder.color,
+                icon: folder.icon,
+                documentCount: folderDocuments.length,
+                children: children.length > 0 ? children : undefined,
+            };
+
+            if (!folder.parentId) {
+                rootIds.push(folder.id);
+            }
+        });
+
+        // Add documents to items
+        documents.forEach((document) => {
+            items[document.id] = {
+                id: document.id,
+                name: document.title || 'Untitled Document',
+                type: 'document',
+                documentType: document.documentType,
+                isPublished: document.isPublished,
+                author: document.author,
+            };
+        });
+
+        return { items, rootIds };
+    } catch (error) {
+        logger.error('Failed to fetch folder tree with documents', error instanceof Error ? error : new Error(String(error)), {
+            action: 'get_folder_tree_with_documents',
+            metadata: {
+                userId,
+                error: error instanceof Error ? error.message : 'Unknown error',
+            },
+        });
+        return { items: {}, rootIds: [] };
     }
 }

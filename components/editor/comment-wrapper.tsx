@@ -1,11 +1,12 @@
 'use client';
 
-import * as React from 'react';
 import { useEditorRef, usePluginOption } from 'platejs/react';
+import * as React from 'react';
 import { toast } from 'sonner';
 
-import { discussionPlugin } from './plugins/discussion-kit';
 import { Comment } from '../ui/comment';
+
+import { discussionPlugin } from './plugins/discussion-kit';
 
 interface CommentWrapperProps {
   comment: any;

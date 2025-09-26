@@ -1,9 +1,10 @@
 'use client';
 
 import { createSlateEditor, PlateStatic } from 'platejs';
-import { useMemo } from 'react';
-import { BaseEditorKit } from './editor-base-kit';
 import type { Value } from 'platejs';
+import { useMemo } from 'react';
+
+import { BaseEditorKit } from './editor-base-kit';
 
 interface StaticEditorProps {
   value: Value;

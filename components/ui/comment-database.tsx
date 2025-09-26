@@ -1,8 +1,6 @@
 'use client';
 
-import * as React from 'react';
 
-import type { CreatePlateEditorOptions } from 'platejs/react';
 
 import { getCommentKey, getDraftCommentKey } from '@platejs/comment';
 import { CommentPlugin, useCommentId } from '@platejs/comment/react';
@@ -21,6 +19,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { type Value, KEYS, nanoid, NodeApi } from 'platejs';
+import type { CreatePlateEditorOptions } from 'platejs/react';
 import {
   Plate,
   useEditorPlugin,
@@ -28,7 +27,9 @@ import {
   usePlateEditor,
   usePluginOption,
 } from 'platejs/react';
+import * as React from 'react';
 
+import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,13 +40,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit';
+
+import { Editor, EditorContainer } from './editor';
+
 import {
   discussionDatabasePlugin,
   discussionDatabaseHelpers,
 } from '@/components/editor/plugins/discussion-database-simple';
 
-import { Editor, EditorContainer } from './editor';
 
 export interface TComment {
   id: string;

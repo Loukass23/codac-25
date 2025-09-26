@@ -1,10 +1,11 @@
 import { ClipboardCheck, Users, School, TrendingUp } from 'lucide-react';
 
 import { AttendanceCohortCard } from '@/components/attendance/attendance-cohort-card';
-import { PageErrorBoundary, SectionErrorBoundary } from '@/components/error';
 import { Grid, PageContainer, PageHeader, Section } from '@/components/layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCohortsForAttendance } from '@/data/attendance/get-cohorts-for-attendance';
+
+import { PageErrorBoundary, SectionErrorBoundary } from '@/components/error';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,4 +1,5 @@
 import { Value } from 'platejs';
+
 import useSavePlate from '@/hooks/use-save-plate';
 
 export function SaveManager({ onSave }: { onSave: (value: Value) => void }) {

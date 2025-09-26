@@ -4,11 +4,12 @@ import { Suspense } from 'react';
 import { AttendancePageHeader } from '@/components/attendance/attendance-page-header';
 import { AttendanceServer } from '@/components/attendance/attendance-server';
 import { StudentAttendanceProgress } from '@/components/attendance/student-attendance-progress';
-import { PageErrorBoundary, SectionErrorBoundary } from '@/components/error';
 import { PageContainer, Section } from '@/components/layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { getCohortForAttendance } from '@/data/attendance/get-cohort-for-attendance';
 import { getStudentAttendanceSummary } from '@/data/attendance/get-student-attendance-summary';
+
+import { PageErrorBoundary, SectionErrorBoundary } from '@/components/error';
 
 export const dynamic = 'force-dynamic';
 

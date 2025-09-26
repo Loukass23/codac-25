@@ -1,9 +1,6 @@
 'use client';
 
-import * as React from 'react';
 
-import type { TPlaceholderElement } from 'platejs';
-import type { PlateElementProps } from 'platejs/react';
 
 import {
   PlaceholderPlugin,
@@ -11,12 +8,15 @@ import {
   updateUploadHistory,
 } from '@platejs/media/react';
 import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from 'lucide-react';
+import type { TPlaceholderElement } from 'platejs';
 import { KEYS } from 'platejs';
+import type { PlateElementProps } from 'platejs/react';
 import { PlateElement, useEditorPlugin, withHOC } from 'platejs/react';
+import * as React from 'react';
 import { useFilePicker } from 'use-file-picker';
 
-import { cn } from '@/lib/utils';
 import { useUploadFile } from '@/hooks/use-upload-file';
+import { cn } from '@/lib/utils';
 
 const CONTENT: Record<
   string,
@@ -104,7 +104,7 @@ export const PlaceholderElement = withHOC(
           isUpload: true,
           name: element.mediaType === KEYS.file ? uploadedFile.name : '',
           placeholderId: element.id as string,
-          type: element.mediaType!,
+          type: element.mediaType,
           url: uploadedFile.url,
         };
 

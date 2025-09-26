@@ -4,10 +4,11 @@ import { AttendancePieChart } from '@/components/attendance/attendance-pie-chart
 import { AttendanceStatistics } from '@/components/attendance/attendance-statistics';
 import { InteractiveAttendanceManager } from '@/components/attendance/interactive-attendance-manager';
 import { InteractiveDatePicker } from '@/components/attendance/interactive-date-picker';
-import { SectionErrorBoundary } from '@/components/error';
 import { Grid, Section } from '@/components/layout';
 import { getCohortAttendanceForDate } from '@/data/attendance/get-cohort-attendance-for-date';
 import { getCohortForAttendance } from '@/data/attendance/get-cohort-for-attendance';
+
+import { SectionErrorBoundary } from '@/components/error';
 
 
 type AttendanceServerProps = {

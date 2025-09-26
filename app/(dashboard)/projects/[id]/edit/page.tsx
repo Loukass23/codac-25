@@ -1,13 +1,14 @@
 import { Project } from '@prisma/client';
 import { notFound } from 'next/navigation';
-
-import { getProjectById } from '@/data/projects/get-project-by-id';
+import { Value } from 'platejs';
 import { Suspense } from 'react';
+
 import ProjectContent from '@/components/projects/project-content';
+import { getProjectById } from '@/data/projects/get-project-by-id';
+import { requireServerAuth } from '@/lib/auth/auth-server';
+
 import { updateProjectSummary } from '../../../../../actions/projects/update-project-summary';
 
-import { Value } from 'platejs';
-import { requireServerAuth } from '@/lib/auth/auth-server';
 
 interface ProjectPageProps {
   params: {

@@ -1,8 +1,6 @@
 'use client';
 
-import * as React from 'react';
 
-import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';
 
 import { getDraftCommentKey } from '@platejs/comment';
 import { CommentPlugin } from '@platejs/comment/react';
@@ -23,8 +21,16 @@ import {
   PathApi,
   TextApi,
 } from 'platejs';
+import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';
 import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react';
+import * as React from 'react';
 
+import { commentPlugin } from '@/components/editor/plugins/comment-kit';
+import {
+  type TDiscussion,
+  discussionPlugin,
+} from '@/components/editor/plugins/discussion-kit';
+import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -32,12 +38,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { commentPlugin } from '@/components/editor/plugins/comment-kit';
-import {
-  type TDiscussion,
-  discussionPlugin,
-} from '@/components/editor/plugins/discussion-kit';
-import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
+
+import { CommentCreateFormWrapper } from '../editor/comment-create-form-wrapper';
+import { CommentWrapper } from '../editor/comment-wrapper';
 
 import {
   BlockSuggestionCard,
@@ -45,8 +48,6 @@ import {
   useResolveSuggestion,
 } from './block-suggestion';
 import { Comment } from './comment';
-import { CommentWrapper } from '../editor/comment-wrapper';
-import { CommentCreateFormWrapper } from '../editor/comment-create-form-wrapper';
 
 export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = props => {
   const { editor, element } = props;

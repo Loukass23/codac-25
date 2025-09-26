@@ -3,12 +3,12 @@ import { Suspense } from 'react';
 
 import { LMSNavigationDB } from '@/components/lms/lms-navigation-db';
 import { LMSSkeleton } from '@/components/lms/lms-skeleton';
-import { getLMSNavigation } from '@/data/documents/get-lms-documents';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import { getLMSNavigation } from '@/data/documents/get-lms-documents';
 
 export const metadata: Metadata = {
   title: 'Learning Management System',
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 
 async function LMSNavigationWrapper() {
   const navigation = await getLMSNavigation();
+  console.log("navigation", navigation);
   return <LMSNavigationDB navigation={navigation} />;
 }
 

@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 
 import { type UseChatHelpers, useChat as useBaseChat } from '@ai-sdk/react';
 import { faker } from '@faker-js/faker';
@@ -11,6 +10,7 @@ import { BlockSelectionPlugin } from '@platejs/selection/react';
 import { type UIMessage, DefaultChatTransport } from 'ai';
 import { type TNode, KEYS, nanoid, NodeApi, TextApi } from 'platejs';
 import { type PlateEditor, useEditorRef, usePluginOption } from 'platejs/react';
+import * as React from 'react';
 
 import { aiChatPlugin } from '@/components/editor/plugins/ai-kit';
 

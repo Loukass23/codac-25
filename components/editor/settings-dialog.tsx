@@ -2,8 +2,6 @@
 
 /* DEMO ONLY, DO NOT USE IN PRODUCTION */
 
-import * as React from 'react';
-
 import { CopilotPlugin } from '@platejs/ai/react';
 import {
   Check,
@@ -15,7 +13,9 @@ import {
   Wand2Icon,
 } from 'lucide-react';
 import { useEditorRef } from 'platejs/react';
+import * as React from 'react';
 
+import { aiChatPlugin } from '@/components/editor/plugins/ai-kit';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -40,7 +40,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { aiChatPlugin } from '@/components/editor/plugins/ai-kit';
 
 interface Model {
   label: string;

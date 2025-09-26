@@ -1,9 +1,9 @@
 'use client';
 
-import type { TElement } from 'platejs';
 
 import { CopilotPlugin } from '@platejs/ai/react';
 import { serializeMd, stripMarkdown } from '@platejs/markdown';
+import type { TElement } from 'platejs';
 
 import { GhostText } from '@/components/ui/ghost-text';
 
@@ -52,7 +52,7 @@ export const CopilotKit = [
         if (!contextEntry) return '';
 
         const prompt = serializeMd(editor, {
-          value: [contextEntry[0] as TElement],
+          value: [contextEntry[0]],
         });
 
         return `Continue the text up to the next punctuation mark:

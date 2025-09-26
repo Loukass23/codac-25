@@ -1,10 +1,11 @@
 'use client';
 
-import * as React from 'react';
 import { useEditorRef, usePluginOption } from 'platejs/react';
+import * as React from 'react';
 import { toast } from 'sonner';
 
 import { CommentCreateForm } from '../ui/comment';
+
 import { discussionPlugin } from './plugins/discussion-kit';
 
 interface CommentCreateFormWrapperProps {

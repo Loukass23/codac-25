@@ -50,8 +50,9 @@ import {
   type ProjectCreationMode,
 } from '@/types/portfolio';
 
-import { GitHubImportTab } from './github-import-tab';
 import { ProjectSummaryEditor } from '../editor/project-summary-editor';
+
+import { GitHubImportTab } from './github-import-tab';
 
 // Validation schema
 const projectFormSchema = z.object({

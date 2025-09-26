@@ -2,6 +2,7 @@ import { Users, Trophy, Plus, Code, Star } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import { BrandHeader } from '@/components/codac-brand/brand-header';
 import { Grid, PageContainer, Section } from '@/components/layout';
 import { ProjectCard } from '@/components/projects/project-card';
 import { BrandButton } from '@/components/ui/brand-button';
@@ -11,7 +12,6 @@ import {
   BrandCardHeader,
   BrandCardTitle,
 } from '@/components/ui/brand-card';
-import { BrandHeader } from '@/components/ui/brand-header';
 import {
   Card,
   CardContent,
@@ -20,10 +20,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getProjectStats } from '@/data/projects/get-project-stats';
-import { getFeaturedProjects } from '@/data/projects/get-projects';
-import { getUserProjects } from '@/data/projects/get-projects';
+import { getFeaturedProjects , getUserProjects } from '@/data/projects/get-projects';
 import { getUser } from '@/data/user/get-user';
 import { requireServerAuth } from '@/lib/auth/auth-server';
+
 import { SectionErrorBoundary } from '../../../components/error/section-error-boundary';
 
 export const dynamic = 'force-dynamic';
@@ -63,14 +63,7 @@ export default async function DashboardPage() {
 
   return (
     <PageContainer>
-      <BrandHeader
-        variant='gradient'
-        size='lg'
-        title={`Welcome back, ${user.name}!`}
-        subtitle='Manage your projects and explore the community showcase'
-        showLogo={true}
-        logoSize='xl'
-      />
+
 
       <div className='flex justify-end mb-6'>
         <Link href='/projects/create'>

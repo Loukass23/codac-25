@@ -2,17 +2,17 @@ import { Suspense } from 'react';
 
 import { DocumentList } from '@/components/documents/document-list';
 import { FolderNavigation } from '@/components/documents/folder-navigation';
-
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from '@/components/ui/resizable';
 import {
-  getUserFolders,
   getDocumentsInFolder,
+  getFolderTreeWithDocuments,
 } from '@/data/documents/get-folders';
 import { requireServerAuth } from '@/lib/auth/auth-server';
+import { VerticalToolbarSkeleton } from '@/components/skeleton/vertical-toolbar-skeletob';
 
 interface DocumentsPageProps {
   searchParams: Promise<{
@@ -30,8 +30,7 @@ export default async function DocumentsPage({
   const selectedFolderId = params.folder ?? null;
 
   // Fetch folders and documents
-
-  const _foldersPromise = getUserFolders(user.id);
+  const _treeDataPromise = getFolderTreeWithDocuments(user.id);
   const _documentsPromise = getDocumentsInFolder(
     selectedFolderId,
     user.id,
@@ -48,12 +47,10 @@ export default async function DocumentsPage({
           maxSize={40}
           className='border-r'
         >
-          <Suspense fallback={<div>Loading...</div>}>
-            <FolderNavigation
-              _foldersPromise={_foldersPromise}
-              selectedFolderId={selectedFolderId}
-            />
-          </Suspense>
+          <FolderNavigation
+            _treeDataPromise={_treeDataPromise}
+            selectedFolderId={selectedFolderId}
+          />
         </ResizablePanel>
 
         <ResizableHandle withHandle />

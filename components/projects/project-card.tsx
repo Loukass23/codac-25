@@ -26,7 +26,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
 import { ProjectDTO } from '@/data/projects/get-projects';
 
 interface ProjectCardProps {

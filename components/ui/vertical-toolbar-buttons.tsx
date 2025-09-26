@@ -46,8 +46,8 @@ import { SuggestionToolbarButton } from './suggestion-toolbar-button';
 import { TableToolbarButton } from './table-toolbar-button';
 import { ToggleToolbarButton } from './toggle-toolbar-button';
 import { TurnIntoToolbarButton } from './turn-into-toolbar-button';
-import { VerticalToolbarGroup } from './vertical-toolbar-group';
 import { VerticalToolbarButton } from './vertical-toolbar-button';
+import { VerticalToolbarGroup } from './vertical-toolbar-group';
 
 export function VerticalToolbarButtons() {
   const readOnly = useEditorReadOnly();

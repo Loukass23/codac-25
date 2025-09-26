@@ -1,33 +1,38 @@
 'use client';
 
-import { use, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
-  DndContext,
-  DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-  closestCenter,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+  hotkeysCoreFeature,
+  renamingFeature,
+  selectionFeature,
+  syncDataLoaderFeature,
+  dragAndDropFeature,
+} from '@headless-tree/core';
+import { useTree } from '@headless-tree/react';
 import {
   Folder,
   FolderOpen,
-  ChevronRight,
-  ChevronDown,
   MoreVertical,
   Plus,
   FileText,
-  GripVertical,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { use, useState, Suspense } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
+import { createFolder } from '@/actions/documents/create-folder';
+import { deleteFolder as deleteFolderAction } from '@/actions/documents/delete-folder';
+import { updateFolder as updateFolderAction } from '@/actions/documents/update-folder';
+import { Tree, TreeItem, TreeItemLabel } from '@/components/tree';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,286 +42,98 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { createFolder } from '@/actions/documents/create-folder';
-import { updateFolder as updateFolderAction } from '@/actions/documents/update-folder';
-import { deleteFolder as deleteFolderAction } from '@/actions/documents/delete-folder';
-import { toast } from 'sonner';
+import type { FolderTreeItem } from '@/data/documents/get-folders';
 import { cn } from '@/lib/utils';
-import type { DocumentFolderWithChildren } from '@/data/documents/get-folders';
+import { VerticalToolbarSkeleton } from '../skeleton/vertical-toolbar-skeletob';
 
 interface FolderNavigationProps {
-  _foldersPromise: Promise<DocumentFolderWithChildren[]>;
+  _treeDataPromise: Promise<{
+    items: Record<string, FolderTreeItem>;
+    rootIds: string[];
+  }>;
   selectedFolderId: string | null;
 }
 
-interface FolderItemProps {
-  folder: DocumentFolderWithChildren;
-  level: number;
-  isSelected: boolean;
-  onEdit: (folder: DocumentFolderWithChildren) => void;
-  onDelete: (folder: DocumentFolderWithChildren) => void;
-  onAddSubfolder: (parentFolder: DocumentFolderWithChildren) => void;
+interface RootItem {
+  id: string;
+  name: string;
+  type: 'folder';
+  color: string;
+  icon: string | null;
+  documentCount: number;
+  children: string[];
 }
 
-function FolderItem({
-  folder,
-  level,
-  isSelected,
-  onEdit,
-  onDelete,
-  onAddSubfolder,
-}: FolderItemProps) {
-  const router = useRouter();
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(folder.name);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: folder.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-    setEditName(folder.name);
-  };
-
-  const handleSaveEdit = async () => {
-    if (editName.trim() && editName !== folder.name) {
-      const result = await updateFolderAction({
-        id: folder.id,
-        name: editName.trim(),
-      });
-
-      if (result.success) {
-        toast.success('Folder renamed successfully');
-        setIsEditing(false);
-      } else {
-        toast.error('Failed to rename folder');
-      }
-    } else {
-      setIsEditing(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSaveEdit();
-    } else if (e.key === 'Escape') {
-      setIsEditing(false);
-      setEditName(folder.name);
-    }
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn('group relative', isDragging && 'opacity-50')}
-    >
-      <div
-        className={cn(
-          'flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors',
-          'hover:bg-muted/50',
-          isSelected && 'bg-primary/10 text-primary'
-        )}
-        style={{ paddingLeft: `${level * 16 + 8}px` }}
-        onClick={() => {
-          const params = new URLSearchParams();
-          if (folder.id) {
-            params.set('folder', folder.id);
-          }
-          const queryString = params.toString();
-          router.push(`/docs${queryString ? `?${queryString}` : ''}`);
-        }}
-      >
-        <div
-          {...attributes}
-          {...listeners}
-          className='cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded'
-        >
-          <GripVertical className='h-3 w-3 text-muted-foreground' />
-        </div>
-
-        {folder.children.length > 0 && (
-          <button
-            onClick={e => {
-              e.stopPropagation();
-              setIsExpanded(!isExpanded);
-            }}
-            className='p-0.5 hover:bg-muted rounded'
-          >
-            {isExpanded ? (
-              <ChevronDown className='h-3 w-3' />
-            ) : (
-              <ChevronRight className='h-3 w-3' />
-            )}
-          </button>
-        )}
-
-        <div
-          className='flex items-center gap-2 flex-1 min-w-0'
-          style={{ paddingLeft: folder.children.length === 0 ? '20px' : '0' }}
-        >
-          {folder.icon ? (
-            <div className='flex-shrink-0'>
-              {folder.icon === 'folder-open' ? (
-                <FolderOpen
-                  className='h-4 w-4'
-                  style={{ color: folder.color }}
-                />
-              ) : (
-                <Folder className='h-4 w-4' style={{ color: folder.color }} />
-              )}
-            </div>
-          ) : (
-            <Folder className='h-4 w-4' style={{ color: folder.color }} />
-          )}
-
-          {isEditing ? (
-            <Input
-              value={editName}
-              onChange={e => setEditName(e.target.value)}
-              onBlur={handleSaveEdit}
-              onKeyDown={handleKeyDown}
-              className='h-6 text-sm'
-              autoFocus
-              onClick={e => e.stopPropagation()}
-            />
-          ) : (
-            <span className='text-sm font-medium truncate flex-1'>
-              {folder.name}
-            </span>
-          )}
-
-          {folder.documentCount > 0 && (
-            <Badge variant='secondary' className='text-xs px-1.5 py-0.5'>
-              {folder.documentCount}
-            </Badge>
-          )}
-        </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity'
-              onClick={e => e.stopPropagation()}
-            >
-              <MoreVertical className='h-3 w-3' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='start'>
-            <DropdownMenuItem onClick={handleEdit}>Rename</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddSubfolder(folder)}>
-              <Plus className='h-3 w-3 mr-2' />
-              Add Subfolder
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onDelete(folder)}
-              className='text-destructive'
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {isExpanded && folder.children.length > 0 && (
-        <div className='ml-2'>
-          <SortableContext
-            items={folder.children.map(c => c.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {folder.children.map(child => (
-              <FolderItem
-                key={child.id}
-                folder={child}
-                level={level + 1}
-                isSelected={isSelected}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onAddSubfolder={onAddSubfolder}
-              />
-            ))}
-          </SortableContext>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function FolderNavigation({
-  _foldersPromise,
+// Tree content component that uses the promise
+function TreeContent({
+  _treeDataPromise,
   selectedFolderId,
 }: FolderNavigationProps) {
   const router = useRouter();
-  const [draggedFolder, setDraggedFolder] =
-    useState<DocumentFolderWithChildren | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderColor, setNewFolderColor] = useState('#3B82F6');
   const [createInFolder, setCreateInFolder] = useState<string | null>(null);
 
-  const folders = use(_foldersPromise);
-  const handleDragStart = (event: DragStartEvent) => {
-    const folder = findFolderById(folders, event.active.id as string);
-    setDraggedFolder(folder);
-  };
+  const treeData = use(_treeDataPromise);
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    setDraggedFolder(null);
+  const tree = useTree<FolderTreeItem>({
+    initialState: {
+      expandedItems: Object.keys(treeData.items).filter(id => treeData.items[id]?.type === 'folder'), // Start with all folders expanded
+      selectedItems: selectedFolderId ? [selectedFolderId] : [],
+    },
+    indent: 10,
+    rootItemId: 'root',
+    getItemName: (item) => item.getItemData().name,
+    isItemFolder: (item) => item.getItemData().type === 'folder',
+    dataLoader: {
+      getItem: (itemId: string): FolderTreeItem | RootItem => {
+        if (itemId === 'root') {
+          return {
+            id: 'root',
+            name: 'Root',
+            type: 'folder',
+            color: '#3B82F6',
+            icon: null,
+            documentCount: 0,
+            children: treeData.rootIds
+          };
+        }
+        const item = treeData.items[itemId];
+        if (!item) {
+          throw new Error(`Item with id ${itemId} not found`);
+        }
+        return item;
+      },
+      getChildren: (itemId: string): string[] => {
+        if (itemId === 'root') {
+          return treeData.rootIds;
+        }
+        return treeData.items[itemId]?.children ?? [];
+      },
+    },
+    onRename: async (item: { getId: () => string }, newName: string) => {
+      const result = await updateFolderAction({
+        id: item.getId(),
+        name: newName,
+      });
 
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const draggedFolder = findFolderById(folders, active.id as string);
-    const targetFolder = findFolderById(folders, over.id as string);
-
-    if (!draggedFolder || !targetFolder) {
-      return;
-    }
-
-    // Prevent moving folder into itself or its children
-    if (isDescendant(draggedFolder, targetFolder)) {
-      toast.error('Cannot move folder into its own subfolder');
-      return;
-    }
-
-    const result = await updateFolderAction({
-      id: draggedFolder.id,
-      parentId: targetFolder.id,
-    });
-
-    if (result.success) {
-      toast.success('Folder moved successfully');
-      router.refresh();
-    } else {
-      toast.error('Failed to move folder');
-    }
-  };
+      if (result.success) {
+        toast.success('Folder renamed successfully');
+        router.refresh();
+      } else {
+        toast.error('Failed to rename folder');
+      }
+    },
+    features: [
+      syncDataLoaderFeature,
+      hotkeysCoreFeature,
+      renamingFeature,
+      selectionFeature,
+      dragAndDropFeature,
+    ],
+  });
 
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) {
@@ -341,54 +158,29 @@ export function FolderNavigation({
     }
   };
 
-  const handleDeleteFolder = async (folder: DocumentFolderWithChildren) => {
+  const handleDeleteFolder = async (folderId: string) => {
+    const folder = treeData.items[folderId];
+    if (!folder) return;
+
     if (
       confirm(
         `Are you sure you want to delete "${folder.name}" and all its contents?`
       )
     ) {
       const result = await deleteFolderAction({
-        id: folder.id,
+        id: folderId,
       });
 
       if (result.success) {
         toast.success('Folder deleted successfully');
         router.refresh();
-        if (selectedFolderId === folder.id) {
+        if (selectedFolderId === folderId) {
           router.push('/docs');
         }
       } else {
         toast.error('Failed to delete folder');
       }
     }
-  };
-
-  const findFolderById = (
-    folders: DocumentFolderWithChildren[],
-    id: string
-  ): DocumentFolderWithChildren | null => {
-    for (const folder of folders) {
-      if (folder.id === id) {
-        return folder;
-      }
-      const found = findFolderById(folder.children, id);
-      if (found) {
-        return found;
-      }
-    }
-    return null;
-  };
-
-  const isDescendant = (
-    parent: DocumentFolderWithChildren,
-    child: DocumentFolderWithChildren
-  ): boolean => {
-    for (const subfolder of parent.children) {
-      if (subfolder.id === child.id || isDescendant(subfolder, child)) {
-        return true;
-      }
-    }
-    return false;
   };
 
   return (
@@ -407,61 +199,147 @@ export function FolderNavigation({
         </Button>
       </div>
 
-      <div className='overflow-y-auto'>
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <div className='p-2'>
-            {/* Root folder (all documents) */}
-            <div
-              className={cn(
-                'flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors',
-                'hover:bg-muted/50',
-                selectedFolderId === null && 'bg-primary/10 text-primary'
-              )}
-              onClick={() => router.push('/docs')}
-            >
-              <FileText className='h-4 w-4' />
-              <span className='text-sm font-medium'>All Documents</span>
-            </div>
-
-            <SortableContext
-              items={folders.map(f => f.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {folders.map(folder => (
-                <FolderItem
-                  key={folder.id}
-                  folder={folder}
-                  level={0}
-                  isSelected={selectedFolderId === folder.id}
-                  onEdit={() => {}}
-                  onDelete={handleDeleteFolder}
-                  onAddSubfolder={parentFolder => {
-                    setCreateInFolder(parentFolder.id);
-                    setShowCreateDialog(true);
-                  }}
-                />
-              ))}
-            </SortableContext>
+      <div className='overflow-y-auto flex-1'>
+        <div className='p-2'>
+          {/* Root folder (all documents) */}
+          <div
+            className={cn(
+              'flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors',
+              'hover:bg-muted/50',
+              selectedFolderId === null && 'bg-primary/10 text-primary'
+            )}
+            onClick={() => router.push('/docs')}
+          >
+            {/* <FileText className='h-4 w-4' />
+            <span className='text-xs font-medium text-left'>All Documents</span> */}
           </div>
 
-          <DragOverlay>
-            {draggedFolder ? (
-              <div className='flex items-center gap-2 px-2 py-1.5 bg-background border rounded-md shadow-lg'>
-                <Folder
-                  className='h-4 w-4'
-                  style={{ color: draggedFolder.color }}
-                />
-                <span className='text-sm font-medium'>
-                  {draggedFolder.name}
-                </span>
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+          {/* Tree component */}
+          <Tree indent={12} tree={tree}>
+            {tree.getItems().map((item) => {
+              const itemData = item.getItemData();
+              const isFolder = itemData.type === 'folder';
+
+              return (
+                <TreeItem key={item.getId()} item={item}>
+                  <TreeItemLabel
+                    onClick={() => {
+                      const itemId = item.getId();
+                      if (isFolder) {
+                        const params = new URLSearchParams();
+                        if (itemId !== 'root') {
+                          params.set('folder', itemId);
+                        }
+                        const queryString = params.toString();
+                        router.push(`/docs${queryString ? `?${queryString}` : ''}`);
+                      } else {
+                        // Handle document click - navigate to document
+                        router.push(`/docs/${itemId}`);
+                      }
+                    }}
+                  >
+                    <div className='flex items-center gap-2 w-full group'>
+                      {/* Icon */}
+                      <div className='flex-shrink-0'>
+                        {isFolder ? (
+                          itemData.icon === 'folder-open' ? (
+                            <FolderOpen
+                              className='h-4 w-4'
+                              style={{ color: itemData.color }}
+                            />
+                          ) : (
+                            <Folder
+                              className='h-4 w-4'
+                              style={{ color: itemData.color }}
+                            />
+                          )
+                        ) : (
+                          <FileText className='h-4 w-4 text-muted-foreground' />
+                        )}
+                      </div>
+
+                      {/* Name */}
+                      <span className='text-xs font-medium truncate flex-1 text-left'>
+                        {item.isRenaming() ? (
+                          <Input
+                            {...item.getRenameInputProps()}
+                            autoFocus
+                            className='h-5 text-xs text-left'
+                          />
+                        ) : (
+                          itemData.name
+                        )}
+                      </span>
+
+                      {/* Document count badge for folders */}
+                      {isFolder && itemData.documentCount && itemData.documentCount > 0 && (
+                        <Badge variant='secondary' className='text-xs px-1.5 py-0.5'>
+                          {itemData.documentCount}
+                        </Badge>
+                      )}
+
+                      {/* Published indicator for documents */}
+                      {!isFolder && itemData.isPublished && (
+                        <Badge variant='outline' className='text-xs px-1.5 py-0.5'>
+                          Published
+                        </Badge>
+                      )}
+
+                      {/* Actions dropdown */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <div
+                            className='h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center hover:bg-muted rounded'
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <MoreVertical className='h-3 w-3' />
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='start'>
+                          {isFolder ? (
+                            <>
+                              <DropdownMenuItem onClick={() => item.startRenaming()}>
+                                Rename
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setCreateInFolder(item.getId());
+                                  setShowCreateDialog(true);
+                                }}
+                              >
+                                <Plus className='h-3 w-3 mr-2' />
+                                Add Subfolder
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteFolder(item.getId())}
+                                className='text-destructive'
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => item.startRenaming()}>
+                                Rename
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteFolder(item.getId())}
+                                className='text-destructive'
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </TreeItemLabel>
+                </TreeItem>
+              );
+            })}
+          </Tree>
+        </div>
       </div>
 
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -515,5 +393,20 @@ export function FolderNavigation({
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+// Main component with Suspense boundary
+export function FolderNavigation({
+  _treeDataPromise,
+  selectedFolderId,
+}: FolderNavigationProps) {
+  return (
+    <Suspense fallback={<VerticalToolbarSkeleton />}>
+      <TreeContent
+        _treeDataPromise={_treeDataPromise}
+        selectedFolderId={selectedFolderId}
+      />
+    </Suspense>
   );
 }

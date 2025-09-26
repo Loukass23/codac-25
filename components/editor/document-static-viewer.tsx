@@ -1,8 +1,11 @@
+import type { Value } from 'platejs';
+
+import type { DocumentWithPlateContent } from '@/data/documents/get-document';
+
+import { MinimalStaticEditor } from './minimal-static-editor';
 import { ServerStaticEditor } from './server-static-editor';
 import { StaticEditor } from './static-editor';
-import { MinimalStaticEditor } from './minimal-static-editor';
-import type { Value } from 'platejs';
-import type { DocumentWithPlateContent } from '@/data/documents/get-document';
+
 
 interface DocumentStaticViewerProps {
   document: DocumentWithPlateContent;
@@ -21,7 +24,7 @@ export function DocumentStaticViewer({
   className,
   style,
 }: DocumentStaticViewerProps) {
-  const content = document.content as Value;
+  const content = document.content;
 
   // Handle empty or invalid content
   if (!content || !Array.isArray(content) || content.length === 0) {

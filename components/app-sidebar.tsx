@@ -26,7 +26,9 @@ import {
 } from '@/components/ui/sidebar';
 import { useTotalUnreadCount } from '@/hooks/use-total-unread-count';
 
-import CodacLogo from './codac-logo';
+import { CodacLeftAngleBracket } from './codac-brand/codac-left-angle-bracket';
+import CodacLogo from './codac-brand/codac-logo';
+import CodacRightAngleBracket from './codac-brand/codac-right-angle-bracket';
 import { NavSecondary } from './nav-secondary';
 import { NavTop, NavigationGroup } from './nav-top';
 import { NavUser } from './nav-user';
@@ -114,12 +116,12 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
     },
     ...(learningItems.length > 0
       ? [
-          {
-            title: 'Learning',
-            icon: GraduationCap,
-            items: learningItems,
-          },
-        ]
+        {
+          title: 'Learning',
+          icon: GraduationCap,
+          items: learningItems,
+        },
+      ]
       : []),
   ];
 };
@@ -168,14 +170,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link
                 href='/'
-                className='flex items-center justify-center group-data-[collapsible=icon]:w-full'
+                className='flex items-center group-data-[collapsible=icon]:w-full'
               >
+
                 <CodacLogo
                   size='sm'
-                  className='group-data-[collapsible=icon]:scale-70'
+                  className='group-data-[collapsible=icon]:scale-70 px-2'
                 />
                 <div className='flex-1 group-data-[collapsible=icon]:group-data-[state=collapsed]:hidden'>
-                  <span className='animate-in fade-in duration-300 font-codac-brand text-4xl uppercase tracking-wider text-secondary-foreground/80'>
+                  <span className='animate-in fade-in duration-300 font-codac-brand text-3xl uppercase tracking-wider text-secondary-foreground/80'>
                     codac
                   </span>
                 </div>

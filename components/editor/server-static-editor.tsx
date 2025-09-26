@@ -1,6 +1,7 @@
 import { createSlateEditor, PlateStatic } from 'platejs';
-import { BaseEditorKit } from './editor-base-kit';
 import type { Value } from 'platejs';
+
+import { BaseEditorKit } from './editor-base-kit';
 
 interface ServerStaticEditorProps {
   value: Value;

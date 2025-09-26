@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 
 import {
   AIChatPlugin,
@@ -44,7 +43,9 @@ import {
   usePluginOption,
 } from 'platejs/react';
 import { type PlateEditor, useEditorRef } from 'platejs/react';
+import * as React from 'react';
 
+import { commentPlugin } from '@/components/editor/plugins/comment-kit';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -58,7 +59,6 @@ import {
   PopoverContent,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { commentPlugin } from '@/components/editor/plugins/comment-kit';
 
 import { AIChatEditor } from './ai-chat-editor';
 
@@ -164,7 +164,7 @@ export function AIMenu() {
       if (!anchorNode) return;
 
       const block = editor.api.block({ at: anchorNode[1] });
-      setAnchorElement(editor.api.toDOMNode(block![0]!)!);
+      setAnchorElement(editor.api.toDOMNode(block![0])!);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);

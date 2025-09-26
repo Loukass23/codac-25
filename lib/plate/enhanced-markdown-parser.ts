@@ -1,14 +1,13 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
+import type { Value } from 'platejs';
+import rehypeStringify from 'rehype-stringify';
+import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkRehype from 'remark-rehype';
-import rehypeStringify from 'rehype-stringify';
-import { remark } from 'remark';
 import { unified } from 'unified';
-
-import type { Value } from 'platejs';
 
 export interface MarkdownMetadata {
     navTitle?: string;

@@ -32,8 +32,8 @@ import {
 import { useEditorReadOnly } from 'platejs/react';
 import * as React from 'react';
 
-import { VerticalToolbarGroup } from './vertical-toolbar-group';
 import { VerticalToolbarButton } from './vertical-toolbar-button';
+import { VerticalToolbarGroup } from './vertical-toolbar-group';
 
 export function VerticalToolbarButtonsWithNames() {
   const readOnly = useEditorReadOnly();

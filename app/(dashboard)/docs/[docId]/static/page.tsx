@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+
 import { ServerDocumentViewer } from '@/components/editor/document-static-viewer';
 import { getDocumentById } from '@/data/documents/get-document';
 

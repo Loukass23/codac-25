@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
-import { CodacLogo } from "@/components/codac-logo";
+import { CodacLogo } from "@/components/codac-brand/codac-logo";
 import { cn } from "@/lib/utils";
 
 const brandHeaderVariants = cva(

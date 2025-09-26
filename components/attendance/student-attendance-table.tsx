@@ -1,12 +1,13 @@
 import { AttendanceStatus, Cohort } from '@prisma/client';
 import { Users } from 'lucide-react';
 
-import { SectionErrorBoundary } from '@/components/error';
 import { Section } from '@/components/layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StudentWithAttendance } from '@/data/attendance/get-cohort-attendance-for-date';
 
 import StudentRow from './student-row';
+
+import { SectionErrorBoundary } from '@/components/error';
 
 type StudentAttendanceTableProps = {
     students: StudentWithAttendance[];

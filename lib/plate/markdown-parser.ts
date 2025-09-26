@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
+
 import type { Value } from 'platejs';
 
 export interface MarkdownMetadata {

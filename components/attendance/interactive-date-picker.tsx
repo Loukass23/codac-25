@@ -5,7 +5,6 @@ import { CalendarDays, Clock, CalendarIcon, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 
-import { SectionErrorBoundary } from '@/components/error';
 import { Grid, Section } from '@/components/layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { isDateDisabled } from '@/utils/attendance/date';
+
+import { SectionErrorBoundary } from '@/components/error';
 
 interface InteractiveDatePickerProps {
     attendanceDate: Date;

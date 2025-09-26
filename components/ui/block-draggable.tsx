@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 
 import { DndPlugin, useDraggable, useDropLine } from '@platejs/dnd';
 import { expandListItemsWithChildren } from '@platejs/list';
@@ -17,6 +16,7 @@ import {
   usePluginOption,
 } from 'platejs/react';
 import { useSelected } from 'platejs/react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {

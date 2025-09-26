@@ -1,12 +1,13 @@
 'use client';
 
+import { usePluginOption } from 'platejs/react';
 import * as React from 'react';
 
-import { usePluginOption } from 'platejs/react';
+
+import { CommentDatabase, CommentCreateFormDatabase } from './comment-database';
 
 import { discussionDatabasePlugin } from '@/components/editor/plugins/discussion-database-simple';
 
-import { CommentDatabase, CommentCreateFormDatabase } from './comment-database';
 
 export function BlockDiscussionDatabase({
   discussionId,

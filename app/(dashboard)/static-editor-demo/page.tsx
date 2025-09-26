@@ -1,13 +1,15 @@
-import {
-  StaticEditor,
-  CustomStaticEditor,
-} from '@/components/editor/static-editor';
-import { ServerStaticEditor } from '@/components/editor/server-static-editor';
+import type { Value } from 'platejs';
+
 import {
   MinimalStaticEditor,
   LightweightStaticEditor,
 } from '@/components/editor/minimal-static-editor';
-import type { Value } from 'platejs';
+import { ServerStaticEditor } from '@/components/editor/server-static-editor';
+import {
+  StaticEditor,
+  CustomStaticEditor,
+} from '@/components/editor/static-editor';
+
 
 // Sample content for demonstration
 const sampleContent: Value = [

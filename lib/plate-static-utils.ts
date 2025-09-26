@@ -1,6 +1,7 @@
 import { createSlateEditor } from 'platejs';
-import { BaseEditorKit } from '@/components/editor/editor-base-kit';
 import type { Value } from 'platejs';
+
+import { BaseEditorKit } from '@/components/editor/editor-base-kit';
 
 /**
  * Utility functions for working with static Plate editors
