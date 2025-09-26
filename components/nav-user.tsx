@@ -4,15 +4,15 @@ import {
   IconDotsVertical,
   IconLogout,
   IconNotification,
-  IconUserCircle,
   IconPalette,
+  IconUserCircle,
 } from '@tabler/icons-react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
-import { use, Suspense } from 'react';
+import { Suspense } from 'react';
 
 import { ThemePicker } from '@/components/theme-picker';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,13 +29,10 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-import { getUserProfile } from '../lib/auth/auth-utils';
-
 export function NavUserStreaming() {
-  const _userProfilePromise = getUserProfile();
   return (
     <Suspense fallback={<ProfileSkeleton />}>
-      <NavUser _userProfilePromise={_userProfilePromise} />
+      <NavUser />
     </Suspense>
   );
 }
@@ -52,18 +49,14 @@ function ProfileSkeleton() {
   );
 }
 
-function NavUser({
-  _userProfilePromise,
-}: {
-  _userProfilePromise: Promise<Awaited<ReturnType<typeof getUserProfile>>>;
-}) {
-  const userProfile = use(_userProfilePromise);
+function NavUser() {
+  const { data: session, status } = useSession();
   const { isMobile } = useSidebar();
 
-  console.log('NavUser - userProfile:', userProfile);
+  console.log('NavUser - session:', session, 'status:', status);
 
-  // Handle loading state (when promise is still resolving)
-  if (userProfile === undefined) {
+  // Handle loading state (when session is still loading)
+  if (status === 'loading') {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
@@ -80,7 +73,7 @@ function NavUser({
   }
 
   // Handle unauthenticated state (when user is not logged in)
-  if (userProfile === null) {
+  if (!session?.user) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
@@ -94,6 +87,8 @@ function NavUser({
     );
   }
 
+  const user = session.user;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -104,28 +99,24 @@ function NavUser({
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
               <Avatar className='h-8 w-8 rounded'>
-                <AvatarImage
-                  src={userProfile.avatar || ''}
-                  alt={userProfile.name || userProfile.email || 'User'}
-                />
                 <AvatarFallback className='rounded'>
                   {(
-                    userProfile.name?.charAt(0) ||
-                    userProfile.email?.charAt(0) ||
+                    user.name?.charAt(0) ||
+                    user.email?.charAt(0) ||
                     'U'
                   ).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-medium'>
-                  {userProfile.name || 'User'}
+                  {user.name || 'User'}
                 </span>
                 <span className='truncate text-xs text-muted-foreground'>
-                  {userProfile.email}
+                  {user.email}
                 </span>
-                {userProfile.role && (
+                {user.role && (
                   <span className='truncate text-xs text-muted-foreground capitalize'>
-                    {userProfile.role.toLowerCase()}
+                    {user.role.toLowerCase()}
                   </span>
                 )}
               </div>
@@ -141,24 +132,20 @@ function NavUser({
             <DropdownMenuLabel className='p-0 font-normal'>
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded'>
-                  <AvatarImage
-                    src={userProfile.avatar || ''}
-                    alt={userProfile.name || userProfile.email || 'User'}
-                  />
                   <AvatarFallback className='rounded'>
                     {(
-                      userProfile.name?.charAt(0) ||
-                      userProfile.email?.charAt(0) ||
+                      user.name?.charAt(0) ||
+                      user.email?.charAt(0) ||
                       'U'
                     ).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-medium'>
-                    {userProfile.name || 'User'}
+                    {user.name || 'User'}
                   </span>
                   <span className='truncate text-xs text-muted-foreground'>
-                    {userProfile.email}
+                    {user.email}
                   </span>
                 </div>
               </div>

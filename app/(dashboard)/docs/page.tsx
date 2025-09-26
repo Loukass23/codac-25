@@ -1,24 +1,29 @@
 import { Suspense } from 'react';
 
+import { DocsPageSkeleton } from '@/components/documents/docs-page-skeleton';
 import { DocumentList } from '@/components/documents/document-list';
+import { DocumentPreview } from '@/components/documents/document-preview';
+import { DocumentPreviewSkeleton } from '@/components/documents/document-preview-skeleton';
 import { VerticalToolbarSkeleton } from '@/components/skeleton/vertical-toolbar-skeletob';
 import {
-  ResizablePanelGroup,
-  ResizablePanel,
   ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import { getDocumentById } from '@/data/documents/get-document';
 import {
   getDocumentsInFolder,
   getFolderTreeWithDocuments,
 } from '@/data/documents/get-folders';
 import { requireServerAuth } from '@/lib/auth/auth-server';
-import { SimpleDocsFolderNavigation } from '../../../components/documents/simple-folder-navigation';
+import { FolderNavigation } from '../../../components/documents/folder-navigation';
 
 interface DocumentsPageProps {
   searchParams: Promise<{
     folder?: string;
     search?: string;
     page?: string;
+    preview?: string;
   }>;
 }
 const SIDE_PANEL_DEFAULT_SIZE = 25;
@@ -35,6 +40,7 @@ export default async function DocumentsPage({
   const user = await requireServerAuth();
   const params = await searchParams;
   const selectedFolderId = params.folder ?? null;
+  const previewDocId = params.preview ?? null;
 
   // Fetch folders and documents
   const _treeDataPromise = getFolderTreeWithDocuments(user.id);
@@ -44,6 +50,11 @@ export default async function DocumentsPage({
     50,
     0
   );
+
+  // If preview mode, fetch the specific document
+  const _previewDocumentPromise = previewDocId
+    ? getDocumentById(previewDocId)
+    : null;
   return (
     <div className='min-h-screen bg-background'>
       <ResizablePanelGroup direction='horizontal' className='h-full w-full'>
@@ -54,10 +65,14 @@ export default async function DocumentsPage({
           className='border-r'
         >
           <Suspense fallback={<VerticalToolbarSkeleton />}>
-            <SimpleDocsFolderNavigation
+            <FolderNavigation
               _treeDataPromise={_treeDataPromise}
               selectedFolderId={selectedFolderId}
             />
+            {/* <DocsFolderNavigation
+                _treeDataPromise={_treeDataPromise}
+                selectedFolderId={selectedFolderId}
+              /> */}
           </Suspense>
         </ResizablePanel>
 
@@ -68,10 +83,18 @@ export default async function DocumentsPage({
           minSize={MAIN_PANEL_MIN_SIZE}
           maxSize={MAIN_PANEL_MAX_SIZE}
         >
-          <DocumentList
-            _documentsPromise={_documentsPromise}
-            selectedFolderId={selectedFolderId}
-          />
+          {previewDocId ? (
+            <Suspense fallback={<DocumentPreviewSkeleton />}>
+              <DocumentPreview _documentPromise={_previewDocumentPromise!} />
+            </Suspense>
+          ) : (
+            <Suspense fallback={<DocsPageSkeleton />}>
+              <DocumentList
+                _documentsPromise={_documentsPromise}
+                selectedFolderId={selectedFolderId}
+              />
+            </Suspense>
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

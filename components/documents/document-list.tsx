@@ -3,214 +3,29 @@
 import {
   DndContext,
   DragEndEvent,
-  DragStartEvent,
   DragOverlay,
+  DragStartEvent,
   closestCenter,
-  useDraggable,
 } from '@dnd-kit/core';
-import {
-  FileText,
-  Calendar,
-  MoreVertical,
-  GripVertical,
-  Search,
-  Filter,
-  Plus,
-} from 'lucide-react';
-import Link from 'next/link';
+import { FileText, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, use, useEffect } from 'react';
+import { use, useState } from 'react';
 import { toast } from 'sonner';
 
 import { moveDocument } from '@/actions/documents/move-document';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import type { DocumentWithAuthor } from '@/data/documents/get-folders';
-import { cn } from '@/lib/utils';
+
+import { CreateDocumentForm } from './create-document-form';
+import { DocumentCard } from './document-card';
+import { DocumentsFilter } from './documents-filter';
 
 interface DocumentListProps {
   _documentsPromise: Promise<DocumentWithAuthor[]>;
   selectedFolderId: string | null;
 }
 
-interface DocumentCardProps {
-  document: DocumentWithAuthor;
-  onMove: (documentId: string, folderId: string | null) => void;
-}
-
-function DocumentCard({ document, onMove }: DocumentCardProps) {
-  const [isDragging, _setIsDragging] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: document.id,
-    data: {
-      type: 'document',
-      document,
-    },
-  });
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
-  };
-
-  const getDocumentTypeColor = (type: string) => {
-    const colors: Record<string, string> = {
-      project_summary: 'bg-blue-100 text-blue-800',
-      community_post: 'bg-green-100 text-green-800',
-      lesson_content: 'bg-purple-100 text-purple-800',
-      general: 'bg-gray-100 text-gray-800',
-    };
-    return colors[type] ?? colors['general'];
-  };
-
-  return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        'group cursor-pointer transition-all hover:shadow-md h-fit',
-        isDragging && 'opacity-50'
-      )}
-    >
-      <CardHeader className='pb-3'>
-        <div className='flex items-start justify-between'>
-          <div className='flex-1 min-w-0'>
-            <div className='flex items-center gap-2 mb-2'>
-              <div
-                {...(isMounted ? attributes : {})}
-                {...(isMounted ? listeners : {})}
-                className='cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity'
-              >
-                <GripVertical className='h-3 w-3 text-muted-foreground' />
-              </div>
-
-              <Link href={`/docs/${document.id}`} className='flex-1 min-w-0'>
-                <CardTitle className='text-base font-medium truncate'>
-                  {document.title ?? 'Untitled Document'}
-                </CardTitle>
-              </Link>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity'
-                  >
-                    <MoreVertical className='h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/docs/${document.id}`}>Open</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onMove(document.id, null)}>
-                    Move to Root
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className='text-destructive'>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            {document.description && (
-              <CardDescription className='line-clamp-2'>
-                {document.description}
-              </CardDescription>
-            )}
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className='pt-0'>
-        <div className='space-y-3'>
-          <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-            <div className='flex items-center gap-1 min-w-0 flex-1'>
-              <Avatar className='h-5 w-5 flex-shrink-0'>
-                <AvatarImage src={document.author.avatar ?? undefined} />
-                <AvatarFallback className='text-xs'>
-                  {document.author.name?.charAt(0) ?? 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <span className='truncate'>
-                {document.author.name ?? 'Unknown'}
-              </span>
-            </div>
-
-            <div className='flex items-center gap-1 flex-shrink-0'>
-              <Calendar className='h-3 w-3' />
-              <span className='text-xs'>{formatDate(document.createdAt)}</span>
-            </div>
-          </div>
-
-          <div className='flex flex-wrap gap-1'>
-            {document.folder && (
-              <Badge
-                variant='outline'
-                className='text-xs'
-                style={{
-                  borderColor: document.folder.color,
-                  color: document.folder.color,
-                }}
-              >
-                {document.folder.name}
-              </Badge>
-            )}
-
-            <Badge
-              variant='secondary'
-              className={cn(
-                'text-xs',
-                getDocumentTypeColor(document.documentType)
-              )}
-            >
-              {document.documentType.replace('_', ' ')}
-            </Badge>
-
-            {document.isPublished && (
-              <Badge variant='default' className='text-xs'>
-                Published
-              </Badge>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 export function DocumentList({
   _documentsPromise,
@@ -221,6 +36,7 @@ export function DocumentList({
     useState<DocumentWithAuthor | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
   const documents = use(_documentsPromise);
 
@@ -296,53 +112,17 @@ export function DocumentList({
 
   return (
     <div className='h-full flex flex-col'>
-      <div className='p-4 border-b space-y-4'>
-        <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>
-            {selectedFolderId ? 'Documents in Folder' : 'All Documents'}
-          </h2>
-          <Button size='sm'>
-            <Plus className='h-4 w-4 mr-2' />
-            New Document
-          </Button>
-        </div>
-
-        <div className='flex items-center gap-4'>
-          <div className='relative flex-1'>
-            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-            <Input
-              placeholder='Search documents...'
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className='pl-9'
-            />
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='outline' size='sm'>
-                <Filter className='h-4 w-4 mr-2' />
-                {filterType === 'all'
-                  ? 'All Types'
-                  : filterType.replace('_', ' ')}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setFilterType('all')}>
-                All Types
-              </DropdownMenuItem>
-              {documentTypes.map(type => (
-                <DropdownMenuItem
-                  key={type}
-                  onClick={() => setFilterType(type)}
-                >
-                  {type.replace('_', ' ')}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      <DocumentsFilter
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filterType={filterType}
+        onFilterChange={setFilterType}
+        documentTypes={documentTypes}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        selectedFolderId={selectedFolderId}
+        onDocumentCreated={() => router.refresh()}
+      />
 
       <div className='flex-1 overflow-y-auto p-4'>
         <DndContext
@@ -359,18 +139,29 @@ export function DocumentList({
                   ? 'Try adjusting your search or filter criteria'
                   : 'Create your first document to get started'}
               </p>
-              <Button>
-                <Plus className='h-4 w-4 mr-2' />
-                Create Document
-              </Button>
+              <CreateDocumentForm
+                selectedFolderId={selectedFolderId}
+                onDocumentCreated={() => router.refresh()}
+                trigger={
+                  <Button>
+                    <Plus className='h-4 w-4 mr-2' />
+                    Create Document
+                  </Button>
+                }
+              />
             </div>
           ) : (
-            <div className='grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'>
+            <div className={
+              viewMode === 'list'
+                ? "space-y-2"
+                : "grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            }>
               {filteredDocuments.map(document => (
                 <DocumentCard
                   key={document.id}
                   document={document}
                   onMove={handleMoveDocument}
+                  viewMode={viewMode}
                 />
               ))}
             </div>

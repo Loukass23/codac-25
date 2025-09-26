@@ -1,7 +1,7 @@
 'use client';
 
-import { type Value, TrailingBlockPlugin } from 'platejs';
-import { type TPlateEditor, useEditorRef } from 'platejs/react';
+import { TrailingBlockPlugin, type Value } from 'platejs';
+import { useEditorRef, type TPlateEditor } from 'platejs/react';
 
 import { AIKit } from '@/components/editor/plugins/ai-kit';
 import { AlignKit } from '@/components/editor/plugins/align-kit';
@@ -87,7 +87,7 @@ export const EditorKit = [
 
   // UI
   ...BlockPlaceholderKit,
-  // ...FixedToolbarKit,
+  ...FixedToolbarKit,
   ...FloatingToolbarKit,
 ];
 

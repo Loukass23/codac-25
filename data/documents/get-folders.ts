@@ -175,6 +175,52 @@ export async function getDocumentsInFolder(
     }
 }
 
+export async function getDocumentById(documentId: string, userId: string): Promise<DocumentWithAuthor | null> {
+    try {
+        const document = await prisma.document.findFirst({
+            where: {
+                id: documentId,
+                authorId: userId,
+                isArchived: false,
+            },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        avatar: true,
+                    },
+                },
+                project: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
+                folder: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                    },
+                },
+            },
+        });
+
+        return document as DocumentWithAuthor | null;
+    } catch (error) {
+        logger.error('Failed to fetch document by ID', error instanceof Error ? error : new Error(String(error)), {
+            action: 'get_document_by_id',
+            metadata: {
+                documentId,
+                userId,
+                error: error instanceof Error ? error.message : 'Unknown error',
+            },
+        });
+        return null;
+    }
+}
+
 export async function getFolderTreeWithDocuments(userId: string): Promise<{
     items: Record<string, FolderTreeItem>;
     rootIds: string[];
@@ -265,6 +311,10 @@ export async function getFolderTreeWithDocuments(userId: string): Promise<{
                 author: document.author,
             };
         });
+
+        // Add documents without parent folders to rootIds
+        const orphanedDocuments = documents.filter(doc => !doc.folderId);
+        orphanedDocuments.forEach(doc => rootIds.push(doc.id));
 
         return { items, rootIds };
     } catch (error) {

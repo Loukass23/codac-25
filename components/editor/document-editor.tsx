@@ -1,7 +1,8 @@
 'use client';
 
 import { Plate } from 'platejs/react';
-import { use, useImperativeHandle, forwardRef, useCallback } from 'react';
+import { forwardRef, use, useCallback, useImperativeHandle } from 'react';
+import { z } from 'zod';
 
 import { Editor, EditorContainer } from '@/components/ui/editor';
 import { DocumentWithPlateContent } from '@/data/documents/get-document';
@@ -16,8 +17,12 @@ interface DocumentEditorProps {
   saveDelay?: number; // Delay in milliseconds before auto-save (default: 2000)
 }
 
+type SaveResult =
+  | { success: true; data: { id: string }; error?: undefined }
+  | { success: false; error: string | z.ZodIssue[]; data?: undefined };
+
 export interface DocumentEditorRef {
-  save: () => Promise<{ success: boolean; error?: string; data?: unknown }>;
+  save: () => Promise<SaveResult>;
   getContent: () => unknown;
 }
 

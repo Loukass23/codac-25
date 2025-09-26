@@ -1,37 +1,23 @@
 'use client';
 
 import {
-  BoldIcon,
-  Code2Icon,
-  ItalicIcon,
-  StrikethroughIcon,
-  UnderlineIcon,
-  AlignLeftIcon,
   AlignCenterIcon,
-  AlignRightIcon,
-  ListIcon,
-  ListOrderedIcon,
-  CheckSquareIcon,
-  LinkIcon,
-  TableIcon,
-  SmileIcon,
-  ImageIcon,
-  VideoIcon,
-  FileIcon,
-  MoreHorizontalIcon,
-  WandSparklesIcon,
-  UploadIcon,
-  DownloadIcon,
-  UndoIcon,
-  RedoIcon,
-  MessageSquareIcon,
-  TypeIcon,
-  PaletteIcon,
   AlignJustifyIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+  ArrowUpToLineIcon,
+  DownloadIcon,
+  FileIcon,
+  ImageIcon,
+  MoreHorizontalIcon,
+  RedoIcon,
+  UndoIcon,
+  VideoIcon
 } from 'lucide-react';
 import { useEditorReadOnly } from 'platejs/react';
-import * as React from 'react';
 
+import { ExportToolbarButton } from './export-toolbar-button';
+import { ImportToolbarButton } from './import-toolbar-button';
 import { VerticalToolbarButton } from './vertical-toolbar-button';
 import { VerticalToolbarGroup } from './vertical-toolbar-group';
 
@@ -52,12 +38,11 @@ export function VerticalToolbarButtonsWithNames() {
             <VerticalToolbarButton name='Redo' tooltip='Redo'>
               <RedoIcon />
             </VerticalToolbarButton>
-            <VerticalToolbarButton name='Comments' tooltip='Add comments'>
-              <MessageSquareIcon />
-            </VerticalToolbarButton>
+
+
           </VerticalToolbarGroup>
 
-          <VerticalToolbarGroup>
+          {/* <VerticalToolbarGroup>
             <VerticalToolbarButton name='AI' tooltip='AI commands'>
               <WandSparklesIcon />
             </VerticalToolbarButton>
@@ -91,7 +76,7 @@ export function VerticalToolbarButtonsWithNames() {
             <VerticalToolbarButton name='Highlight' tooltip='Highlight'>
               <PaletteIcon />
             </VerticalToolbarButton>
-          </VerticalToolbarGroup>
+          </VerticalToolbarGroup> */}
 
           <VerticalToolbarGroup>
             <VerticalToolbarButton name='Align Left' tooltip='Align left'>
@@ -108,7 +93,7 @@ export function VerticalToolbarButtonsWithNames() {
             </VerticalToolbarButton>
           </VerticalToolbarGroup>
 
-          <VerticalToolbarGroup>
+          {/* <VerticalToolbarGroup>
             <VerticalToolbarButton name='Bullet List' tooltip='Bullet list'>
               <ListIcon />
             </VerticalToolbarButton>
@@ -130,7 +115,7 @@ export function VerticalToolbarButtonsWithNames() {
             <VerticalToolbarButton name='Emoji' tooltip='Insert emoji'>
               <SmileIcon />
             </VerticalToolbarButton>
-          </VerticalToolbarGroup>
+          </VerticalToolbarGroup> */}
 
           <VerticalToolbarGroup>
             <VerticalToolbarButton name='Image' tooltip='Insert image'>
@@ -145,6 +130,15 @@ export function VerticalToolbarButtonsWithNames() {
           </VerticalToolbarGroup>
 
           <VerticalToolbarGroup>
+            <ImportToolbarButton />
+          </VerticalToolbarGroup>
+          <VerticalToolbarGroup>
+            <ExportToolbarButton>
+              <ArrowUpToLineIcon />
+            </ExportToolbarButton>
+          </VerticalToolbarGroup>
+
+          <VerticalToolbarGroup>
             <VerticalToolbarButton name='More' tooltip='More options'>
               <MoreHorizontalIcon />
             </VerticalToolbarButton>
@@ -152,13 +146,14 @@ export function VerticalToolbarButtonsWithNames() {
         </>
       )}
 
+
       <div className='grow' />
 
-      <VerticalToolbarGroup>
+      {/* <VerticalToolbarGroup>
         <VerticalToolbarButton name='Comments' tooltip='Add comments'>
           <MessageSquareIcon />
         </VerticalToolbarButton>
-      </VerticalToolbarGroup>
+      </VerticalToolbarGroup> */}
     </div>
   );
 }

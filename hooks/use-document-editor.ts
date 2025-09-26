@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useMemo } from 'react';
 import { usePlateEditor } from 'platejs/react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { z } from 'zod';
 
 import { EditorKit } from '@/components/editor/editor-kit';
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit';
@@ -14,9 +15,13 @@ interface UseDocumentEditorProps {
     onSave?: (value: unknown) => void;
 }
 
+type SaveResult =
+    | { success: true; data: { id: string }; error?: undefined }
+    | { success: false; error: string | z.ZodIssue[]; data?: undefined };
+
 interface UseDocumentEditorReturn {
     editor: ReturnType<typeof usePlateEditor>;
-    saveDocument: (content?: unknown) => Promise<{ success: boolean; error?: string; data?: unknown }>;
+    saveDocument: (content?: unknown) => Promise<SaveResult>;
     debouncedSave: (content: unknown) => void;
 }
 
@@ -94,7 +99,6 @@ export function useDocumentEditor({
 
             // Load discussions from database
             plugin.transforms.discussion.loadDiscussions().catch(error => {
-                // eslint-disable-next-line no-console
                 console.error('Failed to load discussions:', error);
             });
         }
@@ -111,7 +115,7 @@ export function useDocumentEditor({
 
     return {
         editor,
-        saveDocument,
+        saveDocument: saveDocument as any,
         debouncedSave,
     };
 }
