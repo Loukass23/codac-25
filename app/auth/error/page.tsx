@@ -2,6 +2,7 @@ import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CodacLogo } from '@/components/codac-brand/codac-logo';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -40,9 +41,7 @@ export default async function ErrorPage({ searchParams }: ErrorPageProps) {
       <Card className='w-full max-w-md'>
         <CardHeader className='space-y-1 text-center'>
           <div className='flex justify-center mb-4'>
-            <div className='rounded-full bg-destructive/10 p-3'>
-              <AlertTriangle className='h-6 w-6 text-destructive' />
-            </div>
+            <CodacLogo size="lg" useGradient />
           </div>
           <CardTitle className='text-2xl font-bold'>
             Authentication Error

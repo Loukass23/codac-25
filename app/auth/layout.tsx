@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Authentication - codac',
+  title: 'Authentication - CODAC',
   description:
-    'Sign in to your codac account to access your learning dashboard and community.',
+    'Sign in to your CODAC account to access your learning dashboard and community.',
 };
 
 interface AuthLayoutProps {

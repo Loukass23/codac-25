@@ -21,7 +21,14 @@ interface DocumentsPageProps {
     page?: string;
   }>;
 }
+const SIDE_PANEL_DEFAULT_SIZE = 25;
+const MAIN_PANEL_DEFAULT_SIZE = 100 - SIDE_PANEL_DEFAULT_SIZE;
 
+const SIDE_PANEL_MIN_SIZE = 15;
+const SIDE_PANEL_MAX_SIZE = 30;
+
+const MAIN_PANEL_MAX_SIZE = 100 - SIDE_PANEL_MIN_SIZE;
+const MAIN_PANEL_MIN_SIZE = 100 - SIDE_PANEL_MAX_SIZE;
 export default async function DocumentsPage({
   searchParams,
 }: DocumentsPageProps) {
@@ -42,9 +49,9 @@ export default async function DocumentsPage({
     <div className='min-h-screen bg-background'>
       <ResizablePanelGroup direction='horizontal' className='h-full w-full'>
         <ResizablePanel
-          defaultSize={25}
-          minSize={20}
-          maxSize={40}
+          defaultSize={SIDE_PANEL_DEFAULT_SIZE}
+          minSize={SIDE_PANEL_MIN_SIZE}
+          maxSize={SIDE_PANEL_MAX_SIZE}
           className='border-r'
         >
           <FolderNavigation
@@ -55,7 +62,10 @@ export default async function DocumentsPage({
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={75} minSize={60} maxSize={80}>
+        <ResizablePanel defaultSize={MAIN_PANEL_DEFAULT_SIZE}
+          minSize={MAIN_PANEL_MIN_SIZE}
+          maxSize={MAIN_PANEL_MAX_SIZE}
+        >
           <DocumentList
             _documentsPromise={_documentsPromise}
             selectedFolderId={selectedFolderId}

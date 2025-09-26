@@ -5,7 +5,6 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
-import Resend from "next-auth/providers/resend"
 
 import { prisma } from "@/lib/db/prisma"
 import { logger } from "@/lib/logger"
@@ -26,10 +25,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           scope: "read:user user:email repo",
         },
       },
-    }),
-    // Use Resend instead of Nodemailer for Edge Runtime compatibility
-    Resend({
-      from: process.env['EMAIL_FROM'] || "auth@example.com",
     }),
     CredentialsProvider({
       name: "credentials",
@@ -165,20 +160,51 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   events: {
-    async createUser({ user }) {
+    async createUser({ user, account, profile }) {
       try {
         if (!user.id) {
           throw new Error("User ID is required");
         }
-        // Set default role and status for new users
+
+        // Generate username based on provider
+        let username = "";
+        if (account?.provider === "github" && profile?.login) {
+          username = profile.login as string;
+        } else if (account?.provider === "google" && profile?.email) {
+          // Extract username from Google email
+          const email = profile.email as string;
+          username = email.split("@")[0];
+        } else {
+          // Fallback to email-based username
+          username = user.email?.split("@")[0] || `user_${user.id.slice(-6)}`;
+        }
+
+        // Ensure username is unique
+        let finalUsername = username.toLowerCase();
+        let counter = 1;
+        while (true) {
+          const existingUser = await prisma.user.findUnique({
+            where: { username: finalUsername },
+          });
+          if (!existingUser) break;
+          finalUsername = `${username.toLowerCase()}_${counter}`;
+          counter++;
+        }
+
+        // Set default role, status, and username for new users
         await prisma.user.update({
           where: { id: user.id },
           data: {
+            username: finalUsername,
             role: "STUDENT" as UserRole,
             status: "ACTIVE" as UserStatus,
           },
         })
-        logger.info("User created with default role and status", { userId: user.id })
+        logger.info("User created with default role, status, and username", {
+          userId: user.id,
+          username: finalUsername,
+          provider: account?.provider
+        })
       } catch (error) {
         logger.error("Error updating user in createUser event", error instanceof Error ? error : new Error(String(error)))
       }

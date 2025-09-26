@@ -6,6 +6,10 @@ import { prisma } from '@/lib/db/prisma';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
+  username: z.string()
+    .min(3, 'Username must be at least 3 characters long')
+    .max(30, 'Username is too long')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
@@ -16,16 +20,27 @@ export async function POST(request: NextRequest) {
 
     // Validate request body
     const validatedData = registerSchema.parse(body);
-    const { name, email, password } = validatedData;
+    const { name, username, email, password } = validatedData;
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    // Check if user already exists by email or username
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
 
-    if (existingUser) {
+    if (existingUserByEmail) {
       return NextResponse.json(
         { error: 'A user with this email already exists' },
+        { status: 400 }
+      );
+    }
+
+    const existingUserByUsername = await prisma.user.findUnique({
+      where: { username: username.toLowerCase() },
+    });
+
+    if (existingUserByUsername) {
+      return NextResponse.json(
+        { error: 'A user with this username already exists' },
         { status: 400 }
       );
     }
@@ -38,6 +53,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name,
+        username: username.toLowerCase(),
         email: email.toLowerCase(),
         password: hashedPassword,
         role: 'STUDENT',

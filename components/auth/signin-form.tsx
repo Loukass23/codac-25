@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { CodacLogo } from "@/components/codac-brand/codac-logo"
 import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -52,7 +53,6 @@ export function SignInForm({
   const [isCredentialsLoading, setIsCredentialsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isGitHubLoading, setIsGitHubLoading] = useState(false)
-  const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false)
 
   // Get parameters from URL
   const callbackUrl =
@@ -132,33 +132,7 @@ export function SignInForm({
     }
   };
 
-  const handleMagicLinkSignIn = async () => {
-    if (!email) {
-      setError("Please enter your email address");
-      return;
-    }
-
-    setIsMagicLinkLoading(true);
-    setError(undefined);
-
-    try {
-      const result = await signIn("email", {
-        email,
-        callbackUrl,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError(result.error);
-      }
-    } catch {
-      setError("An error occurred during magic link sign in.");
-    } finally {
-      setIsMagicLinkLoading(false);
-    }
-  };
-
-  const isAnyLoading = isCredentialsLoading || isGoogleLoading || isGitHubLoading || isMagicLinkLoading;
+  const isAnyLoading = isCredentialsLoading || isGoogleLoading || isGitHubLoading;
 
   // Show loading while checking authentication status
   if (status === "loading") {
@@ -171,6 +145,8 @@ export function SignInForm({
 
   return (
     <div className="space-y-6">
+
+
       {error && (
         <Alert variant="destructive">
           <AlertDescription>
@@ -243,16 +219,6 @@ export function SignInForm({
           GitHub
         </Button>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleMagicLinkSignIn}
-          disabled={isAnyLoading || !email}
-        >
-          {isMagicLinkLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          <Icons.email className="mr-2 h-4 w-4" />
-          Send Magic Link
-        </Button>
       </div>
 
       <div className="text-center text-sm">
