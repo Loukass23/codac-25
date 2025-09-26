@@ -1026,5 +1026,1074 @@
         ]
       }
     ]
+  },
+  {
+    "title": "Advanced React Patterns and Hooks",
+    "description": "Deep dive into advanced React patterns, custom hooks, and complex state management",
+    "documentType": "lesson_content",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Advanced React Patterns and Hooks"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Master advanced React patterns that will make you a more effective developer. This guide covers complex patterns, custom hooks, and sophisticated state management techniques."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Custom Hooks Deep Dive"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Custom hooks are the key to sharing stateful logic between components. Let's explore advanced patterns:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "// useLocalStorage hook\nfunction useLocalStorage<T>(key: string, initialValue: T) {\n  const [storedValue, setStoredValue] = useState<T>(() => {\n    try {\n      const item = window.localStorage.getItem(key);\n      return item ? JSON.parse(item) : initialValue;\n    } catch (error) {\n      console.error(error);\n      return initialValue;\n    }\n  });\n\n  const setValue = (value: T | ((val: T) => T)) => {\n    try {\n      const valueToStore = value instanceof Function ? value(storedValue) : value;\n      setStoredValue(valueToStore);\n      window.localStorage.setItem(key, JSON.stringify(valueToStore));\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  return [storedValue, setValue] as const;\n}\n\n// Usage\nconst [name, setName] = useLocalStorage('userName', '');"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Compound Components Pattern"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Create flexible, composable components using the compound pattern:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "interface TabsContextType {\n  activeTab: string;\n  setActiveTab: (tab: string) => void;\n}\n\nconst TabsContext = createContext<TabsContextType | undefined>(undefined);\n\nconst Tabs: React.FC<{ children: React.ReactNode; defaultTab: string }> = ({ \n  children, \n  defaultTab \n}) => {\n  const [activeTab, setActiveTab] = useState(defaultTab);\n  \n  return (\n    <TabsContext.Provider value={{ activeTab, setActiveTab }}>\n      <div className=\"tabs\">{children}</div>\n    </TabsContext.Provider>\n  );\n};\n\nconst TabList: React.FC<{ children: React.ReactNode }> = ({ children }) => (\n  <div className=\"tab-list\">{children}</div>\n);\n\nconst Tab: React.FC<{ tabId: string; children: React.ReactNode }> = ({ \n  tabId, \n  children \n}) => {\n  const { activeTab, setActiveTab } = useContext(TabsContext)!;\n  \n  return (\n    <button\n      className={`tab ${activeTab === tabId ? 'active' : ''}`}\n      onClick={() => setActiveTab(tabId)}\n    >\n      {children}\n    </button>\n  );\n};\n\nconst TabPanels: React.FC<{ children: React.ReactNode }> = ({ children }) => (\n  <div className=\"tab-panels\">{children}</div>\n);\n\nconst TabPanel: React.FC<{ tabId: string; children: React.ReactNode }> = ({ \n  tabId, \n  children \n}) => {\n  const { activeTab } = useContext(TabsContext)!;\n  \n  return activeTab === tabId ? (\n    <div className=\"tab-panel\">{children}</div>\n  ) : null;\n};\n\n// Usage\n<Tabs defaultTab=\"tab1\">\n  <TabList>\n    <Tab tabId=\"tab1\">Tab 1</Tab>\n    <Tab tabId=\"tab2\">Tab 2</Tab>\n  </TabList>\n  <TabPanels>\n    <TabPanel tabId=\"tab1\">Content 1</TabPanel>\n    <TabPanel tabId=\"tab2\">Content 2</TabPanel>\n  </TabPanels>\n</Tabs>"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-11",
+        "isResolved": false,
+        "documentContent": "Custom Hooks Deep Dive",
+        "authorEmail": "mikasa.ackerman@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "This is exactly what I needed! The useLocalStorage hook example is perfect for my current project."
+                  }
+                ]
+              }
+            ],
+            "userId": "mikasa.ackerman@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Next.js 14 App Router Mastery",
+    "description": "Complete guide to Next.js 14 App Router, Server Components, and modern React patterns",
+    "documentType": "lesson_content",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Next.js 14 App Router Mastery"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Next.js 14 introduces revolutionary changes with the App Router. Learn how to build modern, performant applications with Server Components, streaming, and the new routing system."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "App Router Fundamentals"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "The App Router uses a file-system based routing system with new conventions:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "// app/layout.tsx - Root layout\nimport { Inter } from 'next/font/google';\n\nexport const metadata = {\n  title: 'My App',\n  description: 'Generated by Next.js',\n};\n\nexport default function RootLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {\n  return (\n    <html lang=\"en\">\n      <body className={inter.className}>\n        <nav>Navigation</nav>\n        {children}\n        <footer>Footer</footer>\n      </body>\n    </html>\n  );\n}\n\n// app/page.tsx - Home page\nexport default function HomePage() {\n  return <h1>Welcome to Next.js 14!</h1>;\n}\n\n// app/about/page.tsx - About page\nexport default function AboutPage() {\n  return <h1>About Us</h1>;\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Server Components vs Client Components"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Understanding when to use Server Components vs Client Components is crucial:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "// Server Component (default)\n// app/posts/page.tsx\nimport { getPosts } from '@/lib/posts';\n\nexport default async function PostsPage() {\n  const posts = await getPosts(); // Runs on server\n  \n  return (\n    <div>\n      <h1>Posts</h1>\n      {posts.map(post => (\n        <article key={post.id}>\n          <h2>{post.title}</h2>\n          <p>{post.excerpt}</p>\n        </article>\n      ))}\n    </div>\n  );\n}\n\n// Client Component\n'use client';\n\nimport { useState } from 'react';\n\nexport default function InteractiveComponent() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>\n        Increment\n      </button>\n    </div>\n  );\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-12",
+        "isResolved": false,
+        "documentContent": "App Router Fundamentals",
+        "authorEmail": "armin.arlert@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great explanation of the App Router! The file structure examples really help understand the new routing system."
+                  }
+                ]
+              }
+            ],
+            "userId": "armin.arlert@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Building a Full-Stack React Application",
+    "description": "Complete project walkthrough: building a modern full-stack application with React, Next.js, and Prisma",
+    "documentType": "project_summary",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Building a Full-Stack React Application"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "This comprehensive project walkthrough covers building a complete full-stack application from scratch. We'll use React, Next.js 14, Prisma, and modern development practices."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Project Overview"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "We'll build a task management application with the following features:"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "User authentication and authorization"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Task creation, editing, and deletion"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Real-time updates with WebSockets"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "File uploads and image processing"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Responsive design with Tailwind CSS"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Technology Stack"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "json",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "{\n  \"frontend\": {\n    \"framework\": \"Next.js 14\",\n    \"ui\": \"React 18\",\n    \"styling\": \"Tailwind CSS\",\n    \"state\": \"Zustand\",\n    \"forms\": \"React Hook Form + Zod\"\n  },\n  \"backend\": {\n    \"database\": \"PostgreSQL\",\n    \"orm\": \"Prisma\",\n    \"auth\": \"NextAuth.js\",\n    \"api\": \"Next.js API Routes\",\n    \"realtime\": \"Pusher\"\n  },\n  \"deployment\": {\n    \"platform\": \"Vercel\",\n    \"database\": \"Supabase\",\n    \"storage\": \"Cloudinary\"\n  }\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Database Schema Design"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "prisma",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "// schema.prisma\nmodel User {\n  id        String   @id @default(cuid())\n  email     String   @unique\n  name      String?\n  image     String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  \n  tasks     Task[]\n  projects  Project[]\n}\n\nmodel Project {\n  id          String   @id @default(cuid())\n  name        String\n  description String?\n  color       String   @default(\"#3B82F6\")\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  \n  userId    String\n  user      User     @relation(fields: [userId], references: [id])\n  tasks     Task[]\n}\n\nmodel Task {\n  id          String   @id @default(cuid())\n  title       String\n  description String?\n  completed   Boolean  @default(false)\n  priority    Priority @default(MEDIUM)\n  dueDate     DateTime?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  \n  userId    String\n  user      User     @relation(fields: [userId], references: [id])\n  projectId String?\n  project   Project? @relation(fields: [projectId], references: [id])\n}\n\nenum Priority {\n  LOW\n  MEDIUM\n  HIGH\n  URGENT\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-13",
+        "isResolved": false,
+        "documentContent": "Project Overview",
+        "authorEmail": "levi.ackerman@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "This is an excellent project structure! The technology stack choices are very modern and practical."
+                  }
+                ]
+              }
+            ],
+            "userId": "levi.ackerman@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "My Learning Journey: From Zero to React Expert",
+    "description": "Personal reflections and lessons learned while mastering React development",
+    "documentType": "community_post",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "My Learning Journey: From Zero to React Expert"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Six months ago, I knew nothing about React. Today, I'm building complex applications and mentoring other developers. Here's my journey and the lessons I learned along the way."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "The Beginning: Overwhelmed and Confused"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "When I first started learning React, I was completely overwhelmed. JSX looked like HTML mixed with JavaScript, and I couldn't understand why we needed all these concepts like components, props, and state."
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "The turning point came when I stopped trying to understand everything at once and focused on building simple projects. My first React app was a todo list - nothing fancy, but it taught me the fundamentals."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Key Breakthrough Moments"
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "Understanding Component Lifecycle"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Learning about useEffect and how components mount, update, and unmount was a game-changer. Suddenly, I could build interactive applications that responded to user actions."
+          }
+        ]
+      },
+      {
+        "type": "h3",
+        "children": [
+          {
+            "text": "State Management Patterns"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Moving from useState to useContext, and eventually to more complex state management solutions, helped me understand how to structure larger applications."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Common Pitfalls and How to Avoid Them"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Don't try to learn everything at once - focus on one concept at a time"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Build projects, don't just read tutorials - hands-on experience is crucial"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Join communities and ask questions - the React community is incredibly helpful"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Read other people's code - GitHub is a goldmine of learning opportunities"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Resources That Helped Me"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Here are the resources that made the biggest difference in my learning:"
+          }
+        ]
+      },
+      {
+        "type": "ol",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "React Official Documentation - Start here, it's actually really good"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Kent C. Dodds' blog and courses - Excellent explanations of complex concepts"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "React DevTools - Essential for debugging and understanding component behavior"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Building real projects - Nothing beats hands-on experience"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-14",
+        "isResolved": false,
+        "documentContent": "The Beginning: Overwhelmed and Confused",
+        "authorEmail": "mikasa.ackerman@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "This resonates so much with my own experience! I also started with a todo list and felt completely lost at first."
+                  }
+                ]
+              }
+            ],
+            "userId": "mikasa.ackerman@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Advanced TypeScript Patterns for React",
+    "description": "Master advanced TypeScript patterns and techniques specifically for React development",
+    "documentType": "technical_documentation",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "Advanced TypeScript Patterns for React"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "TypeScript and React work beautifully together, but there are advanced patterns that can make your code more type-safe, maintainable, and developer-friendly. This guide covers the most powerful techniques."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Generic Components"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Create reusable components that work with any data type:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "interface SelectProps<T> {\n  options: T[];\n  value: T;\n  onChange: (value: T) => void;\n  getLabel: (option: T) => string;\n  getValue: (option: T) => string;\n}\n\nfunction Select<T>({ \n  options, \n  value, \n  onChange, \n  getLabel, \n  getValue \n}: SelectProps<T>) {\n  return (\n    <select \n      value={getValue(value)} \n      onChange={(e) => {\n        const selectedOption = options.find(\n          option => getValue(option) === e.target.value\n        );\n        if (selectedOption) {\n          onChange(selectedOption);\n        }\n      }}\n    >\n      {options.map((option, index) => (\n        <option key={index} value={getValue(option)}>\n          {getLabel(option)}\n        </option>\n      ))}\n    </select>\n  );\n}\n\n// Usage with different types\ninterface User {\n  id: string;\n  name: string;\n}\n\nconst users: User[] = [\n  { id: '1', name: 'John' },\n  { id: '2', name: 'Jane' }\n];\n\n<Select\n  options={users}\n  value={users[0]}\n  onChange={(user) => console.log(user)}\n  getLabel={(user) => user.name}\n  getValue={(user) => user.id}\n/>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Discriminated Unions for State"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Use discriminated unions to create type-safe state machines:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "type AsyncState<T> = \n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: T }\n  | { status: 'error'; error: string };\n\nfunction useAsyncData<T>(fetchFn: () => Promise<T>) {\n  const [state, setState] = useState<AsyncState<T>>({ status: 'idle' });\n\n  const execute = useCallback(async () => {\n    setState({ status: 'loading' });\n    try {\n      const data = await fetchFn();\n      setState({ status: 'success', data });\n    } catch (error) {\n      setState({ \n        status: 'error', \n        error: error instanceof Error ? error.message : 'Unknown error' \n      });\n    }\n  }, [fetchFn]);\n\n  return { state, execute };\n}\n\n// Usage with full type safety\nconst { state, execute } = useAsyncData(() => fetch('/api/users'));\n\n// TypeScript knows the exact shape of state based on status\nif (state.status === 'success') {\n  // state.data is fully typed\n  console.log(state.data);\n} else if (state.status === 'error') {\n  // state.error is available\n  console.error(state.error);\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-15",
+        "isResolved": false,
+        "documentContent": "Generic Components",
+        "authorEmail": "armin.arlert@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "The generic Select component example is brilliant! This pattern will make my components much more reusable."
+                  }
+                ]
+              }
+            ],
+            "userId": "armin.arlert@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "React Testing Strategies and Best Practices",
+    "description": "Comprehensive guide to testing React applications with modern tools and techniques",
+    "documentType": "lesson_content",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "React Testing Strategies and Best Practices"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Testing React applications can be challenging, but with the right strategies and tools, you can build confidence in your code. This guide covers everything from unit tests to integration testing."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Testing Philosophy"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Before diving into specific testing techniques, it's important to understand the testing pyramid and when to use different types of tests:"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Unit tests - Test individual functions and components in isolation"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Integration tests - Test how components work together"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "End-to-end tests - Test complete user workflows"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Testing React Components with React Testing Library"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "React Testing Library encourages testing components the way users interact with them:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "import { render, screen, fireEvent, waitFor } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport { Button } from './Button';\n\ndescribe('Button Component', () => {\n  it('renders with correct text', () => {\n    render(<Button>Click me</Button>);\n    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();\n  });\n\n  it('calls onClick when clicked', async () => {\n    const handleClick = jest.fn();\n    const user = userEvent.setup();\n    \n    render(<Button onClick={handleClick}>Click me</Button>);\n    \n    await user.click(screen.getByRole('button'));\n    expect(handleClick).toHaveBeenCalledTimes(1);\n  });\n\n  it('is disabled when disabled prop is true', () => {\n    render(<Button disabled>Click me</Button>);\n    expect(screen.getByRole('button')).toBeDisabled();\n  });\n});"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Testing Custom Hooks"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Testing custom hooks requires a different approach using renderHook:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "typescript",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "import { renderHook, act } from '@testing-library/react';\nimport { useCounter } from './useCounter';\n\ndescribe('useCounter', () => {\n  it('should initialize with default value', () => {\n    const { result } = renderHook(() => useCounter());\n    expect(result.current.count).toBe(0);\n  });\n\n  it('should increment count', () => {\n    const { result } = renderHook(() => useCounter(0));\n    \n    act(() => {\n      result.current.increment();\n    });\n    \n    expect(result.current.count).toBe(1);\n  });\n\n  it('should decrement count', () => {\n    const { result } = renderHook(() => useCounter(1));\n    \n    act(() => {\n      result.current.decrement();\n    });\n    \n    expect(result.current.count).toBe(0);\n  });\n});"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-16",
+        "isResolved": false,
+        "documentContent": "Testing Philosophy",
+        "authorEmail": "hange.zoe@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great explanation of the testing pyramid! I've been struggling with when to use different types of tests, and this clarifies everything."
+                  }
+                ]
+              }
+            ],
+            "userId": "hange.zoe@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "My Development Setup and Workflow",
+    "description": "Personal development environment, tools, and workflow that helps me stay productive",
+    "documentType": "community_post",
+    "authorEmail": "eren.yeager@codac.academy",
+    "isPublished": true,
+    "content": [
+      {
+        "type": "h1",
+        "children": [
+          {
+            "text": "My Development Setup and Workflow"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "After months of experimenting with different tools and workflows, I've settled on a development setup that keeps me productive and focused. Here's what works for me."
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Code Editor: VS Code with Extensions"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "VS Code is my go-to editor, and these extensions make it incredibly powerful:"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "ES7+ React/Redux/React-Native snippets - Essential for React development"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "TypeScript Importer - Automatically imports TypeScript modules"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Prettier - Code formatting"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "ESLint - Code linting and error detection"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Auto Rename Tag - Automatically renames paired HTML/JSX tags"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Bracket Pair Colorizer - Makes nested code easier to read"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Terminal and Shell"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "I use iTerm2 with Oh My Zsh for a powerful terminal experience:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "bash",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "# My favorite Oh My Zsh plugins\nplugins=(\n  git\n  node\n  npm\n  yarn\n  docker\n  vscode\n  zsh-autosuggestions\n  zsh-syntax-highlighting\n)\n\n# Custom aliases for productivity\nalias gs=\"git status\"\nalias ga=\"git add\"\nalias gc=\"git commit\"\nalias gp=\"git push\"\nalias dev=\"npm run dev\"\nalias build=\"npm run build\"\nalias test=\"npm test\""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Browser DevTools Setup"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "Chrome DevTools with these extensions make debugging a breeze:"
+          }
+        ]
+      },
+      {
+        "type": "ul",
+        "children": [
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "React Developer Tools - Essential for React development"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Redux DevTools - For state management debugging"
+              }
+            ]
+          },
+          {
+            "type": "li",
+            "children": [
+              {
+                "text": "Lighthouse - Performance auditing"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "children": [
+          {
+            "text": "Project Structure and Organization"
+          }
+        ]
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "text": "I follow a consistent project structure that scales well:"
+          }
+        ]
+      },
+      {
+        "type": "code_block",
+        "language": "text",
+        "children": [
+          {
+            "type": "code_line",
+            "children": [
+              {
+                "text": "src/\n├── components/          # Reusable components\n│   ├── ui/              # Basic UI components\n│   └── features/        # Feature-specific components\n├── pages/               # Next.js pages\n├── hooks/               # Custom hooks\n├── services/            # API services\n├── store/               # State management\n├── utils/               # Utility functions\n├── types/               # TypeScript types\n└── constants/           # App constants"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "discussions": [
+      {
+        "id": "discussion-17",
+        "isResolved": false,
+        "documentContent": "Code Editor: VS Code with Extensions",
+        "authorEmail": "jean.kirstein@codac.academy",
+        "comments": [
+          {
+            "contentRich": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great extension recommendations! I'm definitely going to try the TypeScript Importer - that sounds incredibly useful."
+                  }
+                ]
+              }
+            ],
+            "userId": "jean.kirstein@codac.academy",
+            "isEdited": false
+          }
+        ]
+      }
+    ]
   }
 ]

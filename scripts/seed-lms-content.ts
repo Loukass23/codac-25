@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import {
     enhancedMarkdownParser
 } from '../lib/plate/enhanced-markdown-parser';
-import { FolderStructureManager } from '../lib/plate/folder-structure-manager';
+import { FolderStructureManager } from '../lib/folder-structure-manager';
 
 const prisma = new PrismaClient();
 
@@ -74,7 +74,17 @@ async function seedLMSContent() {
                 // Determine order
                 const order = parsed.metadata.order || 0;
 
-                // Get folder ID for this document
+                // Apply the same reorganization logic as in getLMSContentStructure
+                let folderName = file.folderName || 'root';
+                let folderPath = file.folderPath;
+
+                // Reorganize data content under web folder
+                if (folderName === 'data') {
+                    folderName = 'web';
+                    folderPath = folderPath.replace('data/', 'web/data/');
+                }
+
+                // Get folder ID for this document using the reorganized structure
                 const folderId = folderManager.getFolderIdForDocument(file.filePath, folderMapping) ?? undefined;
 
                 const lmsDoc: LMSDocumentData = {
@@ -92,12 +102,12 @@ async function seedLMSContent() {
                     documentType,
                     folderId,
                     filePath: file.filePath,
-                    folderPath: file.folderPath,
-                    folderName: file.folderName,
+                    folderPath,
+                    folderName,
                 };
 
                 lmsDocuments.push(lmsDoc);
-                console.log(`✅ Processed: ${file.filePath} -> ${lmsDoc.title} (folder: ${file.folderName})`);
+                console.log(`✅ Processed: ${file.filePath} -> ${lmsDoc.title} (folder: ${folderName})`);
 
             } catch (error) {
                 console.error(`❌ Failed to process ${file.filePath}:`, error);
@@ -135,11 +145,7 @@ async function seedLMSContent() {
  * Determine document type based on file path
  */
 function determineDocumentType(filePath: string): string {
-    if (filePath.includes('career/')) return 'lms_career';
-    if (filePath.includes('data/')) return 'lms_data';
-    if (filePath.includes('web/')) return 'lms_web';
-    if (filePath === 'welcome.md') return 'lms_welcome';
-    if (filePath === 'guidelines.md') return 'lms_guidelines';
+    // All courses should use 'lms_content' as document type
     return 'lms_content';
 }
 

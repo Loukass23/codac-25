@@ -213,7 +213,6 @@ model User {
   sessions Session[]
 
   // User Management Relations
-  userImage UserImage?
   achievements UserAchievement[]
   quizResults  QuizResult[]
   attendanceRecords Attendance[]
@@ -256,17 +255,6 @@ model User {
   @@map("users")
 }
 
-model UserImage {
-  id          String  @id @default(cuid())
-  userId      String  @unique
-  data        Bytes?
-  contentType String?
-  hash        String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_images")
-}
 
 model Cohort {
   id          String    @id @default(cuid())

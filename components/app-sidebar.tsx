@@ -26,12 +26,10 @@ import {
 } from '@/components/ui/sidebar';
 import { useTotalUnreadCount } from '@/hooks/use-total-unread-count';
 
-import { CodacLeftAngleBracket } from './codac-brand/codac-left-angle-bracket';
 import CodacLogo from './codac-brand/codac-logo';
-import CodacRightAngleBracket from './codac-brand/codac-right-angle-bracket';
 import { NavSecondary } from './nav-secondary';
 import { NavTop, NavigationGroup } from './nav-top';
-import { NavUser } from './nav-user';
+import { NavUserStreaming } from './nav-user';
 
 const buildNavigationData = (role?: string): NavigationGroup[] => {
   // Build career items based on role
@@ -121,13 +119,12 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
     },
     ...(learningItems.length > 0
       ? [
-        {
-          title: 'Learning',
-          icon: GraduationCap,
-          items: learningItems,
-        },
-
-      ]
+          {
+            title: 'Learning',
+            icon: GraduationCap,
+            items: learningItems,
+          },
+        ]
       : []),
   ];
 };
@@ -178,7 +175,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 href='/'
                 className='flex items-center group-data-[collapsible=icon]:w-full'
               >
-
                 <CodacLogo
                   size='sm'
                   className='group-data-[collapsible=icon]:scale-70 px-2'
@@ -202,7 +198,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUserStreaming />
       </SidebarFooter>
     </Sidebar>
   );

@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
 import { DocumentList } from '@/components/documents/document-list';
-import { FolderNavigation } from '@/components/documents/folder-navigation';
+import { VerticalToolbarSkeleton } from '@/components/skeleton/vertical-toolbar-skeletob';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -12,7 +12,7 @@ import {
   getFolderTreeWithDocuments,
 } from '@/data/documents/get-folders';
 import { requireServerAuth } from '@/lib/auth/auth-server';
-import { VerticalToolbarSkeleton } from '@/components/skeleton/vertical-toolbar-skeletob';
+import { SimpleDocsFolderNavigation } from '../../../components/documents/simple-folder-navigation';
 
 interface DocumentsPageProps {
   searchParams: Promise<{
@@ -44,7 +44,6 @@ export default async function DocumentsPage({
     50,
     0
   );
-
   return (
     <div className='min-h-screen bg-background'>
       <ResizablePanelGroup direction='horizontal' className='h-full w-full'>
@@ -54,15 +53,18 @@ export default async function DocumentsPage({
           maxSize={SIDE_PANEL_MAX_SIZE}
           className='border-r'
         >
-          <FolderNavigation
-            _treeDataPromise={_treeDataPromise}
-            selectedFolderId={selectedFolderId}
-          />
+          <Suspense fallback={<VerticalToolbarSkeleton />}>
+            <SimpleDocsFolderNavigation
+              _treeDataPromise={_treeDataPromise}
+              selectedFolderId={selectedFolderId}
+            />
+          </Suspense>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={MAIN_PANEL_DEFAULT_SIZE}
+        <ResizablePanel
+          defaultSize={MAIN_PANEL_DEFAULT_SIZE}
           minSize={MAIN_PANEL_MIN_SIZE}
           maxSize={MAIN_PANEL_MAX_SIZE}
         >

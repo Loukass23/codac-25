@@ -62,7 +62,7 @@ export class FolderStructureManager {
 
             // Create subfolders if needed
             const subfolders = this.extractSubfolders(files);
-            for (const [subfolderName, subfolderFiles] of Object.entries(subfolders)) {
+            for (const [subfolderName, _subfolderFiles] of Object.entries(subfolders)) {
                 const subfolderId = await this.createOrGetFolder({
                     name: this.formatFolderName(subfolderName),
                     description: `Content for ${subfolderName}`,
@@ -164,12 +164,16 @@ export class FolderStructureManager {
 
         for (const file of files) {
             if (file.folderPath && file.folderPath !== file.folderName) {
-                const subfolderName = file.folderPath.split('/').pop();
-                if (subfolderName && subfolderName !== file.folderName) {
-                    if (!subfolders[subfolderName]) {
-                        subfolders[subfolderName] = [];
+                // Handle the new structure where data is under web
+                const pathParts = file.folderPath.split('/');
+                if (pathParts.length > 1) {
+                    const subfolderName = pathParts[pathParts.length - 1];
+                    if (subfolderName && subfolderName !== file.folderName) {
+                        if (!subfolders[subfolderName]) {
+                            subfolders[subfolderName] = [];
+                        }
+                        subfolders[subfolderName].push(file);
                     }
-                    subfolders[subfolderName].push(file);
                 }
             }
         }
@@ -193,8 +197,7 @@ export class FolderStructureManager {
     private getFolderDescription(name: string): string {
         const descriptions: Record<string, string> = {
             career: 'Career development and job search resources',
-            data: 'Data science and analytics content',
-            web: 'Web development and programming materials',
+            web: 'Web development, programming, and data science materials',
             welcome: 'Welcome and introduction content',
             guidelines: 'Guidelines and best practices',
         };
@@ -208,7 +211,6 @@ export class FolderStructureManager {
     private getFolderColor(name: string): string {
         const colors: Record<string, string> = {
             career: '#10B981', // Green
-            data: '#8B5CF6',   // Purple
             web: '#F59E0B',    // Amber
             welcome: '#3B82F6', // Blue
             guidelines: '#EF4444', // Red
@@ -223,7 +225,6 @@ export class FolderStructureManager {
     private getFolderIcon(name: string): string {
         const icons: Record<string, string> = {
             career: 'briefcase',
-            data: 'chart-bar',
             web: 'code',
             welcome: 'hand-wave',
             guidelines: 'clipboard-list',
@@ -244,7 +245,7 @@ export class FolderStructureManager {
     /**
      * Get subfolder icon
      */
-    private getSubfolderIcon(name: string): string {
+    private getSubfolderIcon(_name: string): string {
         return 'folder-open';
     }
 
@@ -256,8 +257,7 @@ export class FolderStructureManager {
             welcome: 0,
             guidelines: 1,
             web: 2,
-            data: 3,
-            career: 4,
+            career: 3,
         };
 
         return order[name] || 99;

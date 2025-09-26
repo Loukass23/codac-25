@@ -4,7 +4,7 @@ import { Camera, Upload, X, Loader2 } from 'lucide-react';
 import React, { useState, useRef } from 'react';
 import { toast } from 'sonner';
 
-import { updateUserAvatar } from '@/actions/user/update-user-avatar';
+import { uploadAvatar } from '@/actions/user/upload-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,11 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useUserAvatar } from '@/hooks/use-user-avatar';
 import { cn } from '@/lib/utils';
 
 interface AvatarUploadProps {
-  userId: string;
   currentAvatar?: string;
   userName?: string;
   className?: string;
@@ -33,7 +31,6 @@ const sizeClasses = {
 };
 
 export function AvatarUpload({
-  userId,
   currentAvatar,
   userName,
   className,
@@ -44,7 +41,6 @@ export function AvatarUpload({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { refreshAvatar } = useUserAvatar();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -76,13 +72,16 @@ export function AvatarUpload({
 
     setIsUploading(true);
     try {
-      const result = await updateUserAvatar(userId, previewImage);
+      // Create FormData with the base64 image
+      const formData = new FormData();
+      const blob = await fetch(previewImage).then(r => r.blob());
+      formData.append('avatar', blob, 'avatar.jpg');
+
+      const result = await uploadAvatar(formData);
 
       if (result.success) {
         toast.success('Avatar updated successfully');
-        onAvatarUpdate?.(previewImage);
-        // Refresh the header avatar to keep it in sync
-        refreshAvatar();
+        onAvatarUpdate?.(result.data.avatar);
         setIsDialogOpen(false);
         setPreviewImage(null);
       } else {

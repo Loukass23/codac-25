@@ -8,13 +8,7 @@ import {
   dragAndDropFeature,
 } from '@headless-tree/core';
 import { useTree } from '@headless-tree/react';
-import {
-  Folder,
-  FolderOpen,
-  MoreVertical,
-  Plus,
-  FileText,
-} from 'lucide-react';
+import { Folder, FolderOpen, MoreVertical, Plus, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { use, useState, Suspense } from 'react';
 import { toast } from 'sonner';
@@ -64,7 +58,6 @@ interface RootItem {
   children: string[];
 }
 
-
 // Tree content component that uses the promise
 function TreeContent({
   _treeDataPromise,
@@ -80,13 +73,15 @@ function TreeContent({
 
   const tree = useTree<FolderTreeItem>({
     initialState: {
-      expandedItems: Object.keys(treeData.items).filter(id => treeData.items[id]?.type === 'folder'), // Start with all folders expanded
+      expandedItems: Object.keys(treeData.items).filter(
+        id => treeData.items[id]?.type === 'folder'
+      ), // Start with all folders expanded
       selectedItems: selectedFolderId ? [selectedFolderId] : [],
     },
     indent: 10,
     rootItemId: 'root',
-    getItemName: (item) => item.getItemData().name,
-    isItemFolder: (item) => item.getItemData().type === 'folder',
+    getItemName: item => item.getItemData().name,
+    isItemFolder: item => item.getItemData().type === 'folder',
     dataLoader: {
       getItem: (itemId: string): FolderTreeItem | RootItem => {
         if (itemId === 'root') {
@@ -97,7 +92,7 @@ function TreeContent({
             color: '#3B82F6',
             icon: null,
             documentCount: 0,
-            children: treeData.rootIds
+            children: treeData.rootIds,
           };
         }
         const item = treeData.items[itemId];
@@ -221,7 +216,7 @@ function TreeContent({
 
           {/* Tree component */}
           <Tree indent={12} tree={tree}>
-            {tree.getItems().map((item) => {
+            {tree.getItems().map(item => {
               const itemData = item.getItemData();
               const isFolder = itemData.type === 'folder';
 
@@ -237,20 +232,26 @@ function TreeContent({
                         }
                         const queryString = params.toString();
                         // Check if we're in LMS context by looking at current pathname
-                        const isLMSContext = window.location.pathname.startsWith('/lms');
+                        const isLMSContext =
+                          window.location.pathname.startsWith('/lms');
                         const basePath = isLMSContext ? '/lms' : '/docs';
-                        router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
+                        router.push(
+                          `${basePath}${queryString ? `?${queryString}` : ''}`
+                        );
                       } else {
                         // Handle document click - navigate to document
                         // Check if we're in LMS context by looking at current pathname
-                        const isLMSContext = window.location.pathname.startsWith('/lms');
+                        const isLMSContext =
+                          window.location.pathname.startsWith('/lms');
                         const basePath = isLMSContext ? '/lms' : '/docs';
 
                         if (itemData.slug) {
                           router.push(`${basePath}/${itemData.slug}`);
                         } else {
                           // Document doesn't have a slug, show error or skip
-                          toast.error('Document is not accessible (no slug available)');
+                          toast.error(
+                            'Document is not accessible (no slug available)'
+                          );
                         }
                       }
                     }}
@@ -289,15 +290,23 @@ function TreeContent({
                       </span>
 
                       {/* Document count badge for folders */}
-                      {isFolder && itemData.documentCount && itemData.documentCount > 0 && (
-                        <Badge variant='secondary' className='text-xs px-1.5 py-0.5'>
-                          {itemData.documentCount}
-                        </Badge>
-                      )}
+                      {isFolder &&
+                        itemData.documentCount &&
+                        itemData.documentCount > 0 && (
+                          <Badge
+                            variant='secondary'
+                            className='text-xs px-1.5 py-0.5'
+                          >
+                            {itemData.documentCount}
+                          </Badge>
+                        )}
 
                       {/* Published indicator for documents */}
                       {!isFolder && itemData.isPublished && (
-                        <Badge variant='outline' className='text-xs px-1.5 py-0.5'>
+                        <Badge
+                          variant='outline'
+                          className='text-xs px-1.5 py-0.5'
+                        >
                           Published
                         </Badge>
                       )}
@@ -315,7 +324,9 @@ function TreeContent({
                         <DropdownMenuContent align='start'>
                           {isFolder ? (
                             <>
-                              <DropdownMenuItem onClick={() => item.startRenaming()}>
+                              <DropdownMenuItem
+                                onClick={() => item.startRenaming()}
+                              >
                                 Rename
                               </DropdownMenuItem>
                               <DropdownMenuItem
@@ -337,7 +348,9 @@ function TreeContent({
                             </>
                           ) : (
                             <>
-                              <DropdownMenuItem onClick={() => item.startRenaming()}>
+                              <DropdownMenuItem
+                                onClick={() => item.startRenaming()}
+                              >
                                 Rename
                               </DropdownMenuItem>
                               <DropdownMenuItem
@@ -414,7 +427,7 @@ function TreeContent({
 }
 
 // Main component with Suspense boundary
-export function FolderNavigation({
+export function LMSFolderNavigation({
   _treeDataPromise,
   selectedFolderId,
 }: FolderNavigationProps) {

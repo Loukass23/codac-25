@@ -30,6 +30,7 @@ const avatarSchema = z.string().refine(
 // Base user validation schema
 export const userSchema = z.object({
     email: z.string().email('Invalid email address').max(255, 'Email too long'),
+    username: z.string().min(3, 'Username must be at least 3 characters').max(30, 'Username too long').regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
     name: z.string().min(1, 'Name is required').max(100, 'Name too long').optional(),
     avatar: avatarSchema,
     bio: z.string().max(500, 'Bio too long').optional(),
@@ -48,6 +49,7 @@ export const userSchema = z.object({
 // Create user schema - required fields for creation
 export const createUserSchema = z.object({
     email: z.string().email('Invalid email address').max(255, 'Email too long'),
+    username: z.string().min(3, 'Username must be at least 3 characters').max(30, 'Username too long').regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
     name: z.string().min(1, 'Name is required').max(100, 'Name too long').optional(),
     role: z.enum(['STUDENT', 'ALUMNI', 'MENTOR', 'ADMIN']),
     status: z.enum(['ACTIVE', 'INACTIVE', 'GRADUATED']),

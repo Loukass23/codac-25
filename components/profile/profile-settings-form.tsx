@@ -30,7 +30,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { UserProfile } from '@/data/user/get-user';
-import { useUserAvatar } from '@/hooks/use-user-avatar';
 
 type ProfileSettingsFormProps = {
   user: UserProfile;
@@ -65,7 +64,6 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
     user.avatar || undefined
   );
-  const { refreshAvatar } = useUserAvatar();
 
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -122,8 +120,6 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
   const handleAvatarUpdate = (newAvatar: string) => {
     setAvatarUrl(newAvatar);
     form.setValue('avatar', newAvatar);
-    // Refresh the header avatar to keep it in sync
-    refreshAvatar();
   };
 
   return (
@@ -142,7 +138,6 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
             <CardContent>
               <div className='flex justify-center'>
                 <AvatarUpload
-                  userId={user.id}
                   currentAvatar={avatarUrl || undefined}
                   userName={user.name || undefined}
                   size='lg'

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
 import { AppBreadcrumb } from '@/components/app-breadcrumb';
+import CodacLeftAngleBracket from '@/components/codac-brand/codac-left-angle-bracket';
 import { NotificationDropdown } from '@/components/notifications/notification-dropdown';
 import { ThemePicker } from '@/components/theme-picker';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useUserAvatar } from '@/hooks/use-user-avatar';
 import { cn } from '@/lib/utils';
 
 interface AppHeaderProps {
@@ -28,8 +28,7 @@ interface AppHeaderProps {
 export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
   const { data: session } = useSession();
   const user = session?.user;
-  const { displayAvatar } = useUserAvatar();
-
+  console.log(user);
   return (
     <header
       className={cn(
@@ -51,16 +50,17 @@ export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant='ghost' className='h-9 px-2 py-0 hover:bg-accent hover:text-accent-foreground'>
+                <Button
+                  variant='ghost'
+                  className='h-9 px-2 py-0 hover:bg-accent hover:text-accent-foreground'
+                >
                   <Avatar className='h-7 w-7'>
                     <AvatarImage
-                      src={displayAvatar ?? ''}
-                      alt={user.name ?? 'User'}
+                      src={user.avatar ?? ''}
+                      alt={user.name ?? 'codac member'}
                     />
                     <AvatarFallback className='text-xs'>
-                      {user.name?.split(' ').map(n => n[0]).join('') ??
-                        user.email?.charAt(0)?.toUpperCase() ??
-                        'U'}
+                      <CodacLeftAngleBracket size='sm' animated />
                     </AvatarFallback>
                   </Avatar>
                   <ChevronDown className='h-3 w-3 ml-1' />
@@ -71,7 +71,9 @@ export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
                 <DropdownMenuLabel>
                   <div className='flex flex-col space-y-1'>
                     {user.name && (
-                      <p className='text-sm font-medium leading-none'>{user.name}</p>
+                      <p className='text-sm font-medium leading-none'>
+                        {user.name}
+                      </p>
                     )}
                     {user.email && (
                       <p className='text-xs leading-none text-muted-foreground'>

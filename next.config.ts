@@ -10,38 +10,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Configure server actions
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
   // Handle server-side external packages
-  serverExternalPackages: ['canvas', 'jsdom'],
-  // Handle external packages that shouldn't be bundled
-  webpack: (config, { isServer }) => {
-    // Exclude canvas from bundling (it's not needed in browser environments)
-    config.externals = config.externals || [];
-    if (!isServer) {
-      config.externals.push('canvas');
-    }
-
-    // Handle jsdom version conflicts
-    config.resolve = config.resolve || {};
-    config.resolve.alias = config.resolve.alias || {};
-    config.resolve.alias.jsdom = require.resolve('jsdom');
-
-    return config;
-  },
-
-  // Turbopack configuration (mirrors webpack config)
+  serverExternalPackages: ['canvas', 'jsdom', 'sharp', 'detect-libc'],
+  // Turbopack configuration (replaces webpack for better performance)
   turbopack: {
     resolveAlias: {
+      // Handle jsdom version conflicts
       jsdom: require.resolve('jsdom'),
     },
+    resolveExtensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
-
-  // Headers configuration to handle large cookies/headers
+  // Basic headers for security
   async headers() {
     return [
       {
@@ -63,14 +42,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Development server configuration
-  ...(process.env.NODE_ENV === 'development' && {
-    // These don't directly control header size but provide better error handling
-    onDemandEntries: {
-      maxInactiveAge: 25 * 1000,
-      pagesBufferLength: 2,
-    },
-  }),
 };
 
 export default nextConfig;

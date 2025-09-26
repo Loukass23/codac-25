@@ -1,7 +1,7 @@
 'use server';
 
 import { Prisma } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
@@ -25,27 +25,37 @@ export async function createUser(
 
   try {
     logger.logServerAction('create', 'user', {
-      metadata: { email: data.email, role: data.role },
+      metadata: { email: data.email, username: data.username, role: data.role },
     });
 
     // Validate input data
     const validatedData = createUserSchema.parse(data);
 
-    // Check if user with this email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email },
-      select: { id: true, email: true },
+    // Check if user with this email or username already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: validatedData.email },
+          { username: validatedData.username }
+        ]
+      },
+      select: { id: true, email: true, username: true },
     });
 
     if (existingUser) {
-      logger.warn('User creation failed: email already exists', {
+      const conflictField = existingUser.email === validatedData.email ? 'email' : 'username';
+      logger.warn(`User creation failed: ${conflictField} already exists`, {
         action: 'create',
         resource: 'user',
-        metadata: { email: validatedData.email },
+        metadata: {
+          email: validatedData.email,
+          username: validatedData.username,
+          conflictField
+        },
       });
       return {
         success: false,
-        error: 'A user with this email already exists',
+        error: `A user with this ${conflictField} already exists`,
       };
     }
 
@@ -53,7 +63,9 @@ export async function createUser(
     const user = await prisma.user.create({
       data: {
         email: validatedData.email,
+        username: validatedData.username,
         name: validatedData.name,
+        avatar: '/codac_logo.svg', // Set default Codac logo as avatar
         role: validatedData.role,
         status: validatedData.status,
       },
@@ -61,12 +73,13 @@ export async function createUser(
     });
 
     logger.logDatabaseOperation('create', 'user', user.id, {
-      metadata: { email: user.email, role: user.role },
+      metadata: { email: user.email, username: user.username, role: user.role },
     });
 
-    // Revalidate relevant paths
+    // Revalidate relevant paths and tags
     revalidatePath('/admin/users');
     revalidatePath('/users');
+    revalidateTag('user');
 
     logger.info('User created successfully', {
       action: 'create',
@@ -75,6 +88,7 @@ export async function createUser(
       metadata: {
         duration: Date.now() - startTime,
         email: user.email,
+        username: user.username,
         role: user.role,
       },
     });
@@ -92,6 +106,7 @@ export async function createUser(
         metadata: {
           duration: Date.now() - startTime,
           email: data.email,
+          username: data.username,
         },
       }
     );
@@ -109,9 +124,22 @@ export async function createUser(
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
         case 'P2002':
+          // Check which field caused the unique constraint violation
+          const target = (error.meta as any)?.target as string[] | undefined;
+          if (target?.includes('email')) {
+            return {
+              success: false,
+              error: 'A user with this email already exists',
+            };
+          } else if (target?.includes('username')) {
+            return {
+              success: false,
+              error: 'A user with this username already exists',
+            };
+          }
           return {
             success: false,
-            error: 'A user with this email already exists',
+            error: 'A user with this information already exists',
           };
         default:
           return {

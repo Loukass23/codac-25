@@ -1,6 +1,7 @@
 'use server';
 
 import { Prisma } from '@prisma/client';
+import { unstable_cache } from 'next/cache';
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
@@ -47,20 +48,11 @@ export type UserProfile = Prisma.UserGetPayload<{
 
 export type GetUserResult = ServerActionResult<UserProfile>;
 
-export async function getUser(id: string): Promise<GetUserResult> {
-  const startTime = Date.now();
-
-  try {
-    logger.logServerAction('get', 'user', {
-      resourceId: id,
-    });
-
-    // Validate input
-    const { id: validatedId } = getUserSchema.parse({ id });
-
-    // Get user with detailed information
-    const user = await prisma.user.findUnique({
-      where: { id: validatedId },
+// Cached user fetch function
+const getCachedUser = unstable_cache(
+  async (id: string) => {
+    return await prisma.user.findUnique({
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -97,6 +89,26 @@ export async function getUser(id: string): Promise<GetUserResult> {
         },
       },
     });
+  },
+  ['user'],
+  {
+    tags: ['user', 'user-avatar'],
+  }
+);
+
+export async function getUser(id: string): Promise<GetUserResult> {
+  const startTime = Date.now();
+
+  try {
+    logger.logServerAction('get', 'user', {
+      resourceId: id,
+    });
+
+    // Validate input
+    const { id: validatedId } = getUserSchema.parse({ id });
+
+    // Get user with detailed information using cache
+    const user = await getCachedUser(validatedId);
 
     if (!user) {
       logger.warn('User not found', {

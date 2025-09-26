@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { Prisma } from '@prisma/client';
-import { type Value } from 'platejs';
+// import { type Value } from 'platejs';
 import { z } from 'zod';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';

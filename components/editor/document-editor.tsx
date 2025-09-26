@@ -41,7 +41,7 @@ export const DocumentEditor = forwardRef<
     ref
   ) => {
     const document = use(_documentPromise);
-
+    console.log(document);
     // Use the custom hook for editor logic
     const { editor, saveDocument, debouncedSave } = useDocumentEditor({
       documentId,

@@ -7,8 +7,7 @@ import { StaticEditor } from '@/components/editor/static-editor';
 import {
   createOptimalStaticEditor,
   sanitizeForStatic,
-} from '@/lib/plate-static-utils';
-
+} from '@/lib/plate/plate-static-utils';
 
 // Example content with different complexity levels
 const simpleContent: Value = [

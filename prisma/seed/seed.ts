@@ -9,7 +9,6 @@ import { logger } from '../../lib/logger';
 // Import all seeder modules
 import { seedAttackOnTitan, cleanAttackOnTitan } from './seeders/attack-on-titan';
 import { seedChatData, cleanChatData } from './seeders/chat';
-import { seedDocumentFolders } from './seeders/document-folders';
 import { seedDocuments, cleanDocuments } from './seeders/documents';
 import { seedJobs, cleanJobs } from './seeders/jobs';
 // import { seedLMSContent, cleanLMSContent } from './seeders/lms-content';
@@ -62,12 +61,6 @@ const seedOptions: SeedOption[] = [
         cleanAction: cleanDocuments,
     },
     {
-        id: 'document-folders',
-        name: 'Document Folders',
-        description: 'Create nested folder structure for organizing documents',
-        action: () => seedDocumentFolders(prisma),
-    },
-    {
         id: 'chat-data',
         name: 'Chat Data',
         description: 'Import chat conversations, participants, and messages from exported data',
@@ -104,7 +97,6 @@ async function seedAll() {
         await seedJobs();
         await seedProjects();
         await seedDocuments();
-        await seedDocumentFolders(prisma);
 
         logger.info('✅ Complete seeding finished successfully!');
 

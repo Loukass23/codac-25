@@ -8,10 +8,10 @@ import { logger } from '@/lib/logger';
 export type ServerActionResult<T = unknown> =
   | { success: true; data: T }
   | {
-      success: false;
-      error: string | z.ZodError['errors'];
-      validationErrors?: z.ZodError['errors'];
-    };
+    success: false;
+    error: string | z.ZodIssue[];
+    validationErrors?: z.ZodIssue[];
+  };
 
 // Common Prisma error handling
 export function handlePrismaError(
@@ -34,12 +34,25 @@ export function handlePrismaError(
   }
 }
 
+// Handle connection pool timeout errors specifically
+export function handleConnectionError(error: unknown): string {
+  if (error instanceof Error) {
+    if (error.message.includes('connection pool') ||
+      error.message.includes('connection timeout') ||
+      error.message.includes('Timed out fetching a new connection')) {
+      logger.error('Database connection pool timeout', error);
+      return 'Database is temporarily unavailable. Please try again in a moment.';
+    }
+  }
+  return 'Database connection error occurred';
+}
+
 // Common validation error handling
 export function handleValidationError(
   error: unknown
-): string | z.ZodError['errors'] {
+): string | z.ZodIssue[] {
   if (error instanceof Error && error.name === 'ZodError') {
-    return (error as z.ZodError).errors;
+    return (error as z.ZodError).issues;
   }
   return 'Validation failed';
 }
@@ -99,7 +112,7 @@ export function createServerAction<TInput, TOutput>(
       if (error instanceof Error && error.name === 'ZodError') {
         logger.logValidationError(
           resourceName || 'unknown',
-          (error as z.ZodError).errors
+          (error as z.ZodError).issues
         );
         return { success: false, error: handleValidationError(error) };
       }
@@ -108,21 +121,30 @@ export function createServerAction<TInput, TOutput>(
         return { success: false, error: handlePrismaError(error) };
       }
 
+      // Handle connection pool timeout errors
+      const connectionError = handleConnectionError(error);
+      if (connectionError !== 'Database connection error occurred') {
+        return { success: false, error: connectionError };
+      }
+
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
 }
+
 
 // Commonly used Prisma select and include patterns
 export const commonSelects = {
   user: {
     id: true,
     name: true,
+    username: true,
     email: true,
   },
   userPublic: {
     id: true,
     name: true,
+    username: true,
     email: true,
     avatar: true,
     bio: true,
@@ -147,6 +169,7 @@ export const commonSelects = {
   userPrivate: {
     id: true,
     name: true,
+    username: true,
     email: true,
     avatar: true,
     bio: true,
@@ -301,7 +324,7 @@ export async function handleServerAction<TInput, TOutput>(
       return {
         success: false,
         error: 'Invalid input data',
-        validationErrors: error.errors,
+        validationErrors: error.issues,
       };
     }
 

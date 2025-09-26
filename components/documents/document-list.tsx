@@ -41,7 +41,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import type { DocumentWithAuthor } from '@/data/projects/get-documents';
+import type { DocumentWithAuthor } from '@/data/documents/get-folders';
 import { cn } from '@/lib/utils';
 
 interface DocumentListProps {

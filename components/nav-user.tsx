@@ -8,11 +8,11 @@ import {
   IconPalette,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
+import { use, Suspense } from 'react';
 
 import { ThemePicker } from '@/components/theme-picker';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,44 +28,71 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { useUserAvatar } from '@/hooks/use-user-avatar';
 
-export function NavUser() {
+import { getUserProfile } from '../lib/auth/auth-utils';
+
+export function NavUserStreaming() {
+  const _userProfilePromise = getUserProfile();
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <NavUser _userProfilePromise={_userProfilePromise} />
+    </Suspense>
+  );
+}
+
+function ProfileSkeleton() {
+  return (
+    <div className='flex items-center gap-2 px-1 py-1.5'>
+      <div className='h-8 w-8 rounded bg-muted animate-pulse' />
+      <div className='flex-1 space-y-1'>
+        <div className='h-4 bg-muted rounded animate-pulse' />
+        <div className='h-3 bg-muted rounded w-3/4 animate-pulse' />
+      </div>
+    </div>
+  );
+}
+
+function NavUser({
+  _userProfilePromise,
+}: {
+  _userProfilePromise: Promise<Awaited<ReturnType<typeof getUserProfile>>>;
+}) {
+  const userProfile = use(_userProfilePromise);
   const { isMobile } = useSidebar();
-  const { data: session, status } = useSession();
-  const { displayAvatar } = useUserAvatar();
 
-  if (status === 'loading') {
+  console.log('NavUser - userProfile:', userProfile);
+
+  // Handle loading state (when promise is still resolving)
+  if (userProfile === undefined) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <div className="flex items-center gap-2 px-1 py-1.5">
-            <div className="h-8 w-8 rounded bg-muted animate-pulse" />
-            <div className="flex-1 space-y-1">
-              <div className="h-4 bg-muted rounded animate-pulse" />
-              <div className="h-3 bg-muted rounded w-3/4 animate-pulse" />
+          <SidebarMenuButton size='lg' disabled>
+            <div className='h-8 w-8 rounded bg-muted animate-pulse' />
+            <div className='flex-1 space-y-1'>
+              <div className='h-4 bg-muted rounded animate-pulse' />
+              <div className='h-3 bg-muted rounded w-3/4 animate-pulse' />
             </div>
-          </div>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     );
   }
 
-  if (!session?.user) {
+  // Handle unauthenticated state (when user is not logged in)
+  if (userProfile === null) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <Button asChild className="w-full justify-start">
-            <Link href="/auth/signin">
+          <SidebarMenuButton asChild size='lg'>
+            <Link href='/auth/signin' className='w-full justify-start'>
               Sign In
             </Link>
-          </Button>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     );
   }
-
-  const user = session.user;
 
   return (
     <SidebarMenu>
@@ -73,50 +100,65 @@ export function NavUser() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              size='lg'
+              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
-              <Avatar className="h-8 w-8 rounded">
+              <Avatar className='h-8 w-8 rounded'>
                 <AvatarImage
-                  src={displayAvatar || ""}
-                  alt={user.name || user.email || "User"}
+                  src={userProfile.avatar || ''}
+                  alt={userProfile.name || userProfile.email || 'User'}
                 />
-                <AvatarFallback className="rounded">
-                  {(user.name?.charAt(0) || user.email?.charAt(0) || "U").toUpperCase()}
+                <AvatarFallback className='rounded'>
+                  {(
+                    userProfile.name?.charAt(0) ||
+                    userProfile.email?.charAt(0) ||
+                    'U'
+                  ).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name || "User"}</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
+              <div className='grid flex-1 text-left text-sm leading-tight'>
+                <span className='truncate font-medium'>
+                  {userProfile.name || 'User'}
                 </span>
-                {user.role && (
-                  <span className="truncate text-xs text-muted-foreground capitalize">
-                    {user.role.toLowerCase()}
+                <span className='truncate text-xs text-muted-foreground'>
+                  {userProfile.email}
+                </span>
+                {userProfile.role && (
+                  <span className='truncate text-xs text-muted-foreground capitalize'>
+                    {userProfile.role.toLowerCase()}
                   </span>
                 )}
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
+              <IconDotsVertical className='ml-auto size-4' />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded"
+            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded'
             side={isMobile ? 'bottom' : 'right'}
-            align="end"
+            align='end'
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded">
-                  <AvatarImage src={displayAvatar || ""} alt={user.name || user.email || "User"} />
-                  <AvatarFallback className="rounded">
-                    {(user.name?.charAt(0) || user.email?.charAt(0) || "U").toUpperCase()}
+            <DropdownMenuLabel className='p-0 font-normal'>
+              <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+                <Avatar className='h-8 w-8 rounded'>
+                  <AvatarImage
+                    src={userProfile.avatar || ''}
+                    alt={userProfile.name || userProfile.email || 'User'}
+                  />
+                  <AvatarFallback className='rounded'>
+                    {(
+                      userProfile.name?.charAt(0) ||
+                      userProfile.email?.charAt(0) ||
+                      'U'
+                    ).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name || "User"}</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {user.email}
+                <div className='grid flex-1 text-left text-sm leading-tight'>
+                  <span className='truncate font-medium'>
+                    {userProfile.name || 'User'}
+                  </span>
+                  <span className='truncate text-xs text-muted-foreground'>
+                    {userProfile.email}
                   </span>
                 </div>
               </div>
@@ -124,13 +166,13 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="cursor-pointer">
+                <Link href='/profile' className='cursor-pointer'>
                   <IconUserCircle />
                   Profile
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/profile/settings" className="cursor-pointer">
+                <Link href='/profile/settings' className='cursor-pointer'>
                   <IconUserCircle />
                   Settings
                 </Link>
@@ -140,19 +182,19 @@ export function NavUser() {
                 Notifications
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <div className="flex items-center cursor-pointer">
+                <div className='flex items-center cursor-pointer'>
                   <IconPalette />
-                  <span className="flex-1">Theme</span>
-                  <ThemePicker variant="dropdown" align="start" />
+                  <span className='flex-1'>Theme</span>
+                  <ThemePicker variant='dropdown' align='start' />
                 </div>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="cursor-pointer"
-              onSelect={(event) => {
+              className='cursor-pointer'
+              onSelect={event => {
                 event.preventDefault();
-                signOut({ callbackUrl: "/" });
+                signOut({ callbackUrl: '/' });
               }}
             >
               <IconLogout />

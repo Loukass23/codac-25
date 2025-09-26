@@ -1,19 +1,14 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import { FolderNavigation } from '@/components/documents/folder-navigation';
-import { LMSDocumentList } from '@/components/lms/lms-document-list';
+import { LMSFolderNavigation } from '@/components/lms/lms-folder-navigation';
 import { VerticalToolbarSkeleton } from '@/components/skeleton/vertical-toolbar-skeletob';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
-import {
-  getLMSFolderTreeWithDocuments,
-  getLMSDocumentsInFolder,
-} from '@/data/documents/get-folders';
-import { requireServerAuth } from '@/lib/auth/auth-server';
+import { getLMSNavigation } from '@/data/lms/get-lms-documents';
 
 export const metadata: Metadata = {
   title: 'Learning Management System',
@@ -38,57 +33,33 @@ const SIDE_PANEL_MAX_SIZE = 30;
 const MAIN_PANEL_MAX_SIZE = 100 - SIDE_PANEL_MIN_SIZE;
 const MAIN_PANEL_MIN_SIZE = 100 - SIDE_PANEL_MAX_SIZE;
 
-async function LMSNavigationWrapper({
-  selectedFolderId,
-}: {
-  selectedFolderId: string | null;
-}) {
-  const user = await requireServerAuth();
-  const _treeDataPromise = getLMSFolderTreeWithDocuments(user.id);
+// async function LMSNavigationWrapper({ currentSlug }: { currentSlug?: string }) {
+//   const _navigationPromise = getLMSNavigation();
 
-  return (
-    <FolderNavigation
-      _treeDataPromise={_treeDataPromise}
-      selectedFolderId={selectedFolderId}
-    />
-  );
-}
+//   return (
+//     <LMSFolderNavigation
+//       _navigationPromise={_navigationPromise}
+//       currentSlug={currentSlug}
+//     />
+//   );
+// }
 
-async function LMSContentWrapper({
-  selectedFolderId,
-}: {
-  selectedFolderId: string | null;
-}) {
-  const user = await requireServerAuth();
-  const _documentsPromise = getLMSDocumentsInFolder(
-    selectedFolderId,
-    user.id,
-    50,
-    0
-  );
-
-  return (
-    <LMSDocumentList
-      _documentsPromise={_documentsPromise}
-      selectedFolderId={selectedFolderId}
-    />
-  );
-}
+// LMS content is now handled by the dynamic route [slug] pages
 
 export default async function LMSLayout({
   children,
-  searchParams
+  searchParams,
 }: LMSLayoutProps) {
-  let selectedFolderId: string | null = null;
+  let currentSlug: string | undefined = undefined;
 
   try {
     if (searchParams) {
       const params = await searchParams;
-      selectedFolderId = params?.folder ?? null;
+      currentSlug = params?.slug as string;
     }
   } catch (_error) {
-    // If there's an error parsing search params, default to no folder selected
-    selectedFolderId = null;
+    // If there's an error parsing search params, default to no slug
+    currentSlug = undefined;
   }
 
   return (
@@ -102,7 +73,7 @@ export default async function LMSLayout({
             className='border-r'
           >
             <Suspense fallback={<VerticalToolbarSkeleton />}>
-              <LMSNavigationWrapper selectedFolderId={selectedFolderId} />
+              {/* <LMSNavigationWrapper currentSlug={currentSlug} /> */}
             </Suspense>
           </ResizablePanel>
 
@@ -113,8 +84,10 @@ export default async function LMSLayout({
             minSize={MAIN_PANEL_MIN_SIZE}
             maxSize={MAIN_PANEL_MAX_SIZE}
           >
-            <Suspense fallback={<div className="p-4">Loading LMS content...</div>}>
-              {children ?? <LMSContentWrapper selectedFolderId={selectedFolderId} />}
+            <Suspense
+              fallback={<div className='p-4'>Loading LMS content...</div>}
+            >
+              {children}
             </Suspense>
           </ResizablePanel>
         </ResizablePanelGroup>

@@ -81,7 +81,7 @@ export async function createDocumentComment(
         // Create the document comment
         const comment = await prisma.documentComment.create({
             data: {
-                content: validatedInput.content as Prisma.InputJsonValue,
+                contentRich: validatedInput.content as Prisma.InputJsonValue,
                 discussionId: validatedInput.discussionId,
                 documentId: validatedInput.documentId,
                 authorId: user.id,

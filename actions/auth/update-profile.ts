@@ -1,8 +1,7 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db';
@@ -104,6 +103,9 @@ export async function updateProfile(
         userId: session.user.id,
       },
     });
+    // Revalidate user cache tags to refresh session
+    revalidateTag('user');
+    revalidateTag(`user-${user.id}`);
 
     // Revalidate relevant paths
     revalidatePath('/');

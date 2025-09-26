@@ -62,6 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               status: true,
               cohortId: true,
               emailVerified: true,
+              avatar: true,
             }
           })
 
@@ -85,6 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: user.role,
             status: user.status,
             cohortId: user.cohortId,
+            avatar: user.avatar,
             emailVerified: user.emailVerified,
           };
         } catch (error) {
@@ -115,7 +117,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub as string
         session.user.role = token.role
         session.user.status = token.status
-        session.user.cohortId = token.cohortId
+        // cohortId and avatar will be fetched from database when needed
+        // This keeps the JWT token small to prevent HTTP 431 errors
       }
 
       return session
@@ -123,36 +126,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       // For credentials provider, user data is already complete
       if (user) {
+        // Store only essential data to keep JWT small
         token.role = user.role
         token.status = user.status
-        token.cohortId = user.cohortId
-        // Explicitly exclude avatar from JWT to prevent large cookies
-        // Avatar will be fetched from database when needed
+        // Remove cohortId and avatar from JWT to reduce size
+        // These will be fetched from database when needed
       }
       // For existing tokens, fetch from database if needed
       else if (token.sub && !token.role) {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.sub },
-            select: { role: true, status: true, cohortId: true },
+            select: { role: true, status: true },
           })
 
           if (dbUser) {
             token.role = dbUser.role
             token.status = dbUser.status
-            token.cohortId = dbUser.cohortId
           } else {
             // Set defaults
             token.role = "STUDENT" as UserRole
             token.status = "ACTIVE" as UserStatus
-            token.cohortId = null
           }
         } catch (error) {
           logger.error("Error fetching user data in JWT callback", error instanceof Error ? error : new Error(String(error)))
           // Set defaults on error
           token.role = "STUDENT" as UserRole
           token.status = "ACTIVE" as UserStatus
-          token.cohortId = null
         }
       }
 
@@ -160,23 +160,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   events: {
-    async createUser({ user, account, profile }) {
+    async createUser({ user }) {
       try {
         if (!user.id) {
           throw new Error("User ID is required");
         }
 
-        // Generate username based on provider
+        // Generate username based on user data
         let username = "";
-        if (account?.provider === "github" && profile?.login) {
-          username = profile.login as string;
-        } else if (account?.provider === "google" && profile?.email) {
-          // Extract username from Google email
-          const email = profile.email as string;
-          username = email.split("@")[0];
+        if (user.email) {
+          // Extract username from email
+          const emailUsername = user.email.split("@")[0];
+          username = emailUsername || `user_${user.id.slice(-6)}`;
         } else {
-          // Fallback to email-based username
-          username = user.email?.split("@")[0] || `user_${user.id.slice(-6)}`;
+          // Fallback to user ID
+          username = `user_${user.id.slice(-6)}`;
         }
 
         // Ensure username is unique
@@ -202,8 +200,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         })
         logger.info("User created with default role, status, and username", {
           userId: user.id,
-          username: finalUsername,
-          provider: account?.provider
+          metadata: { username: finalUsername }
         })
       } catch (error) {
         logger.error("Error updating user in createUser event", error instanceof Error ? error : new Error(String(error)))

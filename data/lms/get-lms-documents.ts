@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-import type { DocumentWithPlateContent } from './get-document';
+import type { DocumentWithPlateContent } from '../documents/get-document';
 
 export interface LMSDocumentWithAuthor extends DocumentWithPlateContent {
     author: {
@@ -90,19 +90,28 @@ export async function getLMSNavigation(): Promise<LMSNavigationItem[]> {
         const rootItems: LMSNavigationItem[] = [];
 
         for (const doc of documents) {
+            // Apply the same reorganization logic as in the seeding script
+            let slug = doc.slug || '';
+            let title = doc.title || '';
+
+            // Reorganize data content under web folder
+            if (slug.startsWith('data/')) {
+                slug = slug.replace('data/', 'web/data/');
+            }
+
             const navItem: LMSNavigationItem = {
                 id: doc.id,
-                slug: doc.slug || '',
-                title: doc.title || '',
+                slug: slug,
+                title: title,
                 navTitle: doc.navTitle || undefined,
                 order: doc.order || 0,
                 access: doc.access || 'public',
             };
 
-            navigationMap.set(doc.slug || '', navItem);
+            navigationMap.set(slug, navItem);
 
             // Determine if this is a root item or child
-            const slugParts = (doc.slug || '').split('/');
+            const slugParts = slug.split('/');
             if (slugParts.length === 1) {
                 // Root level item
                 rootItems.push(navItem);
@@ -268,7 +277,7 @@ export async function getRelatedLMSDocuments(slug: string): Promise<{
 /**
  * Build access filter based on user role
  */
-function buildAccessFilter(access: string, userRole?: string) {
+function buildAccessFilter(_access: string, userRole?: string) {
     // Admin can access everything
     if (userRole === 'ADMIN') {
         return {};

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 import { PrismaClient } from '@prisma/client';
-import { getLMSDocumentBySlug } from '../data/documents/get-lms-documents';
+import { getLMSDocumentBySlug } from '../data/lms/get-lms-documents';
 
 const prisma = new PrismaClient();
 

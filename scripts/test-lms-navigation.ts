@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { getLMSNavigation } from '../data/documents/get-lms-documents';
+import { getLMSNavigation } from '../data/lms/get-lms-documents';
 
 async function testLMSNavigation() {
     try {

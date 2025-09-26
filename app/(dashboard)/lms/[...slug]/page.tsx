@@ -5,7 +5,7 @@ import {
   getLMSDocumentBySlug,
   getRelatedLMSDocuments,
   checkLMSDocumentAccess,
-} from '@/data/documents/get-lms-documents';
+} from '@/data/lms/get-lms-documents';
 import { requireServerAuth } from '@/lib/auth/auth-server';
 
 interface LMSContentPageProps {
@@ -16,11 +16,9 @@ interface LMSContentPageProps {
 
 export async function generateStaticParams() {
   // Generate static params for all LMS documents
-  const { getLMSNavigation } = await import(
-    '@/data/documents/get-lms-documents'
-  );
+  const { getLMSNavigation } = await import('@/data/lms/get-lms-documents');
   const navigation = await getLMSNavigation();
-
+  console.log('navigation', navigation);
   const params: { slug: string[] }[] = [];
 
   function extractSlugs(

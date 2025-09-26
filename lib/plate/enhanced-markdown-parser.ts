@@ -2,11 +2,11 @@ import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
 import type { Value } from 'platejs';
-import rehypeStringify from 'rehype-stringify';
-import { remark } from 'remark';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import remarkRehype from 'remark-rehype';
+// import rehypeStringify from 'rehype-stringify';
+// import { remark } from 'remark';
+// import remarkGfm from 'remark-gfm';
+// import remarkMath from 'remark-math';
+// import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 
 export interface MarkdownMetadata {
@@ -36,12 +36,12 @@ const CONTENT_DIR = join(process.cwd(), 'content');
  * Enhanced markdown parser with Plate MCP and rehype plugins
  */
 export class EnhancedMarkdownParser {
-    private processor: ReturnType<typeof unified>;
+    // private processor: ReturnType<typeof unified>;
 
     constructor() {
         // Initialize a simple unified processor without problematic plugins for now
         // TODO: Fix plugin compatibility issues
-        this.processor = unified();
+        // this.processor = unified();
     }
 
     /**
@@ -222,13 +222,25 @@ export class EnhancedMarkdownParser {
     }
 
     /**
-     * Process inline formatting (bold, italic, links, etc.)
+     * Process inline formatting (bold, italic, links, images, etc.)
      */
     private processInlineFormatting(text: string): unknown[] {
         // This is a simplified implementation
         // In a full implementation, you'd use a proper markdown parser
         const children: unknown[] = [];
         let currentText = text;
+
+        // Handle images first (before other processing)
+        currentText = currentText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_match, alt, url) => {
+            // Update image URL to use /lms/staticAssets prefix
+            const processedUrl = this.processImageUrl(url);
+            children.push({
+                type: 'img',
+                url: processedUrl,
+                alt: alt || '',
+            });
+            return '';
+        });
 
         // Handle bold text
         currentText = currentText.replace(/\*\*(.*?)\*\*/g, (_match, content) => {
@@ -264,6 +276,24 @@ export class EnhancedMarkdownParser {
         }
 
         return children.length > 0 ? children : [{ text }];
+    }
+
+    /**
+     * Process image URL to use /lms/staticAssets prefix
+     */
+    private processImageUrl(url: string): string {
+        // If URL already starts with /lms/staticAssets, return as is
+        if (url.startsWith('/lms/staticAssets')) {
+            return url;
+        }
+
+        // If URL starts with /, it's already an absolute path, just add the prefix
+        if (url.startsWith('/')) {
+            return `/lms/staticAssets${url}`;
+        }
+
+        // If URL is relative, add the prefix
+        return `/lms/staticAssets/${url}`;
     }
 
     /**
@@ -344,15 +374,29 @@ export class EnhancedMarkdownParser {
 
     /**
      * Get LMS content structure organized by folders
+     * Restructured to have only 'web' and 'career' as top-level folders
      */
     getLMSContentStructure(): Record<string, Array<{ filePath: string; folderPath: string; folderName: string }>> {
         const files = this.getAllMarkdownFiles();
         const structure: Record<string, Array<{ filePath: string; folderPath: string; folderName: string }>> = {};
 
         for (const file of files) {
-            const folderName = file.folderName || 'root';
+            let folderName = file.folderName || 'root';
+            let folderPath = file.folderPath;
+
+            // Reorganize data content under web folder
+            if (folderName === 'data') {
+                folderName = 'web';
+                // Update folderPath to reflect the new structure
+                folderPath = folderPath.replace('data/', 'web/data/');
+            }
+
             structure[folderName] ??= [];
-            structure[folderName]?.push(file);
+            structure[folderName]?.push({
+                ...file,
+                folderName,
+                folderPath
+            });
         }
 
         return structure;

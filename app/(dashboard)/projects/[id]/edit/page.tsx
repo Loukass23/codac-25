@@ -9,18 +9,15 @@ import { requireServerAuth } from '@/lib/auth/auth-server';
 
 import { updateProjectSummary } from '../../../../../actions/projects/update-project-summary';
 
-
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ProjectEditPage({ params }: ProjectPageProps) {
   const { id } = await params;
   const projectPromise = getProjectById(id) as Promise<Project>;
-
-
 
   if (!projectPromise) {
     notFound();
