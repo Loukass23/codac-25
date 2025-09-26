@@ -56,6 +56,7 @@ export interface FolderTreeItem {
     children?: string[];
     documentType?: string;
     isPublished?: boolean;
+    slug?: string;
     author?: {
         id: string;
         name: string | null;
@@ -260,6 +261,7 @@ export async function getFolderTreeWithDocuments(userId: string): Promise<{
                 type: 'document',
                 documentType: document.documentType,
                 isPublished: document.isPublished,
+                slug: document.slug || undefined,
                 author: document.author,
             };
         });

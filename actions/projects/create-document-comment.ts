@@ -1,8 +1,7 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-
 import { Prisma } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
@@ -83,13 +82,11 @@ export async function createDocumentComment(
             data: {
                 contentRich: validatedInput.content as Prisma.InputJsonValue,
                 discussionId: validatedInput.discussionId,
-                documentId: validatedInput.documentId,
-                authorId: user.id,
+                userId: user.id,
                 parentId: validatedInput.parentId,
-                documentContent: validatedInput.documentContent,
             },
             include: {
-                author: {
+                user: {
                     select: {
                         id: true,
                         name: true,
@@ -130,6 +127,9 @@ export async function createDocumentComment(
             };
         }
 
-        return handlePrismaError(error);
+        return {
+            success: false,
+            error: handlePrismaError(error as Prisma.PrismaClientKnownRequestError),
+        };
     }
 }
