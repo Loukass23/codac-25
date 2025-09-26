@@ -208,7 +208,12 @@ function TreeContent({
               'hover:bg-muted/50',
               selectedFolderId === null && 'bg-primary/10 text-primary'
             )}
-            onClick={() => router.push('/docs')}
+            onClick={() => {
+              // Check if we're in LMS context by looking at current pathname
+              const isLMSContext = window.location.pathname.startsWith('/lms');
+              const basePath = isLMSContext ? '/lms' : '/docs';
+              router.push(basePath);
+            }}
           >
             {/* <FileText className='h-4 w-4' />
             <span className='text-xs font-medium text-left'>All Documents</span> */}
@@ -231,10 +236,22 @@ function TreeContent({
                           params.set('folder', itemId);
                         }
                         const queryString = params.toString();
-                        router.push(`/docs${queryString ? `?${queryString}` : ''}`);
+                        // Check if we're in LMS context by looking at current pathname
+                        const isLMSContext = window.location.pathname.startsWith('/lms');
+                        const basePath = isLMSContext ? '/lms' : '/docs';
+                        router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
                       } else {
                         // Handle document click - navigate to document
-                        router.push(`/docs/${itemId}`);
+                        // Check if we're in LMS context by looking at current pathname
+                        const isLMSContext = window.location.pathname.startsWith('/lms');
+                        const basePath = isLMSContext ? '/lms' : '/docs';
+
+                        if (itemData.slug) {
+                          router.push(`${basePath}/${itemData.slug}`);
+                        } else {
+                          // Document doesn't have a slug, show error or skip
+                          toast.error('Document is not accessible (no slug available)');
+                        }
                       }
                     }}
                   >

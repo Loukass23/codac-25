@@ -68,6 +68,9 @@ export async function getLMSNavigation(): Promise<LMSNavigationItem[]> {
                 },
                 isPublished: true,
                 isArchived: false,
+                slug: {
+                    not: null
+                },
             },
             select: {
                 id: true,

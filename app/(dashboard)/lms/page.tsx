@@ -4,15 +4,17 @@ import { getLMSDocumentBySlug } from '@/data/documents/get-lms-documents';
 import { requireServerAuth } from '@/lib/auth/auth-server';
 
 export default async function LMSPage() {
-  const user = await requireServerAuth();
 
-  // Try to find the welcome document
-  const welcomeDoc = await getLMSDocumentBySlug('welcome');
 
-  if (welcomeDoc) {
-    redirect('/lms/welcome');
-  }
 
-  // If no welcome document, redirect to a default LMS page
-  redirect('/lms');
+  // If no welcome document, show the LMS content with folder navigation
+  // The layout will handle showing the folder navigation and content
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Learning Management System</h1>
+      <p className="text-muted-foreground">
+        Welcome to your learning content. Use the folder navigation on the left to browse your courses and materials.
+      </p>
+    </div>
+  );
 }

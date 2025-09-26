@@ -56,6 +56,11 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
       title: 'LMS',
       url: '/lms/welcome',
     },
+    {
+      title: 'Attendance',
+      url: '/attendance',
+      icon: GraduationCap,
+    },
   ];
 
   if (role === 'ADMIN') {
@@ -121,6 +126,7 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
           icon: GraduationCap,
           items: learningItems,
         },
+
       ]
       : []),
   ];
