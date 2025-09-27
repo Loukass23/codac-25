@@ -5,6 +5,8 @@ import { forwardRef, use, useCallback, useImperativeHandle } from 'react';
 import { z } from 'zod';
 
 import { Editor, EditorContainer } from '@/components/ui/editor';
+import { VerticalToolbar } from '@/components/ui/vertical-toolbar';
+import { VerticalToolbarButtonsWithNames } from '@/components/ui/vertical-toolbar-buttons-with-names';
 import { DocumentWithPlateContent } from '@/data/documents/get-document';
 import { useDocumentEditor } from '@/hooks/use-document-editor';
 
@@ -90,14 +92,21 @@ export const DocumentEditor = forwardRef<
 
     return (
       <Plate editor={editor}>
-        <EditorContainer>
-          <Editor
-            placeholder='Start typing to add content...'
-            variant='fullWidth'
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-        </EditorContainer>
+        <div className="flex h-full w-full">
+          <VerticalToolbar>
+            <VerticalToolbarButtonsWithNames />
+          </VerticalToolbar>
+          <div className="flex-1">
+            <EditorContainer>
+              <Editor
+                placeholder='Start typing to add content...'
+                variant='fullWidth'
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </EditorContainer>
+          </div>
+        </div>
       </Plate>
     );
   }

@@ -6,18 +6,19 @@ import {
   AlignLeftIcon,
   AlignRightIcon,
   ArrowUpToLineIcon,
-  DownloadIcon,
   FileIcon,
   ImageIcon,
-  MoreHorizontalIcon,
-  RedoIcon,
-  UndoIcon,
-  VideoIcon
+  VideoIcon,
+  WandSparklesIcon
 } from 'lucide-react';
 import { useEditorReadOnly } from 'platejs/react';
 
+import { AIToolbarButton } from './ai-toolbar-button';
 import { ExportToolbarButton } from './export-toolbar-button';
+import { RedoToolbarButton, UndoToolbarButton } from './history-toolbar-button';
 import { ImportToolbarButton } from './import-toolbar-button';
+import { ModeToolbarButton } from './mode-toolbar-button';
+import { SimpleSaveButton } from './simple-save-button';
 import { VerticalToolbarButton } from './vertical-toolbar-button';
 import { VerticalToolbarGroup } from './vertical-toolbar-group';
 
@@ -29,55 +30,52 @@ export function VerticalToolbarButtonsWithNames() {
       {!readOnly && (
         <>
           <VerticalToolbarGroup>
+            <VerticalToolbarButton name='Mode' tooltip='Mode'>
+              <ModeToolbarButton />
+            </VerticalToolbarButton>
+          </VerticalToolbarGroup>
+          {/* Document Actions */}
+          <VerticalToolbarGroup>
             <VerticalToolbarButton name='Save' tooltip='Save document'>
-              <DownloadIcon />
+              <SimpleSaveButton />
             </VerticalToolbarButton>
             <VerticalToolbarButton name='Undo' tooltip='Undo'>
-              <UndoIcon />
+              <UndoToolbarButton />
             </VerticalToolbarButton>
             <VerticalToolbarButton name='Redo' tooltip='Redo'>
-              <RedoIcon />
-            </VerticalToolbarButton>
-
-
-          </VerticalToolbarGroup>
-
-          {/* <VerticalToolbarGroup>
-            <VerticalToolbarButton name='AI' tooltip='AI commands'>
-              <WandSparklesIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Export' tooltip='Export document'>
-              <UploadIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Import' tooltip='Import document'>
-              <DownloadIcon />
+              <RedoToolbarButton />
             </VerticalToolbarButton>
           </VerticalToolbarGroup>
 
+          {/* AI Actions */}
           <VerticalToolbarGroup>
-            <VerticalToolbarButton name='Bold' tooltip='Bold (⌘+B)'>
-              <BoldIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Italic' tooltip='Italic (⌘+I)'>
-              <ItalicIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Underline' tooltip='Underline (⌘+U)'>
-              <UnderlineIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Strikethrough' tooltip='Strikethrough'>
-              <StrikethroughIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Code' tooltip='Code (⌘+E)'>
-              <Code2Icon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Text Color' tooltip='Text color'>
-              <TypeIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Highlight' tooltip='Highlight'>
-              <PaletteIcon />
-            </VerticalToolbarButton>
-          </VerticalToolbarGroup> */}
+            <AIToolbarButton tooltip='AI commands'>
+              <WandSparklesIcon />
+            </AIToolbarButton>
+          </VerticalToolbarGroup>
 
+          {/* Import/Export */}
+          <VerticalToolbarGroup>
+            <ImportToolbarButton />
+            <ExportToolbarButton>
+              <ArrowUpToLineIcon />
+            </ExportToolbarButton>
+          </VerticalToolbarGroup>
+
+          {/* Media Insertion */}
+          <VerticalToolbarGroup>
+            <VerticalToolbarButton name='Image' tooltip='Insert image'>
+              <ImageIcon />
+            </VerticalToolbarButton>
+            <VerticalToolbarButton name='Video' tooltip='Insert video'>
+              <VideoIcon />
+            </VerticalToolbarButton>
+            <VerticalToolbarButton name='File' tooltip='Insert file'>
+              <FileIcon />
+            </VerticalToolbarButton>
+          </VerticalToolbarGroup>
+
+          {/* Alignment */}
           <VerticalToolbarGroup>
             <VerticalToolbarButton name='Align Left' tooltip='Align left'>
               <AlignLeftIcon />
@@ -92,68 +90,10 @@ export function VerticalToolbarButtonsWithNames() {
               <AlignJustifyIcon />
             </VerticalToolbarButton>
           </VerticalToolbarGroup>
-
-          {/* <VerticalToolbarGroup>
-            <VerticalToolbarButton name='Bullet List' tooltip='Bullet list'>
-              <ListIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Numbered List' tooltip='Numbered list'>
-              <ListOrderedIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Todo List' tooltip='Todo list'>
-              <CheckSquareIcon />
-            </VerticalToolbarButton>
-          </VerticalToolbarGroup>
-
-          <VerticalToolbarGroup>
-            <VerticalToolbarButton name='Link' tooltip='Add link'>
-              <LinkIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Table' tooltip='Insert table'>
-              <TableIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Emoji' tooltip='Insert emoji'>
-              <SmileIcon />
-            </VerticalToolbarButton>
-          </VerticalToolbarGroup> */}
-
-          <VerticalToolbarGroup>
-            <VerticalToolbarButton name='Image' tooltip='Insert image'>
-              <ImageIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='Video' tooltip='Insert video'>
-              <VideoIcon />
-            </VerticalToolbarButton>
-            <VerticalToolbarButton name='File' tooltip='Insert file'>
-              <FileIcon />
-            </VerticalToolbarButton>
-          </VerticalToolbarGroup>
-
-          <VerticalToolbarGroup>
-            <ImportToolbarButton />
-          </VerticalToolbarGroup>
-          <VerticalToolbarGroup>
-            <ExportToolbarButton>
-              <ArrowUpToLineIcon />
-            </ExportToolbarButton>
-          </VerticalToolbarGroup>
-
-          <VerticalToolbarGroup>
-            <VerticalToolbarButton name='More' tooltip='More options'>
-              <MoreHorizontalIcon />
-            </VerticalToolbarButton>
-          </VerticalToolbarGroup>
         </>
       )}
 
-
       <div className='grow' />
-
-      {/* <VerticalToolbarGroup>
-        <VerticalToolbarButton name='Comments' tooltip='Add comments'>
-          <MessageSquareIcon />
-        </VerticalToolbarButton>
-      </VerticalToolbarGroup> */}
     </div>
   );
 }

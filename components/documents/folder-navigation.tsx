@@ -84,6 +84,7 @@ function TreeContent({
             expandedItems: Object.keys(treeData.items).filter(id => treeData.items[id]?.type === 'folder'), // Start with all folders expanded
             selectedItems: selectedFolderId ? [selectedFolderId] : [],
         },
+
         indent: 10,
         rootItemId: 'root',
         getItemName: (item) => item.getItemData().name,

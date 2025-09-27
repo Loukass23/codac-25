@@ -10,9 +10,12 @@ export const VerticalToolbarKit = [
     key: 'vertical-toolbar',
     render: {
       beforeEditable: () => (
-        <VerticalToolbar>
-          <VerticalToolbarButtonsWithNames />
-        </VerticalToolbar>
+        <div className="flex h-full w-full">
+          <VerticalToolbar>
+            <VerticalToolbarButtonsWithNames />
+          </VerticalToolbar>
+          <div className="flex-1" />
+        </div>
       ),
     },
   }),
