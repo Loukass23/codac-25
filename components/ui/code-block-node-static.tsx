@@ -1,11 +1,10 @@
 import {
+  SlateElement,
+  SlateLeaf,
   type SlateElementProps,
   type SlateLeafProps,
   type TCodeBlockElement,
-  SlateElement,
-  SlateLeaf,
 } from 'platejs';
-import * as React from 'react';
 
 
 export function CodeBlockElementStatic(
@@ -30,7 +29,7 @@ export function CodeLineElementStatic(props: SlateElementProps) {
 }
 
 export function CodeSyntaxLeafStatic(props: SlateLeafProps) {
-  const tokenClassName = props.leaf.className as string;
+  const tokenClassName = props.leaf['className'] as string;
 
   return <SlateLeaf className={tokenClassName} {...props} />;
 }

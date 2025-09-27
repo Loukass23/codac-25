@@ -72,7 +72,7 @@ export async function getDocumentById(
                 documentId,
             },
         });
-        return [];
+        return null as any;
     }
 }
 
@@ -165,13 +165,11 @@ export async function getDocumentsByType(
 
         return documents;
     } catch (error) {
-        logger.error('Failed to fetch documents by type', {
-            action: 'get_documents_by_type',
+        logger.error('Failed to fetch documents by type', error instanceof Error ? error : new Error(String(error)), {
             metadata: {
                 documentType,
                 limit,
                 offset,
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
         return [];
@@ -227,14 +225,12 @@ export async function getUserDocuments(
 
         return documents;
     } catch (error) {
-        logger.error('Failed to fetch user documents', {
-            action: 'get_user_documents',
+        logger.error('Failed to fetch user documents', error instanceof Error ? error : new Error(String(error)), {
             metadata: {
                 userId,
                 documentType,
                 limit,
                 offset,
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
         return [];
@@ -248,16 +244,16 @@ export async function getProjectSummaryDocument(
         const project = await prisma.project.findUnique({
             where: { id: projectId },
             select: {
-                summaryDocumentId: true,
+                documentId: true,
             },
         });
 
-        if (!project?.summaryDocumentId) {
+        if (!project?.documentId) {
             return null;
         }
 
         const document = await prisma.document.findUnique({
-            where: { id: project.summaryDocumentId },
+            where: { id: project.documentId },
             include: {
                 author: {
                     select: {
@@ -284,11 +280,9 @@ export async function getProjectSummaryDocument(
 
         return document;
     } catch (error) {
-        logger.error('Failed to fetch project summary document', {
-            action: 'get_project_summary_document',
+        logger.error('Failed to fetch project summary document', error instanceof Error ? error : new Error(String(error)), {
             metadata: {
                 projectId,
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
         return null;
@@ -346,12 +340,10 @@ export async function getDocumentStats(
             totalVersions: totalVersions._sum.version || 0,
         };
     } catch (error) {
-        logger.error('Failed to fetch document stats', {
-            action: 'get_document_stats',
+        logger.error('Failed to fetch document stats', error instanceof Error ? error : new Error(String(error)), {
             metadata: {
                 documentType,
                 userId,
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
         return {

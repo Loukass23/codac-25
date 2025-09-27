@@ -3,7 +3,7 @@
 
 import { CopilotPlugin } from '@platejs/ai/react';
 import { serializeMd, stripMarkdown } from '@platejs/markdown';
-import type { TElement } from 'platejs';
+// import type { TElement } from 'platejs';
 
 import { GhostText } from '@/components/ui/ghost-text';
 

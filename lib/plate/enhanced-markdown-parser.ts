@@ -7,7 +7,7 @@ import type { Value } from 'platejs';
 // import remarkGfm from 'remark-gfm';
 // import remarkMath from 'remark-math';
 // import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
+// import { unified } from 'unified';
 
 export interface MarkdownMetadata {
     navTitle?: string;

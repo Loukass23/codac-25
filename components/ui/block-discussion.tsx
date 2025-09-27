@@ -12,14 +12,14 @@ import {
   PencilLineIcon,
 } from 'lucide-react';
 import {
+  PathApi,
+  TextApi,
   type AnyPluginConfig,
   type NodeEntry,
   type Path,
   type TCommentText,
   type TElement,
   type TSuggestionText,
-  PathApi,
-  TextApi,
 } from 'platejs';
 import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react';
 import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react';
@@ -27,8 +27,8 @@ import * as React from 'react';
 
 import { commentPlugin } from '@/components/editor/plugins/comment-kit';
 import {
-  type TDiscussion,
   discussionPlugin,
+  type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit';
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
 import { Button } from '@/components/ui/button';
@@ -47,7 +47,7 @@ import {
   isResolvedSuggestion,
   useResolveSuggestion,
 } from './block-suggestion';
-import { Comment } from './comment';
+// import { Comment } from './comment';
 
 export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = props => {
   const { editor, element } = props;
@@ -146,7 +146,7 @@ const BlockCommentContent = ({
         ([node]) =>
           TextApi.isText(node) &&
           editor.getApi(SuggestionPlugin).suggestion.nodeId(node) ===
-            activeSuggestion.suggestionId
+          activeSuggestion.suggestionId
       );
     }
 

@@ -9,9 +9,9 @@ import {
 } from '@platejs/list/react';
 import type { TListElement } from 'platejs';
 import {
+  useReadOnly,
   type PlateElementProps,
   type RenderNodeWrapper,
-  useReadOnly,
 } from 'platejs/react';
 import React from 'react';
 
@@ -32,7 +32,7 @@ const config: Record<
 };
 
 export const BlockList: RenderNodeWrapper = (props) => {
-  if (!props.element.listStyleType) return;
+  if (!props.element['listStyleType']) return;
 
   return (props) => <List {...props} />;
 };
@@ -77,8 +77,8 @@ function TodoLi(props: PlateElementProps) {
     <li
       className={cn(
         'list-none',
-        (props.element.checked as boolean) &&
-          'text-muted-foreground line-through'
+        (props.element['checked'] as boolean) &&
+        'text-muted-foreground line-through'
       )}
     >
       {props.children}

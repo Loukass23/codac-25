@@ -13,8 +13,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { DocumentWithPlateContent } from '@/data/documents/get-document';
 import Link from 'next/link';
+
+import type { DocumentWithPlateContent } from '@/data/documents/get-document';
 
 interface DocumentPreviewProps {
     _documentPromise: Promise<DocumentWithPlateContent | null>;

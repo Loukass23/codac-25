@@ -1,7 +1,7 @@
 'use client';
 
-import { ProjectStatus , SkillLevel } from '@prisma/client';
-import { Search, Grid, List, Filter } from 'lucide-react';
+import { ProjectStatus, SkillLevel } from '@prisma/client';
+import { Filter, Grid, List, Search } from 'lucide-react';
 import { use, useState } from 'react';
 
 import { Grid as LayoutGrid, Section } from '@/components/layout';
@@ -28,7 +28,7 @@ interface ProjectsListProps {
 
 export function ProjectsList({
   _projectsPromise,
-  initialFilters,
+  // initialFilters,
 }: ProjectsListProps) {
   const { updateFilters, clearAllFilters, getCurrentFilters } = useUrlFilters();
   const [isFilterOpen, setIsFilterOpen] = useState(false);

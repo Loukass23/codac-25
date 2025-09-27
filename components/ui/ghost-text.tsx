@@ -3,7 +3,6 @@
 
 import { CopilotPlugin } from '@platejs/ai/react';
 import { useElement, usePluginOption } from 'platejs/react';
-import * as React from 'react';
 
 export function GhostText() {
   const element = useElement();
@@ -11,7 +10,7 @@ export function GhostText() {
   const isSuggested = usePluginOption(
     CopilotPlugin,
     'isSuggested',
-    element.id as string
+    element['id'] as string
   );
 
   if (!isSuggested) return null;

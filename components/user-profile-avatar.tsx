@@ -23,7 +23,6 @@ export function UserProfileAvatar({ user }: UserProfileAvatarProps) {
   return (
     <div className='flex flex-col items-center space-y-4'>
       <AvatarUpload
-        userId={user.id}
         currentAvatar={currentAvatar ?? ''}
         userName={user.name ?? ''}
         size='lg'

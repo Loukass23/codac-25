@@ -302,7 +302,7 @@ export class FolderStructureManager {
         if (parts.length === 2) {
             // Direct folder document
             const folderName = parts[0];
-            return folderMapping[folderName]?.id || null;
+            return folderMapping[folderName || '']?.id || null;
         }
 
         if (parts.length > 2) {

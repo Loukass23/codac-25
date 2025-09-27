@@ -52,7 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.id = token.sub as string
                 session.user.role = token.role
                 session.user.status = token.status
-                session.user.cohortId = token.cohortId
+                session.user['cohortId'] = token['cohortId']
             }
             return session
         },
@@ -61,7 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (user) {
                 token.role = user.role
                 token.status = user.status
-                token.cohortId = user.cohortId
+                token['cohortId'] = user['cohortId']
             }
             // For existing tokens, we'll fetch from database in API routes
             // This prevents database operations in Edge Runtime

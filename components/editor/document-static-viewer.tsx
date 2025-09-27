@@ -1,4 +1,4 @@
-import type { Value } from 'platejs';
+// import type { Value } from 'platejs';
 
 import type { DocumentWithPlateContent } from '@/data/documents/get-document';
 

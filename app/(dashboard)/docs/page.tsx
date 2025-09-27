@@ -16,6 +16,7 @@ import {
   getFolderTreeWithDocuments,
 } from '@/data/documents/get-folders';
 import { requireServerAuth } from '@/lib/auth/auth-server';
+
 import { FolderNavigation } from '../../../components/documents/folder-navigation';
 
 interface DocumentsPageProps {

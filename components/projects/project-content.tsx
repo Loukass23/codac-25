@@ -6,8 +6,8 @@ import { use } from 'react';
 import { toast } from 'sonner';
 
 import { updateProjectSummary } from '../../actions/projects/update-project-summary';
-import { jsonToPlateValue } from '../../lib/plate/utils';
-import { PlateEditor } from '../editor/plate-editor2';
+// import { jsonToPlateValue } from '../../lib/plate/utils';
+// import { PlateEditor } from '../editor/plate-editor2';
 
 function ProjectContent({
   _projectPromise,

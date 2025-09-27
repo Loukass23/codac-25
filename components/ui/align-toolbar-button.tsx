@@ -47,7 +47,7 @@ export function AlignToolbarButton(props: DropdownMenuProps) {
   const value =
     useSelectionFragmentProp({
       defaultValue: 'start',
-      getProp: (node) => node.align,
+      getProp: (node) => node['align'],
     }) ?? 'left';
 
   const [open, setOpen] = React.useState(false);

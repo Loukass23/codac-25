@@ -31,10 +31,10 @@ async function testEnhancedSeeding() {
         // Test parsing a sample file if available
         if (allFiles.length > 0) {
             const sampleFile = allFiles[0];
-            console.log(`\n🔍 Testing parsing of: ${sampleFile.filePath}`);
+            console.log(`\n🔍 Testing parsing of: ${sampleFile?.filePath}`);
 
             try {
-                const parsed = await enhancedMarkdownParser.parseMarkdownFile(sampleFile.filePath);
+                const parsed = await enhancedMarkdownParser.parseMarkdownFile(sampleFile?.filePath || '');
                 console.log('✅ Parsing successful!');
                 console.log(`  Title: ${parsed.metadata.title || 'No title'}`);
                 console.log(`  Access: ${parsed.metadata.access || 'public'}`);
@@ -43,7 +43,7 @@ async function testEnhancedSeeding() {
                 console.log(`  HTML length: ${parsed.htmlContent.length} characters`);
                 console.log(`  Plate nodes: ${Array.isArray(parsed.plateValue) ? parsed.plateValue.length : 'N/A'}`);
             } catch (error) {
-                console.error(`❌ Failed to parse ${sampleFile.filePath}:`, error);
+                console.error(`❌ Failed to parse ${sampleFile?.filePath}:`, error);
             }
         }
 
@@ -71,3 +71,4 @@ if (require.main === module) {
 }
 
 export { testEnhancedSeeding };
+

@@ -60,8 +60,8 @@ export default async function StaticDocumentPage({
         </div>
       </div>
     );
-  } catch (error) {
-    console.error('Error loading document:', error);
+  } catch (_error) {
+    console.error('Error loading document:', _error);
     notFound();
   }
 }
@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: StaticDocumentPageProps) {
       title: `${document.title} (Static)`,
       description: document.description || 'Static document view',
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       title: 'Document Error',
     };

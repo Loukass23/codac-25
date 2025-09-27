@@ -2,10 +2,10 @@
 
 import { PrismaClient } from '@prisma/client';
 
+import { FolderStructureManager } from '../lib/folder-structure-manager';
 import {
     enhancedMarkdownParser
 } from '../lib/plate/enhanced-markdown-parser';
-import { FolderStructureManager } from '../lib/folder-structure-manager';
 
 const prisma = new PrismaClient();
 
@@ -144,7 +144,7 @@ async function seedLMSContent() {
 /**
  * Determine document type based on file path
  */
-function determineDocumentType(filePath: string): string {
+function determineDocumentType(_filePath: string): string {
     // All courses should use 'lms_content' as document type
     return 'lms_content';
 }
@@ -296,3 +296,4 @@ if (require.main === module) {
 }
 
 export { seedLMSContent };
+

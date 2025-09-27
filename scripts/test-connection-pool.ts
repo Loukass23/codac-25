@@ -5,7 +5,7 @@
  * This script tests the connection pool settings and retry mechanism
  */
 
-import { prisma, checkDatabaseConnection } from '../lib/db/prisma';
+import { checkDatabaseConnection, prisma } from '../lib/db/prisma';
 import { logger } from '../lib/logger';
 
 async function testConnectionPool() {
@@ -65,7 +65,7 @@ async function testConnectionPool() {
 
     } catch (error) {
         console.error('❌ Connection pool test failed:', error);
-        logger.error('Connection pool test failed', error);
+        logger.error('Connection pool test failed', error instanceof Error ? error : new Error(String(error)));
     } finally {
         await prisma.$disconnect();
         console.log('\n🔌 Database connection closed');
@@ -78,3 +78,4 @@ if (require.main === module) {
 }
 
 export { testConnectionPool };
+

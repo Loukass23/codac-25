@@ -9,6 +9,7 @@ declare module "next-auth" {
             email?: string | null
             role: UserRole
             status: UserStatus
+            cohortId?: string | null
         }
     }
 
@@ -16,6 +17,7 @@ declare module "next-auth" {
         role: UserRole
         status: UserStatus
         emailVerified: Date | null
+        cohortId?: string | null
     }
 }
 
@@ -23,5 +25,6 @@ declare module "next-auth/jwt" {
     interface JWT {
         role: UserRole
         status: UserStatus
+        cohortId?: string | null
     }
 } 

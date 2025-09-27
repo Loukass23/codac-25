@@ -1,6 +1,6 @@
 'use client';
 
-import { useEditorRef, usePluginOption } from 'platejs/react';
+import { useEditorRef } from 'platejs/react';
 import * as React from 'react';
 import { toast } from 'sonner';
 

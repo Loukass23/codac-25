@@ -11,22 +11,22 @@ import {
 import { SuggestionPlugin } from '@platejs/suggestion/react';
 import { CheckIcon, XIcon } from 'lucide-react';
 import {
+  ElementApi,
+  KEYS,
+  PathApi,
+  TextApi,
   type NodeEntry,
   type Path,
   type TElement,
   type TSuggestionElement,
   type TSuggestionText,
-  ElementApi,
-  KEYS,
-  PathApi,
-  TextApi,
 } from 'platejs';
 import { useEditorPlugin, usePluginOption } from 'platejs/react';
 import * as React from 'react';
 
 import {
-  type TDiscussion,
   discussionPlugin,
+  type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit';
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,10 +34,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import {
-  type TComment,
   Comment,
   CommentCreateForm,
   formatCommentDate,
+  type TComment,
 } from './comment';
 
 export interface ResolvedSuggestion extends TResolvedSuggestion {
@@ -334,6 +334,7 @@ export const useResolveSuggestion = (
           if (ElementApi.isElement(node)) {
             return api.suggestion.nodeId(node);
           }
+          return [];
         })
         .filter(Boolean)
     );
@@ -341,7 +342,7 @@ export const useResolveSuggestion = (
     const res: ResolvedSuggestion[] = [];
 
     suggestionIds.forEach(id => {
-      if (!id) return;
+      if (!id) return undefined;
 
       const path = map.get(id);
 
@@ -414,18 +415,18 @@ export const useResolveSuggestion = (
           if (lineBreakData.type === 'insert') {
             newText += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node);
+              : BLOCK_SUGGESTION + (TYPE_TEXT_MAP[node.type]?.(node) || '');
           } else if (lineBreakData.type === 'remove') {
             text += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node);
+              : BLOCK_SUGGESTION + (TYPE_TEXT_MAP[node.type]?.(node) || '');
           }
         }
       });
 
       if (entries.length === 0) return;
 
-      const nodeData = api.suggestion.suggestionData(entries[0][0]);
+      const nodeData = entries[0]?.[0] ? api.suggestion.suggestionData(entries[0][0]) : null;
 
       if (!nodeData) return;
 

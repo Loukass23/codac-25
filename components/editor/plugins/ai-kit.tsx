@@ -8,7 +8,7 @@ import {
   streamInsertChunk,
   useChatChunk,
 } from '@platejs/ai/react';
-import { getPluginType, KEYS, PathApi } from 'platejs';
+import { KEYS, PathApi, getPluginType } from 'platejs';
 import { usePluginOption } from 'platejs/react';
 
 import { AILoadingBar, AIMenu } from '@/components/ui/ai-menu';
@@ -32,7 +32,7 @@ export const aiChatPlugin = AIChatPlugin.extend({
     node: AIAnchorElement,
   },
   shortcuts: { show: { keys: 'mod+j' } },
-  useHooks: ({ api, editor, getOption }) => {
+  useHooks: ({ editor, getOption }) => {
     useChat();
 
     const mode = usePluginOption(AIChatPlugin, 'mode');
