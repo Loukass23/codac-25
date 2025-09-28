@@ -30,9 +30,7 @@ export function VerticalToolbarButtonsWithNames() {
       {!readOnly && (
         <>
           <VerticalToolbarGroup>
-            <VerticalToolbarButton name='Mode' tooltip='Mode'>
-              <ModeToolbarButton />
-            </VerticalToolbarButton>
+            <ModeToolbarButton />
           </VerticalToolbarGroup>
           {/* Document Actions */}
           <VerticalToolbarGroup>

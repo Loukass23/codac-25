@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
@@ -19,9 +20,12 @@ export default async function LandingPage() {
       <AnimatedNavigation />
 
       {/* Your content */}
-      <div className='relative z-10 flex items-center justify-center h-full'>
+      <Link
+        href="/auth/signin"
+        className='relative z-10 flex items-center justify-center h-full w-full cursor-pointer hover:bg-white/5 transition-colors duration-300'
+      >
         <AnimatedLandingContent />
-      </div>
+      </Link>
 
       {/* Retro grid background */}
       <RetroGrid
