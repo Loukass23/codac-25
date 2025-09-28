@@ -262,7 +262,7 @@ AUTH_GOOGLE_SECRET="your-google-oauth-client-secret"
 
 # GitHub OAuth (For repository integration)
 AUTH_GITHUB_ID="your-github-oauth-client-id"
-GITHUB_CLIENT_SECRET="your-github-oauth-client-secret"
+AUTH_GITHUB_SECRET="your-github-oauth-client-secret"
 
 # Email Provider (Required for magic links)
 AUTH_RESEND_KEY="re_your-resend-api-key"
@@ -274,7 +274,6 @@ EMAIL_FROM="noreply@yourdomain.com"
 To enable GitHub repository integration:
 
 1. **Create GitHub OAuth App**:
-
    - Go to GitHub Settings → Developer settings → OAuth Apps
    - Click "New OAuth App"
    - Set Authorization callback URL to: `http://localhost:3000/api/auth/callback/github`

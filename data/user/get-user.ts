@@ -13,6 +13,7 @@ export type UserProfile = Prisma.UserGetPayload<{
     id: true;
     name: true;
     email: true;
+    username: true;
     avatar: true;
     bio: true;
     role: true;
@@ -57,6 +58,7 @@ const getCachedUser = unstable_cache(
         id: true,
         name: true,
         email: true,
+        username: true,
         avatar: true,
         bio: true,
         role: true,
@@ -107,8 +109,24 @@ export async function getUser(id: string): Promise<GetUserResult> {
     // Validate input
     const { id: validatedId } = getUserSchema.parse({ id });
 
+    logger.info('getUser validation passed', {
+      metadata: {
+        originalId: id,
+        validatedId: validatedId
+      }
+    });
+
     // Get user with detailed information using cache
     const user = await getCachedUser(validatedId);
+
+    logger.info('getUser database query result', {
+      metadata: {
+        userFound: !!user,
+        userId: user?.id,
+        userEmail: user?.email,
+        userUsername: user?.username
+      }
+    });
 
     if (!user) {
       logger.warn('User not found', {
@@ -119,6 +137,94 @@ export async function getUser(id: string): Promise<GetUserResult> {
       return {
         success: false,
         error: 'User not found',
+      };
+    }
+
+    // Check if user is missing username (legacy user from before our fix)
+    if (!user.username) {
+      logger.warn('User missing username, updating...', {
+        metadata: {
+          userId: user.id,
+          userEmail: user.email,
+          userName: user.name
+        }
+      });
+
+      // Generate username from email or name
+      let username = '';
+      if (user.email) {
+        username = user.email.split('@')[0].toLowerCase();
+      } else if (user.name) {
+        username = user.name.toLowerCase().replace(/\s+/g, '_');
+      } else {
+        username = `user_${user.id.slice(-6)}`;
+      }
+
+      // Ensure username is unique
+      let finalUsername = username;
+      let counter = 1;
+      while (true) {
+        const existingUser = await prisma.user.findUnique({
+          where: { username: finalUsername },
+        });
+        if (!existingUser) break;
+        finalUsername = `${username}_${counter}`;
+        counter++;
+      }
+
+      // Update user with username
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { username: finalUsername },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          username: true,
+          avatar: true,
+          bio: true,
+          role: true,
+          status: true,
+          githubUrl: true,
+          linkedinUrl: true,
+          portfolioUrl: true,
+          currentJob: true,
+          currentCompany: true,
+          startDate: true,
+          endDate: true,
+          createdAt: true,
+          updatedAt: true,
+          cohort: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              avatar: true,
+              startDate: true,
+              description: true,
+            },
+          },
+          _count: {
+            select: {
+              posts: true,
+              comments: true,
+              achievements: true,
+            },
+          },
+        },
+      });
+
+      logger.info('User updated with username', {
+        metadata: {
+          userId: updatedUser.id,
+          username: updatedUser.username
+        }
+      });
+
+      // Return updated user
+      return {
+        success: true,
+        data: updatedUser,
       };
     }
 

@@ -67,7 +67,7 @@ export const deleteUserSchema = z.object({
 
 // Get user schema
 export const getUserSchema = z.object({
-    id: z.string().cuid('Invalid user ID'),
+    id: z.string().min(1, 'User ID is required'),
 });
 
 // Get users with filters schema

@@ -28,7 +28,7 @@ export const CodacRightAngleBracket: React.FC<CodacRightAngleBracketProps> = ({
 }) => {
   const SvgComponent = (
     <svg
-      viewBox="350 0 430 675"
+      viewBox="350 0 500 675"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(sizeConfig[size], className)}

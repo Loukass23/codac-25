@@ -14,12 +14,93 @@ import { logger } from "@/lib/logger"
 // Use type assertion to bypass NextAuth v5 beta compatibility issues with Prisma adapter
 const customPrismaAdapter = PrismaAdapter(prisma) as any
 
+// Override the createUser method to handle username field
+if (customPrismaAdapter.createUser) {
+  const _originalCreateUser = customPrismaAdapter.createUser;
+  customPrismaAdapter.createUser = async (user: any) => {
+    logger.info('createUser called', {
+      metadata: {
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.name
+      }
+    });
+
+    // Generate a default username if not provided
+    let username = user.username;
+    if (!username) {
+      if (user.email) {
+        username = user.email.split('@')[0].toLowerCase();
+      } else if (user.name) {
+        username = user.name.toLowerCase().replace(/\s+/g, '_');
+      } else {
+        username = `user_${user.id.slice(-6)}`;
+      }
+
+      // Ensure username is unique
+      let finalUsername = username;
+      let counter = 1;
+      while (true) {
+        const existingUser = await prisma.user.findUnique({
+          where: { username: finalUsername },
+        });
+        if (!existingUser) break;
+        finalUsername = `${username}_${counter}`;
+        counter++;
+      }
+      username = finalUsername;
+    }
+
+    // Handle email for GitHub OAuth users (email might be null)
+    let email = user.email;
+    if (!email && user.name) {
+      // Generate a temporary email for GitHub users without public email
+      email = `${username}@github.local`;
+    }
+
+    const userData = {
+      ...user,
+      email: email || `${username}@github.local`,
+      username,
+      role: 'STUDENT' as UserRole,
+      status: 'ACTIVE' as UserStatus,
+    };
+
+    logger.info('createUser data prepared', {
+      metadata: {
+        userId: userData.id,
+        email: userData.email,
+        username: userData.username,
+        role: userData.role,
+        status: userData.status
+      }
+    });
+
+    // Create user with username and email
+    const createdUser = await prisma.user.create({
+      data: userData,
+    });
+
+    logger.info('createUser successful', {
+      metadata: {
+        userId: createdUser.id,
+        email: createdUser.email,
+        username: createdUser.username
+      }
+    });
+
+    return createdUser;
+  };
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: customPrismaAdapter,
   trustHost: true,
   providers: [
     Google,
     GitHub({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
       authorization: {
         params: {
           scope: "read:user user:email repo",
@@ -107,9 +188,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async signIn() {
-      // Allow sign in
-      return true
+    async signIn({ user, account }) {
+      // Handle GitHub OAuth errors
+      if (account?.provider === "github") {
+        if (!process.env.AUTH_GITHUB_ID || !process.env.AUTH_GITHUB_SECRET) {
+          logger.warn("GitHub OAuth configuration missing", {
+            metadata: {
+              hasClientId: !!process.env.AUTH_GITHUB_ID,
+              hasClientSecret: !!process.env.AUTH_GITHUB_SECRET
+            }
+          });
+          return false;
+        }
+
+        // Log successful GitHub sign-in
+        logger.info("GitHub OAuth sign-in attempt", {
+          userId: user.id,
+          metadata: {
+            userEmail: user.email,
+            userName: user.name
+          }
+        });
+      }
+
+      return true;
     },
     async session({ session, token }) {
       // Add user data from token to session with proper typing
@@ -161,50 +263,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   events: {
     async createUser({ user }) {
-      try {
-        if (!user.id) {
-          throw new Error("User ID is required");
+      // User creation is now handled in the adapter override
+      logger.info("User created successfully", {
+        userId: user.id,
+        metadata: {
+          userEmail: user.email,
+          userName: user.name
         }
-
-        // Generate username based on user data
-        let username = "";
-        if (user.email) {
-          // Extract username from email
-          const emailUsername = user.email.split("@")[0];
-          username = emailUsername || `user_${user.id.slice(-6)}`;
-        } else {
-          // Fallback to user ID
-          username = `user_${user.id.slice(-6)}`;
-        }
-
-        // Ensure username is unique
-        let finalUsername = username.toLowerCase();
-        let counter = 1;
-        while (true) {
-          const existingUser = await prisma.user.findUnique({
-            where: { username: finalUsername },
-          });
-          if (!existingUser) break;
-          finalUsername = `${username.toLowerCase()}_${counter}`;
-          counter++;
-        }
-
-        // Set default role, status, and username for new users
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            username: finalUsername,
-            role: "STUDENT" as UserRole,
-            status: "ACTIVE" as UserStatus,
-          },
-        })
-        logger.info("User created with default role, status, and username", {
-          userId: user.id,
-          metadata: { username: finalUsername }
-        })
-      } catch (error) {
-        logger.error("Error updating user in createUser event", error instanceof Error ? error : new Error(String(error)))
-      }
+      });
     },
   },
 });
