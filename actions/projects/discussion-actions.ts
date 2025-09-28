@@ -117,7 +117,7 @@ export async function createComment(
             data: {
                 discussionId: input.discussionId,
                 userId: session.user.id,
-                contentRich: input.contentRich,
+                contentRich: input.contentRich as any,
                 parentId: input.parentId,
                 isEdited: false,
             },
@@ -197,7 +197,7 @@ export async function updateComment(
         const comment = await prisma.documentComment.update({
             where: { id: input.commentId },
             data: {
-                contentRich: input.contentRich,
+                contentRich: input.contentRich as any,
                 isEdited: true,
             },
         });

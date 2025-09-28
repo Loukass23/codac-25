@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
@@ -58,21 +59,32 @@ export async function deleteDocument(
 
         // Use transaction to handle related data
         await prisma.$transaction(async (tx) => {
-            // Delete all document comments first
-            await tx.documentComment.deleteMany({
-                where: {
-                    documentId: validatedInput.id,
-                },
+            // Delete all document discussions and their comments first
+            const discussions = await tx.documentDiscussion.findMany({
+                where: { documentId: validatedInput.id },
+                select: { id: true },
             });
+
+            if (discussions.length > 0) {
+                await tx.documentComment.deleteMany({
+                    where: {
+                        discussionId: { in: discussions.map(d => d.id) },
+                    },
+                });
+
+                await tx.documentDiscussion.deleteMany({
+                    where: { documentId: validatedInput.id },
+                });
+            }
 
             // If this document is linked to a project as a summary, unlink it
             if (existingDocument.projectId) {
                 await tx.project.updateMany({
                     where: {
-                        summaryDocumentId: validatedInput.id,
+                        documentId: validatedInput.id,
                     },
                     data: {
-                        summaryDocumentId: null,
+                        documentId: null,
                     },
                 });
             }
@@ -112,6 +124,11 @@ export async function deleteDocument(
             };
         }
 
-        return handlePrismaError(error);
+        return {
+            success: false,
+            error: error instanceof Prisma.PrismaClientKnownRequestError
+                ? handlePrismaError(error)
+                : 'An unexpected error occurred',
+        };
     }
 }

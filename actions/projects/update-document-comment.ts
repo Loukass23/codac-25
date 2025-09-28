@@ -40,10 +40,10 @@ export async function updateDocumentComment(
         const existingComment = await prisma.documentComment.findFirst({
             where: {
                 id: validatedInput.id,
-                authorId: user.id,
+                userId: user.id,
             },
             include: {
-                author: true,
+                user: true,
             },
         });
 
@@ -58,22 +58,22 @@ export async function updateDocumentComment(
         const updatedComment = await prisma.documentComment.update({
             where: { id: validatedInput.id },
             data: {
-                content: validatedInput.content as Prisma.InputJsonValue,
+                contentRich: validatedInput.content as Prisma.InputJsonValue,
+                isEdited: true,
                 updatedAt: new Date(),
             },
             include: {
-                author: {
+                user: {
                     select: {
                         id: true,
                         name: true,
-                        avatar: true,
+                        image: true,
                     },
                 },
             },
         });
 
         // Revalidate relevant pages
-        revalidatePath(`/projects/${existingComment.documentId}`);
         revalidatePath('/projects');
 
         logger.info('Document comment updated successfully', {
@@ -82,8 +82,6 @@ export async function updateDocumentComment(
             resourceId: updatedComment.id,
             metadata: {
                 userId: user.id,
-                documentType: existingComment.documentType,
-                documentId: existingComment.documentId,
             },
         });
 
@@ -99,6 +97,11 @@ export async function updateDocumentComment(
             };
         }
 
-        return handlePrismaError(error);
+        return {
+            success: false,
+            error: error instanceof Prisma.PrismaClientKnownRequestError
+                ? handlePrismaError(error)
+                : 'An unexpected error occurred',
+        };
     }
 }

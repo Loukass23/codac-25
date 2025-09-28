@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
@@ -39,18 +40,21 @@ export async function resolveDocumentDiscussion(
         const discussion = await prisma.documentComment.findFirst({
             where: {
                 discussionId: validatedInput.discussionId,
-                documentId: validatedInput.documentId,
             },
             include: {
-                author: true,
-                document: {
+                user: true,
+                discussion: {
                     include: {
-                        project: {
-                            select: {
-                                id: true,
-                                projectProfile: {
+                        document: {
+                            include: {
+                                project: {
                                     select: {
-                                        userId: true,
+                                        id: true,
+                                        projectProfile: {
+                                            select: {
+                                                userId: true,
+                                            },
+                                        },
                                     },
                                 },
                             },
@@ -68,15 +72,15 @@ export async function resolveDocumentDiscussion(
         }
 
         // Check if user owns the discussion or has access to the document
-        let hasAccess = discussion.authorId === user.id;
+        let hasAccess = discussion.userId === user.id;
 
         if (!hasAccess) {
             // Check if user owns the document
-            hasAccess = discussion.document.authorId === user.id;
+            hasAccess = discussion.discussion.document.authorId === user.id;
 
             // Check if user owns the project (for project-related documents)
-            if (!hasAccess && discussion.document.projectId) {
-                hasAccess = discussion.document.project?.projectProfile?.userId === user.id;
+            if (!hasAccess && discussion.discussion.document.projectId) {
+                hasAccess = discussion.discussion.document.project?.projectProfile?.userId === user.id;
             }
         }
 
@@ -87,10 +91,10 @@ export async function resolveDocumentDiscussion(
             };
         }
 
-        // Mark all comments in the discussion as resolved
-        await prisma.documentComment.updateMany({
+        // Mark the discussion as resolved
+        await prisma.documentDiscussion.update({
             where: {
-                discussionId: validatedInput.discussionId,
+                id: validatedInput.discussionId,
             },
             data: {
                 isResolved: true,
@@ -99,8 +103,8 @@ export async function resolveDocumentDiscussion(
         });
 
         // Revalidate relevant pages
-        if (discussion.document.projectId) {
-            revalidatePath(`/projects/${discussion.document.projectId}`);
+        if (discussion.discussion.document.projectId) {
+            revalidatePath(`/projects/${discussion.discussion.document.projectId}`);
         }
         revalidatePath('/projects');
 
@@ -110,9 +114,9 @@ export async function resolveDocumentDiscussion(
             metadata: {
                 userId: user.id,
                 discussionId: validatedInput.discussionId,
-                documentType: discussion.document.documentType,
+                documentType: discussion.discussion.document.documentType,
                 documentId: validatedInput.documentId,
-                projectId: discussion.document.projectId,
+                projectId: discussion.discussion.document.projectId,
             },
         });
 
@@ -128,6 +132,11 @@ export async function resolveDocumentDiscussion(
             };
         }
 
-        return handlePrismaError(error);
+        return {
+            success: false,
+            error: error instanceof Prisma.PrismaClientKnownRequestError
+                ? handlePrismaError(error)
+                : 'An unexpected error occurred',
+        };
     }
 }

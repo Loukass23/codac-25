@@ -93,7 +93,7 @@ export async function createDocument(
             await prisma.project.update({
                 where: { id: validatedInput.projectId },
                 data: {
-                    summaryDocumentId: document.id,
+                    documentId: document.id,
                 },
             });
         }
@@ -127,6 +127,11 @@ export async function createDocument(
             };
         }
 
-        return handlePrismaError(error);
+        return {
+            success: false,
+            error: error instanceof Prisma.PrismaClientKnownRequestError
+                ? handlePrismaError(error)
+                : 'An unexpected error occurred',
+        };
     }
 }

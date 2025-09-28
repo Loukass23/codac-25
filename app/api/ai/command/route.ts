@@ -22,14 +22,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = streamText({
-      experimental_transform: markdownJoinerTransform(),
+      experimental_transform: markdownJoinerTransform,
       maxTokens: 2048,
       messages: convertToCoreMessages(messages),
       model: openai('gpt-4o'),
       system: system,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch {
     return NextResponse.json(
       { error: 'Failed to process AI request' },

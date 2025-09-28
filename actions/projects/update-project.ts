@@ -57,7 +57,6 @@ export async function updateProject(
       data: {
         title: data.title,
         description: data.description,
-        summary: data.summary,
         shortDesc: data.shortDesc,
         images: data.images || [],
         demoUrl: data.demoUrl,

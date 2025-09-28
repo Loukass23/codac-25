@@ -1,8 +1,8 @@
 'use client';
 
 import { ChevronDown, Settings } from 'lucide-react';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 import { AppBreadcrumb } from '@/components/app-breadcrumb';
 import CodacLeftAngleBracket from '@/components/codac-brand/codac-left-angle-bracket';
@@ -56,7 +56,7 @@ export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
                 >
                   <Avatar className='h-7 w-7'>
                     <AvatarImage
-                      src={user.avatar ?? ''}
+                      src={user.image ?? user.avatar ?? ''}
                       alt={user.name ?? 'codac member'}
                     />
                     <AvatarFallback className='text-xs'>

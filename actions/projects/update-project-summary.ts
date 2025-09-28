@@ -51,14 +51,16 @@ export async function updateProjectSummary(
       };
     }
 
-    // Update the project summary
-    await prisma.project.update({
-      where: { id: projectId },
-      data: {
-        summary: summary as Prisma.InputJsonValue, // Prisma handles JSON serialization
-        updatedAt: new Date(),
-      },
-    });
+    // Update the project's document content
+    if (project.documentId) {
+      await prisma.document.update({
+        where: { id: project.documentId },
+        data: {
+          content: summary as Prisma.InputJsonValue,
+          updatedAt: new Date(),
+        },
+      });
+    }
 
     // Revalidate relevant pages
     revalidatePath('/projects');

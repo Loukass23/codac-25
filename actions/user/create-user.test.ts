@@ -10,6 +10,7 @@ import { mockPrisma } from '@/tests/utils/prisma-mock';
 describe('createUser Server Action', () => {
   const validUserData = {
     email: 'test@example.com',
+    username: 'testuser',
     name: 'Test User',
     role: 'STUDENT' as const,
     status: 'ACTIVE' as const,
@@ -72,6 +73,7 @@ describe('createUser Server Action', () => {
   it('should handle validation errors', async () => {
     const invalidUserData = {
       email: 'invalid-email',
+      username: '',
       name: '',
       role: 'INVALID_ROLE' as never,
       status: 'ACTIVE' as const,
@@ -145,6 +147,7 @@ describe('createUser Server Action', () => {
   it('should validate required fields', async () => {
     const incompleteData = {
       email: 'test@example.com',
+      username: 'testuser',
       // Missing name, role, status
     } as Partial<CreateUserInput>;
 

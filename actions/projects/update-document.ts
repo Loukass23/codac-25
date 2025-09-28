@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 
 import { Prisma } from '@prisma/client';
-import { type Value } from 'platejs';
 import { z } from 'zod';
 
 import { getCurrentUser } from '@/lib/auth/auth-utils';
@@ -122,6 +121,11 @@ export async function updateDocument(
             };
         }
 
-        return handlePrismaError(error);
+        return {
+            success: false,
+            error: error instanceof Prisma.PrismaClientKnownRequestError
+                ? handlePrismaError(error)
+                : 'An unexpected error occurred',
+        };
     }
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { auth } from '@/lib/auth/auth';
-import { getUserAvatar } from '@/lib/auth/auth-utils';
+import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 
 export async function GET(
@@ -23,7 +23,12 @@ export async function GET(
         }
 
         // Fetch avatar from database
-        const avatar = await getUserAvatar(userId);
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { image: true, avatar: true },
+        });
+
+        const avatar = user?.image || user?.avatar;
 
         return NextResponse.json({ avatar });
     } catch (error) {
