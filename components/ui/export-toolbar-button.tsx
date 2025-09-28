@@ -22,7 +22,11 @@ import { ToolbarButton } from './toolbar';
 
 const siteUrl = 'https://platejs.org';
 
-export function ExportToolbarButton(props: DropdownMenuProps) {
+interface ExportToolbarButtonProps extends DropdownMenuProps {
+  showText?: boolean;
+}
+
+export function ExportToolbarButton({ showText = true, ...props }: ExportToolbarButtonProps) {
   const editor = useEditorRef();
   const [open, setOpen] = React.useState(false);
 
@@ -157,7 +161,9 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
           <span className='flex-shrink-0 w-4 h-4 flex items-center justify-center'>
             <ArrowDownToLineIcon className="size-4" />
           </span>
-          <span className='text-sm font-medium truncate'>Export</span>
+          {showText && (
+            <span className='text-sm font-medium truncate'>Export</span>
+          )}
         </ToolbarButton>
       </DropdownMenuTrigger>
 

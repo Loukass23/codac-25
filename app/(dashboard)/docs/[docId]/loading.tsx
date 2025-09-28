@@ -1,20 +1,19 @@
 import { VerticalToolbarSkeleton } from '@/components/skeleton/vertical-toolbar-skeletob';
 import {
-  ResizablePanelGroup,
-  ResizablePanel,
   ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const SIDE_PANEL_DEFAULT_SIZE = 15;
+const SIDE_PANEL_DEFAULT_SIZE = 5;
 const MAIN_PANEL_DEFAULT_SIZE = 100 - SIDE_PANEL_DEFAULT_SIZE;
 
-const SIDE_PANEL_MIN_SIZE = 10;
-const SIDE_PANEL_MAX_SIZE = 25;
+const SIDE_PANEL_MIN_SIZE = 5;
+const SIDE_PANEL_MAX_SIZE = 15;
 
 const MAIN_PANEL_MAX_SIZE = 100 - SIDE_PANEL_MIN_SIZE;
 const MAIN_PANEL_MIN_SIZE = 100 - SIDE_PANEL_MAX_SIZE;
-
 
 
 function DocumentSkeleton() {

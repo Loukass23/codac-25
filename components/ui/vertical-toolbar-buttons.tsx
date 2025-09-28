@@ -8,13 +8,13 @@ import {
   HighlighterIcon,
   ItalicIcon,
   PaintBucketIcon,
+  SaveIcon,
   StrikethroughIcon,
   UnderlineIcon,
-  WandSparklesIcon,
+  WandSparklesIcon
 } from 'lucide-react';
 import { KEYS } from 'platejs';
 import { useEditorReadOnly } from 'platejs/react';
-import * as React from 'react';
 
 import { AIToolbarButton } from './ai-toolbar-button';
 import { AlignToolbarButton } from './align-toolbar-button';
@@ -41,7 +41,6 @@ import { MarkToolbarButton } from './mark-toolbar-button';
 import { MediaToolbarButton } from './media-toolbar-button';
 import { ModeToolbarButton } from './mode-toolbar-button';
 import { MoreToolbarButton } from './more-toolbar-button';
-import { SimpleSaveButton } from './simple-save-button';
 import { SuggestionToolbarButton } from './suggestion-toolbar-button';
 import { TableToolbarButton } from './table-toolbar-button';
 import { ToggleToolbarButton } from './toggle-toolbar-button';
@@ -49,7 +48,11 @@ import { TurnIntoToolbarButton } from './turn-into-toolbar-button';
 import { VerticalToolbarButton } from './vertical-toolbar-button';
 import { VerticalToolbarGroup } from './vertical-toolbar-group';
 
-export function VerticalToolbarButtons() {
+interface VerticalToolbarButtonsProps {
+  onSave?: () => Promise<void>;
+}
+
+export function VerticalToolbarButtons({ onSave }: VerticalToolbarButtonsProps) {
   const readOnly = useEditorReadOnly();
 
   return (
@@ -57,8 +60,13 @@ export function VerticalToolbarButtons() {
       {!readOnly && (
         <>
           <VerticalToolbarGroup>
-            <VerticalToolbarButton name='Save' tooltip='Save document'>
-              <SimpleSaveButton />
+            <VerticalToolbarButton
+              name='Save'
+              tooltip='Save document'
+              isSaveButton={true}
+              onSave={onSave}
+            >
+              <SaveIcon />
             </VerticalToolbarButton>
             <VerticalToolbarButton
               name='Suggestions'

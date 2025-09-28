@@ -16,7 +16,7 @@ export function VerticalToolbarGroup({
         className
       )}
     >
-      <div className='flex flex-col w-full items-start gap-1'>{children}</div>
+      <div className='flex flex-col w-full items-center gap-1'>{children}</div>
 
       <div className='my-1.5 mx-0.5 group-last/toolbar-group:hidden!'>
         <Separator orientation='horizontal' />

@@ -1,3 +1,4 @@
+import typography from '@tailwindcss/typography';
 import type { Config } from "tailwindcss";
 
 export default {
@@ -6,6 +7,9 @@ export default {
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./hooks/**/*.{js,ts,jsx,tsx,mdx}",
         "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    ],
+    plugins: [
+        typography,
     ],
     theme: {
         extend: {

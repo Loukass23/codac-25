@@ -21,7 +21,11 @@ import { ToolbarButton } from './toolbar';
 
 type ImportType = 'html' | 'markdown';
 
-export function ImportToolbarButton(props: DropdownMenuProps) {
+interface ImportToolbarButtonProps extends DropdownMenuProps {
+  showText?: boolean;
+}
+
+export function ImportToolbarButton({ showText = true, ...props }: ImportToolbarButtonProps) {
   const editor = useEditorRef();
   const [open, setOpen] = React.useState(false);
 
@@ -78,7 +82,9 @@ export function ImportToolbarButton(props: DropdownMenuProps) {
           <span className='flex-shrink-0 w-4 h-4 flex items-center justify-center'>
             <ArrowUpToLineIcon className="size-4" />
           </span>
-          <span className='text-sm font-medium truncate'>Import</span>
+          {showText && (
+            <span className='text-sm font-medium truncate'>Import</span>
+          )}
         </ToolbarButton>
       </DropdownMenuTrigger>
 

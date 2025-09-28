@@ -16,6 +16,11 @@ export function RedoToolbarButton(
     []
   );
 
+  // If asChild is true, render just the content without a button wrapper
+  if (props.asChild) {
+    return <Redo2Icon />;
+  }
+
   return (
     <ToolbarButton
       {...props}
@@ -37,6 +42,11 @@ export function UndoToolbarButton(
     (editor) => editor.history.undos.length === 0,
     []
   );
+
+  // If asChild is true, render just the content without a button wrapper
+  if (props.asChild) {
+    return <Undo2Icon />;
+  }
 
   return (
     <ToolbarButton

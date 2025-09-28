@@ -20,7 +20,7 @@ import {
 
 import { ToolbarButton } from './toolbar';
 
-export function ModeToolbarButton(props: DropdownMenuProps) {
+export function ModeToolbarButton({ showText = true, ...props }: DropdownMenuProps & { showText?: boolean }) {
   const editor = useEditorRef();
   const [readOnly, setReadOnly] = usePlateState('readOnly');
   const [open, setOpen] = React.useState(false);
@@ -53,7 +53,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
       <DropdownMenuTrigger asChild>
         <ToolbarButton pressed={open} tooltip="Editing mode" isDropdown>
           {item[value]?.icon}
-          <span className="hidden lg:inline">{item[value]?.label}</span>
+          {showText && <span className="hidden lg:inline">{item[value]?.label}</span>}
         </ToolbarButton>
       </DropdownMenuTrigger>
 

@@ -32,7 +32,7 @@ export function AnimatedLandingContent() {
                 }}
             >
 
-                <h1 className="text-[15rem] uppercase font-codac-brand bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent ">codac</h1>
+                <h1 className="text-[15rem] uppercase font-codac-brand bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ WebkitTextStroke: '4px white' }}>codac</h1>
             </motion.div>
             <motion.div
                 className="animate-diamond-pulse opacity-0"

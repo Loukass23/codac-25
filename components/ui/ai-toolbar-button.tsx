@@ -7,9 +7,15 @@ import * as React from 'react';
 
 import { ToolbarButton } from './toolbar';
 
-export function AIToolbarButton(
-  props: React.ComponentProps<typeof ToolbarButton>
-) {
+interface AIToolbarButtonProps extends React.ComponentProps<typeof ToolbarButton> {
+  showText?: boolean;
+}
+
+export function AIToolbarButton({
+  showText = true,
+  children,
+  ...props
+}: AIToolbarButtonProps) {
   const { api } = useEditorPlugin(AIChatPlugin);
 
   return (
@@ -21,6 +27,11 @@ export function AIToolbarButton(
       onMouseDown={(e) => {
         e.preventDefault();
       }}
-    />
+    >
+      {children}
+      {showText && (
+        <span className="text-sm font-medium truncate">AI</span>
+      )}
+    </ToolbarButton>
   );
 }

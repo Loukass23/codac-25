@@ -1,6 +1,6 @@
 'use client';
 
-import { SaveIcon, CheckIcon, ClockIcon, AlertCircleIcon } from 'lucide-react';
+import { AlertCircleIcon, CheckIcon, ClockIcon, SaveIcon } from 'lucide-react';
 import { useEditorRef, usePluginOption } from 'platejs/react';
 import * as React from 'react';
 
@@ -14,6 +14,7 @@ interface SimpleSaveButtonProps
   extends React.ComponentProps<typeof ToolbarButton> {
   documentId?: string; // Optional, will get from plugin options if not provided
   onSave?: (content: unknown) => void;
+  asChild?: boolean; // When true, renders as a child element instead of a button
 }
 
 /**
@@ -22,11 +23,13 @@ interface SimpleSaveButtonProps
 export function SimpleSaveButton({
   documentId: propDocumentId,
   onSave,
+  asChild = false,
   ...props
 }: SimpleSaveButtonProps) {
   const editor = useEditorRef();
   const [saveState, setSaveState] = React.useState<SaveState>('idle');
   const [lastSaved, setLastSaved] = React.useState<Date | null>(null);
+  const parentRef = React.useRef<HTMLButtonElement>(null);
 
   // Get documentId from plugin options if not provided as prop
   const pluginDocumentId = usePluginOption(savePlugin, 'documentId') ?? '';
@@ -93,6 +96,18 @@ export function SimpleSaveButton({
         return <SaveIcon />;
     }
   };
+
+  // If asChild is true, render just the content without a button wrapper
+  if (asChild) {
+    return (
+      <>
+        <span className='flex-shrink-0 w-4 h-4 flex items-center justify-center'>
+          {getIcon()}
+        </span>
+        <span className='text-sm font-medium truncate'>Save</span>
+      </>
+    );
+  }
 
   return (
     <ToolbarButton
