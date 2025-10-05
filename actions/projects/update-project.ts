@@ -73,6 +73,20 @@ export async function updateProject(
       },
     });
 
+    // Update the associated document if it exists and summary is provided
+    if (project.documentId && data.summary !== undefined) {
+      await prisma.document.update({
+        where: { id: project.documentId },
+        data: {
+          title: data.title,
+          description: data.description,
+          content: data.summary as Prisma.InputJsonValue,
+          isPublished: data.isPublic ?? true,
+          updatedAt: new Date(),
+        },
+      });
+    }
+
     // Revalidate relevant pages
     revalidatePath('/projects');
     revalidatePath(`/projects/${projectId}`);

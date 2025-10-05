@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { CreateProjectData } from '@/types/portfolio';
+import { Value } from 'platejs';
+import { ProjectSummaryEditor } from './project-summary-editor';
 
 type ProjectFormFocusedProps = {
     onSubmit: (data: CreateProjectData) => Promise<{ error?: string } | void>;
@@ -24,6 +26,12 @@ export function ProjectFormFocused({ onSubmit, isLoading = false }: ProjectFormF
         title: '',
         description: '',
         shortDesc: '',
+        summary: [
+            {
+                type: 'p',
+                children: [{ text: '' }],
+            },
+        ],
         techStack: [],
         features: [],
         demoUrl: '',
@@ -129,6 +137,12 @@ export function ProjectFormFocused({ onSubmit, isLoading = false }: ProjectFormF
                             placeholder="Brief one-line description"
                         />
                     </div>
+
+                    <ProjectSummaryEditor
+                        initialValue={formData.summary}
+                        onChange={(value: Value) => setFormData(prev => ({ ...prev, summary: value }))}
+                        placeholder="Write a detailed summary of your project..."
+                    />
                 </CardContent>
             </Card>
 

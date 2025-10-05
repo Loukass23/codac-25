@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { PlateStaticEditor } from '@/components/editor/plate-editor-static';
 import { Button } from '@/components/ui/button';
-import { getProjectById } from '@/data/projects/get-project-by-id';
+import { ProjectWithDocument, getProjectById } from '@/data/projects/get-project-by-id';
 import { requireServerAuth } from '@/lib/auth/auth-server';
 import { jsonToPlateValue } from '@/lib/plate/utils';
 
@@ -15,18 +15,22 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { id } = await params;
-  const project = await getProjectById(id);
+  const project = await getProjectById(id) as ProjectWithDocument;
   const user = await requireServerAuth();
 
   if (!project) {
     notFound();
   }
 
-  const isOwner = user?.id === project.projectProfile.userId;
+  const isOwner = user?.id === project.projectProfileId;
 
-  const { summary } = project;
+  const { content } = project.document;
 
-  const plateValue = jsonToPlateValue(summary);
+  if (!content) {
+    notFound();
+  }
+
+  const plateValue = jsonToPlateValue(content);
 
   if (!plateValue.length) {
     notFound();

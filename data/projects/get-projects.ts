@@ -14,6 +14,12 @@ export type ProjectDTO = Project & {
   projectProfile: ProjectProfile & {
     user: Pick<User, 'id' | 'name' | 'avatar'>;
   };
+  document?: {
+    id: string;
+    content: any; // Plate.js Value type
+    title: string | null;
+    description: string | null;
+  } | null;
   projectLikes: ProjectLike[];
   _count: {
     comments: number;
@@ -75,6 +81,14 @@ export async function getAllProjects(
                 avatar: true,
               },
             },
+          },
+        },
+        document: {
+          select: {
+            id: true,
+            content: true,
+            title: true,
+            description: true,
           },
         },
         projectLikes: {
@@ -140,6 +154,14 @@ export async function getFeaturedProjects(
             },
           },
         },
+        document: {
+          select: {
+            id: true,
+            content: true,
+            title: true,
+            description: true,
+          },
+        },
         projectLikes: {
           where: userId ? { userId } : { id: 'never-matches' },
           select: { id: true },
@@ -191,6 +213,14 @@ export async function getUserProjects(
                 avatar: true,
               },
             },
+          },
+        },
+        document: {
+          select: {
+            id: true,
+            content: true,
+            title: true,
+            description: true,
           },
         },
         _count: {

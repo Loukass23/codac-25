@@ -15,7 +15,7 @@ import type { CreateProjectData } from '@/types/portfolio';
 
 export async function createProject(
   data: CreateProjectData
-): Promise<ServerActionResult<{ id: string; projectProfileId: string }>> {
+): Promise<ServerActionResult<{ id: string; projectProfileId: string; documentId: string }>> {
   try {
     // Get current user
     const user = await getCurrentUser();
@@ -59,7 +59,20 @@ export async function createProject(
       },
     });
 
-    // Create the project
+    // Create a document for the project's rich content
+    const document = await prisma.document.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        content: data.summary || [], // Plate.js content, defaults to empty array
+        documentType: 'project_summary',
+        authorId: user.id,
+        isPublished: data.isPublic ?? true,
+        projectId: undefined, // Will be set after project creation
+      },
+    });
+
+    // Create the project with document reference
     const project = await prisma.project.create({
       data: {
         title: data.title,
@@ -77,7 +90,14 @@ export async function createProject(
         endDate: data.endDate || null,
         isPublic: data.isPublic ?? true,
         projectProfileId: projectProfile.id,
+        documentId: document.id,
       },
+    });
+
+    // Update the document with the project reference
+    await prisma.document.update({
+      where: { id: document.id },
+      data: { projectId: project.id },
     });
 
     // Revalidate relevant pages
@@ -101,6 +121,7 @@ export async function createProject(
       data: {
         id: project.id,
         projectProfileId: projectProfile.id,
+        documentId: document.id,
       },
     };
   } catch (error) {

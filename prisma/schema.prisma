@@ -646,7 +646,7 @@ model Project {
   projectProfileId String
   projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
   
-  // Document relation for rich content (replaces summary field)
+  // Document relation for rich content (Plate.js editor content)
   documentId String? @unique
   document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
   
@@ -658,6 +658,7 @@ model Project {
   @@index([status])
   @@index([isFeatured])
   @@index([isPublic])
+  @@index([documentId])
   @@map("projects")
 }
 

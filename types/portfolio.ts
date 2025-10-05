@@ -33,6 +33,12 @@ export type ProjectShowcaseWithStats = Project & {
   projectProfile: ProjectProfile & {
     user: Pick<User, 'id' | 'name' | 'avatar'>;
   };
+  document?: {
+    id: string;
+    content: any; // Plate.js Value type
+    title: string | null;
+    description: string | null;
+  } | null;
   isLiked?: boolean;
   _count: {
     comments: number;
@@ -45,6 +51,12 @@ export type ProjectShowcaseWithDetails = Project & {
   projectProfile: ProjectProfile & {
     user: Pick<User, 'id' | 'name' | 'avatar' | 'githubUrl' | 'linkedinUrl'>;
   };
+  document?: {
+    id: string;
+    content: any; // Plate.js Value type
+    title: string | null;
+    description: string | null;
+  } | null;
   isLiked?: boolean;
   comments: (ProjectComment & {
     author: Pick<User, 'id' | 'name' | 'avatar'>;

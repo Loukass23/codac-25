@@ -2,7 +2,11 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { Project } from '@prisma/client';
+import { Document, Project } from '@prisma/client';
+
+export type ProjectWithDocument = Project & {
+  document: Document;
+};
 
 export async function getProjectById(
   projectId: string
@@ -22,6 +26,14 @@ export async function getProjectById(
                 linkedinUrl: true,
               },
             },
+          },
+        },
+        document: {
+          select: {
+            id: true,
+            content: true,
+            title: true,
+            description: true,
           },
         },
         comments: {
@@ -101,7 +113,7 @@ export async function getProjectById(
         );
       });
 
-    return project as Project;
+    return project;
   } catch (error) {
     logger.error(
       'Failed to get project by ID',

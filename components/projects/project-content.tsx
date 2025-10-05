@@ -1,41 +1,42 @@
 'use client';
 
 import { Project } from '@prisma/client';
-import { Value } from 'platejs';
 import { use } from 'react';
-import { toast } from 'sonner';
 
-import { updateProjectSummary } from '../../actions/projects/update-project-summary';
-// import { jsonToPlateValue } from '../../lib/plate/utils';
-// import { PlateEditor } from '../editor/plate-editor2';
+import { ProjectSummaryDisplay } from './project-summary-display';
 
-function ProjectContent({
-  _projectPromise,
-}: {
-  _projectPromise: Promise<Project>;
-}) {
+interface ProjectContentProps {
+  _projectPromise: Promise<Project & {
+    document?: {
+      id: string;
+      content: any;
+      title: string | null;
+      description: string | null;
+    } | null;
+  }>;
+}
+
+export function ProjectContent({ _projectPromise }: ProjectContentProps) {
   const project = use(_projectPromise);
-  // const plateValue = jsonToPlateValue(project.documentId?.content ?? []);
-  const handleSave = async (value: Value) => {
-    try {
-      const result = await updateProjectSummary(project.id, value);
 
-      if (result.success) {
-        toast.success('Project summary saved successfully!');
-      } else {
-        toast.error(result.error ?? 'Failed to save project summary');
-      }
-    } catch (_error) {
-      toast.error('An unexpected error occurred while saving');
-    }
-  };
+  // If no document or content, show placeholder
+  if (!project.document || !project.document.content) {
+    return (
+      <div className="text-muted-foreground italic">
+        No project summary available.
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* <PlateEditor initialValue={plateValue} onSave={handleSave} /> */}
-      {/* <ProjectSummaryEditor projectId={project.id} initialValue={plateValue} /> */}
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Project Summary</h3>
+        <ProjectSummaryDisplay
+          content={project.document.content}
+          className="border rounded-lg p-4"
+        />
+      </div>
     </div>
   );
 }
-
-export default ProjectContent;

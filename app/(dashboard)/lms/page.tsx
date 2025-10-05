@@ -1,10 +1,8 @@
 import { redirect } from 'next/navigation';
 
-import { getLMSDocumentBySlug } from '@/data/lms/get-lms-documents';
-import { requireServerAuth } from '@/lib/auth/auth-server';
 
 export default async function LMSPage() {
-  // redirect('/lms/welcome');
+  redirect('/lms/welcome');
 
   // If no welcome document, show the LMS content with folder navigation
   // The layout will handle showing the folder navigation and content

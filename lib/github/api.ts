@@ -86,9 +86,20 @@ async function makeGitHubRequest<T>(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(
-      `GitHub API error: ${response.status} ${response.statusText} - ${errorText}`
-    );
+    let errorMessage = `GitHub API error: ${response.status} ${response.statusText}`;
+
+    // Provide more specific error messages
+    if (response.status === 401) {
+      errorMessage += ' - Authentication failed. Please check your GitHub OAuth configuration.';
+    } else if (response.status === 403) {
+      errorMessage += ' - Access forbidden. Please check your GitHub permissions.';
+    } else if (response.status === 404) {
+      errorMessage += ' - Resource not found.';
+    } else {
+      errorMessage += ` - ${errorText}`;
+    }
+
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -224,6 +235,12 @@ export async function getRepositoryLanguages(
  */
 export async function isGitHubConnected(): Promise<boolean> {
   try {
+    // Check if GitHub OAuth is configured
+    if (!process.env.AUTH_GITHUB_ID || !process.env.AUTH_GITHUB_SECRET) {
+      logger.warn('GitHub OAuth not configured - missing environment variables');
+      return false;
+    }
+
     const session = await auth();
     if (!session?.user?.id) {
       return false;

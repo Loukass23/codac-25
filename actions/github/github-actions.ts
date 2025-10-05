@@ -69,6 +69,15 @@ export async function fetchGitHubRepositories(): Promise<
       'Error fetching GitHub repositories',
       error instanceof Error ? error : new Error(String(error))
     );
+
+    // Check if it's a GitHub OAuth configuration issue
+    if (error instanceof Error && error.message.includes('GitHub API error: 401')) {
+      return {
+        success: false,
+        error: 'GitHub authentication failed. Please check your GitHub OAuth configuration.',
+      };
+    }
+
     return {
       success: false,
       error: 'Failed to fetch GitHub repositories. Please try again.',
@@ -226,6 +235,14 @@ export async function checkGitHubConnection(): Promise<
       return {
         success: false,
         error: 'Authentication required',
+      };
+    }
+
+    // Check if GitHub OAuth is configured
+    if (!process.env.AUTH_GITHUB_ID || !process.env.AUTH_GITHUB_SECRET) {
+      return {
+        success: false,
+        error: 'GitHub OAuth not configured. Please set AUTH_GITHUB_ID and AUTH_GITHUB_SECRET environment variables.',
       };
     }
 
