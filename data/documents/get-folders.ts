@@ -53,7 +53,8 @@ export interface FolderTreeItem {
     type: 'folder' | 'document';
     color?: string;
     icon?: string | null;
-    documentCount?: number;
+    documentCount?: number; // Direct documents count
+    totalDocumentCount?: number; // Including nested folders
     children?: string[];
     documentType?: string;
     isPublished?: boolean;
@@ -225,6 +226,7 @@ export async function getDocumentById(documentId: string, userId: string): Promi
 export async function getFolderTreeWithDocuments(userId: string): Promise<{
     items: Record<string, FolderTreeItem>;
     rootIds: string[];
+    totalDocuments: number;
 }> {
     try {
         // Get all folders for the user with document counts using aggregation
@@ -317,7 +319,44 @@ export async function getFolderTreeWithDocuments(userId: string): Promise<{
         const orphanedDocuments = documents.filter(doc => !doc.folderId);
         orphanedDocuments.forEach(doc => rootIds.push(doc.id));
 
-        return { items, rootIds };
+        // Calculate total document count including nested folders
+        const calculateTotalDocumentCount = (folderId: string): number => {
+            const folder = items[folderId];
+            if (!folder || folder.type !== 'folder') return 0;
+
+            let count = 0;
+            const children = folder.children || [];
+
+            children.forEach(childId => {
+                const child = items[childId];
+                if (!child) return;
+
+                if (child.type === 'document') {
+                    count++;
+                } else if (child.type === 'folder') {
+                    // Recursively count documents in nested folders
+                    count += calculateTotalDocumentCount(childId);
+                }
+            });
+
+            return count;
+        };
+
+        // Add total document count to each folder
+        Object.keys(items).forEach(itemId => {
+            const item = items[itemId];
+            if (item && item.type === 'folder') {
+                items[itemId] = {
+                    ...item,
+                    totalDocumentCount: calculateTotalDocumentCount(itemId),
+                };
+            }
+        });
+
+        // Calculate total documents across entire tree
+        const totalDocuments = documents.length;
+
+        return { items, rootIds, totalDocuments };
     } catch (error) {
         logger.error('Failed to fetch folder tree with documents', error instanceof Error ? error : new Error(String(error)), {
             action: 'get_folder_tree_with_documents',
@@ -326,6 +365,6 @@ export async function getFolderTreeWithDocuments(userId: string): Promise<{
                 error: error instanceof Error ? error.message : 'Unknown error',
             },
         });
-        return { items: {}, rootIds: [] };
+        return { items: {}, rootIds: [], totalDocuments: 0 };
     }
 }

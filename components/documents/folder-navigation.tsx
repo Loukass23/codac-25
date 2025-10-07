@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  createOnDropHandler,
   dragAndDropFeature,
   hotkeysCoreFeature,
   renamingFeature,
@@ -15,6 +16,7 @@ import { toast } from 'sonner';
 
 import { createFolder } from '@/actions/documents/create-folder';
 import { deleteFolder as deleteFolderAction } from '@/actions/documents/delete-folder';
+import { moveDocument } from '@/actions/documents/move-document';
 import { updateFolder as updateFolderAction } from '@/actions/documents/update-folder';
 import { Tree, TreeItem, TreeItemLabel } from '@/components/tree';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +47,7 @@ interface FolderNavigationProps {
   _treeDataPromise: Promise<{
     items: Record<string, FolderTreeItem>;
     rootIds: string[];
+    totalDocuments: number;
   }>;
   selectedFolderId: string | null;
 }
@@ -70,13 +73,17 @@ function TreeContent({
   const [newFolderColor, setNewFolderColor] = useState('#3B82F6');
   const [createInFolder, setCreateInFolder] = useState<string | null>(null);
 
-  const treeData = use(_treeDataPromise);
+  const initialTreeData = use(_treeDataPromise);
+  const [items, setItems] = useState(initialTreeData.items);
+  const [rootIds, setRootIds] = useState(initialTreeData.rootIds);
+  const totalDocuments = initialTreeData.totalDocuments;
 
   const tree = useTree<FolderTreeItem>({
     initialState: {
-      expandedItems: Object.keys(treeData.items).filter(
-        id => treeData.items[id]?.type === 'folder'
-      ), // Start with all folders expanded
+      expandedItems: [],
+      //   expandedItems: Object.keys(items).filter(
+      //     id => items[id]?.type === 'folder'
+      //   ), // Start with all folders expanded
       selectedItems: selectedFolderId ? [selectedFolderId] : [],
     },
 
@@ -84,6 +91,7 @@ function TreeContent({
     rootItemId: 'root',
     getItemName: item => item.getItemData().name,
     isItemFolder: item => item.getItemData().type === 'folder',
+    canDrop: () => true, // Allow dropping anywhere
     dataLoader: {
       getItem: (itemId: string): FolderTreeItem | RootItem => {
         if (itemId === 'root') {
@@ -94,10 +102,10 @@ function TreeContent({
             color: '#3B82F6',
             icon: null,
             documentCount: 0,
-            children: treeData.rootIds,
+            children: rootIds,
           };
         }
-        const item = treeData.items[itemId];
+        const item = items[itemId];
         if (!item) {
           throw new Error(`Item with id ${itemId} not found`);
         }
@@ -105,9 +113,9 @@ function TreeContent({
       },
       getChildren: (itemId: string): string[] => {
         if (itemId === 'root') {
-          return treeData.rootIds;
+          return rootIds;
         }
-        return treeData.items[itemId]?.children ?? [];
+        return items[itemId]?.children ?? [];
       },
     },
     onRename: async (item: { getId: () => string }, newName: string) => {
@@ -123,6 +131,106 @@ function TreeContent({
         toast.error('Failed to rename folder');
       }
     },
+    onDrop: createOnDropHandler((parentItem, newChildrenIds) => {
+      const parentId = parentItem.getId();
+
+      // Update state immediately
+      setItems(prevItems => {
+        // Update document counts
+        const updatedItems = { ...prevItems };
+
+        // For the parent folder, update its children and document count
+        if (parentId === 'root') {
+          setRootIds(newChildrenIds);
+        } else {
+          const parent = prevItems[parentId];
+          if (parent) {
+            // Calculate new document count
+            const documentCount = newChildrenIds.filter(
+              id => prevItems[id]?.type === 'document'
+            ).length;
+
+            updatedItems[parentId] = {
+              ...parent,
+              children: newChildrenIds,
+              documentCount:
+                parent.type === 'folder' ? documentCount : parent.documentCount,
+            };
+          }
+        }
+
+        return updatedItems;
+      });
+
+      // Find which item was moved and persist the change to the server
+      const movedItems = newChildrenIds.filter(id => {
+        // Check if this item's parent changed
+        const currentItem = items[id];
+        if (!currentItem) return false;
+
+        // Check if item was previously at root
+        const wasAtRoot = rootIds.includes(id);
+
+        // Check all parents to see if this item was in a folder
+        const oldParentId = Object.keys(items).find(key =>
+          items[key]?.children?.includes(id)
+        );
+
+        // Item moved if:
+        // - It's now at root but wasn't before (had a parent folder)
+        // - It's in a folder but was at root before
+        // - It's in a different folder than before
+        if (parentId === 'root') {
+          return oldParentId !== undefined; // Moved to root from a folder
+        } else {
+          return wasAtRoot || oldParentId !== parentId; // Moved from root or different folder
+        }
+      });
+
+      // Persist each moved item to the server
+      movedItems.forEach(async itemId => {
+        const itemData = items[itemId];
+        if (!itemData) return;
+
+        const newParentId = parentId === 'root' ? null : parentId;
+
+        if (itemData.type === 'folder') {
+          const result = await updateFolderAction({
+            id: itemId,
+            parentId: newParentId,
+          });
+
+          if (result.success) {
+            toast.success('Folder moved successfully');
+            router.refresh();
+          } else {
+            const errorMsg =
+              typeof result.error === 'string'
+                ? result.error
+                : 'Failed to move folder';
+            toast.error(errorMsg);
+            router.refresh();
+          }
+        } else {
+          const result = await moveDocument({
+            documentId: itemId,
+            folderId: newParentId || undefined,
+          });
+
+          if (result.success) {
+            toast.success('Document moved successfully');
+            router.refresh();
+          } else {
+            const errorMsg =
+              typeof result.error === 'string'
+                ? result.error
+                : 'Failed to move document';
+            toast.error(errorMsg);
+            router.refresh();
+          }
+        }
+      });
+    }),
     features: [
       syncDataLoaderFeature,
       hotkeysCoreFeature,
@@ -156,7 +264,7 @@ function TreeContent({
   };
 
   const handleDeleteFolder = async (folderId: string) => {
-    const folder = treeData.items[folderId];
+    const folder = items[folderId];
     if (!folder) return;
 
     if (
@@ -210,7 +318,7 @@ function TreeContent({
 
       <div className='overflow-y-auto flex-1'>
         <div className='p-2'>
-          {/* Root folder (all documents) */}
+          {/* Root folder (all documents) - Drag items here to move to root */}
           <div
             className={cn(
               'flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors',
@@ -222,7 +330,7 @@ function TreeContent({
             <FileText className='h-4 w-4' />
             <span className='text-xs font-medium text-left'>All Documents</span>
             <Badge className='h-5 min-w-5 rounded-full px-1 tabular-nums ml-auto'>
-              {treeData.rootIds.length}
+              {totalDocuments}
             </Badge>
           </div>
 
@@ -285,16 +393,16 @@ function TreeContent({
                         )}
                       </span>
 
-                      {/* Document count badge for folders */}
-
+                      {/* Document count badge for collapsed folders */}
                       {isFolder &&
-                        itemData.documentCount !== undefined &&
-                        itemData.documentCount > 0 && (
+                        !item.isExpanded() &&
+                        itemData.totalDocumentCount !== undefined &&
+                        itemData.totalDocumentCount > 0 && (
                           <Badge
                             variant='secondary'
                             className='text-xs px-1.5 py-0.5'
                           >
-                            {itemData.documentCount}
+                            {itemData.totalDocumentCount}
                           </Badge>
                         )}
 

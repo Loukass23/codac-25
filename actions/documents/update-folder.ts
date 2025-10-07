@@ -1,10 +1,10 @@
 'use server';
 
+import { requireServerAuth } from '@/lib/auth/auth-server';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { requireServerAuth } from '@/lib/auth/auth-server';
-import { z } from 'zod';
 import { ServerActionResult } from '@/types/server-action';
+import { z } from 'zod';
 
 const UpdateFolderSchema = z.object({
     id: z.string().min(1, 'Folder ID is required'),
@@ -12,7 +12,7 @@ const UpdateFolderSchema = z.object({
     description: z.string().optional(),
     color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
     icon: z.string().optional(),
-    parentId: z.string().optional(),
+    parentId: z.string().nullable().optional(),
     sortOrder: z.number().int().min(0).optional(),
 });
 

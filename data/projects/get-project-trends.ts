@@ -1,5 +1,7 @@
 'use server';
 
+import { Prisma } from '@prisma/client';
+
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 
@@ -205,7 +207,7 @@ export async function getTechStackDistribution(): Promise<TechStackData[]> {
             where: {
                 isPublic: true,
                 techStack: {
-                    isEmpty: false,
+                    not: Prisma.DbNull,
                 },
             },
             select: {
@@ -218,10 +220,15 @@ export async function getTechStackDistribution(): Promise<TechStackData[]> {
         let totalTech = 0;
 
         projects.forEach(project => {
-            project.techStack.forEach(tech => {
-                techCount.set(tech, (techCount.get(tech) || 0) + 1);
-                totalTech++;
-            });
+            // Type guard: ensure techStack is an array of strings
+            if (project.techStack && Array.isArray(project.techStack)) {
+                project.techStack.forEach((tech) => {
+                    if (typeof tech === 'string') {
+                        techCount.set(tech, (techCount.get(tech) || 0) + 1);
+                        totalTech++;
+                    }
+                });
+            }
         });
 
         // Sort by count and get top 10
