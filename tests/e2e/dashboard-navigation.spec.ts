@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 /**
  * Dashboard and Navigation Tests
@@ -42,7 +42,7 @@ test.describe('Navigation and Routing', () => {
     // Test direct navigation to different sections
     const sections = [
       { path: '/auth/signin', expectedText: ['Welcome to codac'] },
-      // Note: /docs and /community may redirect to signin for unauthenticated users
+      // Note: /documents and /community may redirect to signin for unauthenticated users
     ];
 
     for (const section of sections) {

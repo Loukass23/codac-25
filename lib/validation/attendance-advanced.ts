@@ -1,5 +1,5 @@
 import { AttendanceStatus, UserRole, UserStatus } from '@prisma/client';
-import { isAfter, isBefore, isWeekend, parseISO, format, differenceInDays } from 'date-fns';
+import { differenceInDays, format, isAfter, isBefore, isWeekend, parseISO } from 'date-fns';
 import { z } from 'zod';
 
 /**
@@ -23,7 +23,7 @@ const attendanceDateSchema = z.string().refine(
   },
   { message: 'Invalid date format. Expected ISO date string (YYYY-MM-DD)' }
 ).transform((dateStr) => parseISO(dateStr));
-*/ 
+*/
 
 // Enhanced attendance record validation
 export const attendanceRecordValidationSchema = z.object({
@@ -31,7 +31,7 @@ export const attendanceRecordValidationSchema = z.object({
   cohortId: z.string().min(1, 'Cohort ID is required'),
   date: attendanceDateSchema,
   status: z.nativeEnum(AttendanceStatus, {
-    errorMap: () => ({ message: 'Invalid attendance status' })
+    message: 'Invalid attendance status'
   }),
   notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
   recordedBy: z.string().min(1, 'Recorder ID is required'),
@@ -165,10 +165,10 @@ export function validateAttendanceDate(
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  const { 
-    cohortStartDate, 
-    cohortEndDate, 
-    currentDate, 
+  const {
+    cohortStartDate,
+    cohortEndDate,
+    currentDate,
     allowFutureAttendance = false,
     maxEditDays = 30,
     allowWeekendAttendance = false
@@ -276,23 +276,23 @@ export function validateAttendancePermissions(
     case 'view':
       // All authorized roles can view
       break;
-    
+
     case 'create':
     case 'update':
       // All authorized roles can create/update
       break;
-    
+
     case 'delete':
       // Only admins can delete attendance records
       if (userRole !== UserRole.ADMIN) {
         errors.push('Only administrators can delete attendance records');
       }
       break;
-    
+
     case 'export':
       // All authorized roles can export
       break;
-    
+
     default:
       errors.push(`Unknown operation: ${operation}`);
   }
@@ -331,11 +331,11 @@ export function validateAttendanceConsistency(
   studentGroups.forEach((records, studentId) => {
     // Sort by date
     const sortedRecords = records.sort((a, b) => a.date.localeCompare(b.date));
-    
+
     // Check for attendance patterns that might need attention
     let consecutiveAbsences = 0;
     let totalAbsences = 0;
-    
+
     sortedRecords.forEach((record) => {
       if (record.status !== AttendanceStatus.PRESENT) {
         consecutiveAbsences++;
@@ -343,26 +343,26 @@ export function validateAttendanceConsistency(
       } else {
         consecutiveAbsences = 0;
       }
-      
+
       // Flag if student has been absent for 3+ consecutive days
       if (consecutiveAbsences >= 3) {
         warnings.push(`Student ${studentId} has ${consecutiveAbsences} consecutive absences ending on ${record.date}`);
       }
-      
+
       // Check for suspicious status changes
       if (record.previousStatus && record.previousStatus !== record.status) {
         const currentDate = parseISO(record.date);
         const dayOfWeek = currentDate.getDay();
-        
+
         // Flag if changing from present to absent on Monday (might indicate weekend issues)
-        if (record.previousStatus === AttendanceStatus.PRESENT && 
-            record.status !== AttendanceStatus.PRESENT && 
-            dayOfWeek === 1) {
+        if (record.previousStatus === AttendanceStatus.PRESENT &&
+          record.status !== AttendanceStatus.PRESENT &&
+          dayOfWeek === 1) {
           warnings.push(`Student ${studentId} changed from present to absent on Monday ${record.date} - verify status`);
         }
       }
     });
-    
+
     // Flag students with high absence rates in the current dataset
     const attendanceRate = ((sortedRecords.length - totalAbsences) / sortedRecords.length) * 100;
     if (attendanceRate < 75) {

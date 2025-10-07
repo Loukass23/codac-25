@@ -26,6 +26,7 @@ export default {
             colors: {
                 'codac-pink': '#E77096',
                 'codac-teal': '#52EACE',
+                'codac-purple': '#A855F7',
                 'codac-pink-dark': '#D65A7F',
                 'codac-teal-dark': '#3DD4B8',
                 'codac-pink-light': '#F4A5C1',

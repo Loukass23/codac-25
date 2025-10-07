@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 
 import { createProject } from '@/actions/projects/create-project';
 import { PageContainer, PageHeader } from '@/components/layout';
-import { ProjectFormWithGitHub } from '@/components/projects/project-form-with-github';
+import { ProjectCreationStepper } from '@/components/projects/project-creation-stepper';
 import type { CreateProjectData } from '@/types/portfolio';
 
 export default async function CreateProjectPage() {
@@ -20,7 +20,7 @@ export default async function CreateProjectPage() {
 
     if (result.success) {
       // Redirect is now outside try-catch to avoid catching NEXT_REDIRECT
-      redirect(`/projects/${result.data.id}`);
+      redirect(result.data.url);
     } else {
       // Handle error - properly return error to be displayed
       console.error('Failed to create project:', result.error);
@@ -36,7 +36,10 @@ export default async function CreateProjectPage() {
         size='lg'
       />
 
-      <ProjectFormWithGitHub onSubmit={handleCreateProject} isLoading={false} />
+      <ProjectCreationStepper
+        onSubmit={handleCreateProject}
+        isLoading={false}
+      />
     </PageContainer>
   );
 }

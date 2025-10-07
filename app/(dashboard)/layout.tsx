@@ -1,9 +1,12 @@
-import { AppLayout } from "@/components/app-layout";
+import { AppLayout } from '@/components/app-layout';
+import { getUserProfile } from '@/lib/auth/auth-utils';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AppLayout>{children}</AppLayout>;
+  const userProfile = await getUserProfile();
+
+  return <AppLayout userProfile={userProfile}>{children}</AppLayout>;
 }

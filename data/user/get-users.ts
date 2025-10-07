@@ -83,9 +83,7 @@ export async function getUsers(data: GetUsersInput): Promise<GetUsersResult> {
       include: {
         _count: {
           select: {
-            posts: true,
-            comments: true,
-            achievements: true,
+            projectComments: true,
           },
         },
         cohort: {

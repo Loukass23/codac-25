@@ -1,26 +1,25 @@
 'use client';
 
 import {
-  type BaseSuggestionConfig,
   BaseSuggestionPlugin,
+  type BaseSuggestionConfig,
 } from '@platejs/suggestion';
 import {
-  type ExtendConfig,
-  type Path,
   isSlateEditor,
   isSlateElement,
   isSlateString,
+  type ExtendConfig,
+  type Path,
 } from 'platejs';
 import { toTPlatePlugin } from 'platejs/react';
 
 import { discussionPlugin } from './discussion-kit';
 
-import { BlockSuggestion } from '@/components/block-suggestion';
+import { BlockSuggestion } from '@/components/ui/block-suggestion';
 import {
   SuggestionLeaf,
   SuggestionLineBreak,
-} from '@/components/suggestion-node';
-
+} from '@/components/ui/suggestion-node';
 
 export type SuggestionConfig = ExtendConfig<
   BaseSuggestionConfig,

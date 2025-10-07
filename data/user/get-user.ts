@@ -39,9 +39,7 @@ export type UserProfile = Prisma.UserGetPayload<{
     };
     _count: {
       select: {
-        posts: true;
-        comments: true;
-        achievements: true;
+        projectComments: true;
       };
     };
   };
@@ -84,9 +82,7 @@ const getCachedUser = unstable_cache(
         },
         _count: {
           select: {
-            posts: true,
-            comments: true,
-            achievements: true,
+            projectComments: true,
           },
         },
       },
@@ -206,9 +202,7 @@ export async function getUser(id: string): Promise<GetUserResult> {
           },
           _count: {
             select: {
-              posts: true,
-              comments: true,
-              achievements: true,
+              projectComments: true,
             },
           },
         },

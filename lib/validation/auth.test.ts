@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { updateProfileSchema } from './auth';
 
@@ -190,7 +190,7 @@ describe('Auth Validation Schemas', () => {
       const result = updateProfileSchema.safeParse(dataWithoutId);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors.some(err => err.path.includes('id'))).toBe(
+        expect((result.error as any).errors?.some((err: any) => err.path.includes('id'))).toBe(
           true
         );
       }

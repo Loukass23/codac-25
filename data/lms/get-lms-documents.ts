@@ -25,9 +25,16 @@ export interface LMSNavigationItem {
  */
 export async function getLMSDocumentBySlug(slug: string): Promise<DocumentWithPlateContent | null> {
     try {
+        // Reverse the slug transformation that was applied in getLMSNavigation
+        // If the slug starts with 'web/data/', convert it back to 'data/'
+        let dbSlug = slug;
+        if (slug.startsWith('web/data/')) {
+            dbSlug = slug.replace('web/data/', 'data/');
+        }
+
         const document = await prisma.document.findFirst({
             where: {
-                slug,
+                slug: dbSlug,
                 documentType: {
                     startsWith: 'lms_'
                 },

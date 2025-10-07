@@ -46,8 +46,12 @@ export const savePlugin = createPlatePlugin({
           }
           return { success: true, data: result.data };
         } else {
-          toast.error(result.error ?? 'Failed to save document');
-          return { success: false, error: result.error };
+          const errorMessage =
+            typeof result.error === 'string'
+              ? result.error
+              : 'Failed to save document';
+          toast.error(errorMessage);
+          return { success: false, error: errorMessage };
         }
       } catch (error) {
         // eslint-disable-next-line no-console

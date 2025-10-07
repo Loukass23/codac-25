@@ -27,9 +27,7 @@ describe('Update User Integration Test', () => {
       ...mockUserData,
       cohort: null,
       _count: {
-        posts: 10,
-        comments: 15,
-        achievements: 3,
+        projectComments: 10,
       },
     };
 

@@ -356,11 +356,11 @@ export class DocumentHelpers {
   constructor(private page: Page) { }
 
   async goToDocuments() {
-    await this.page.goto('/docs');
+    await this.page.goto('/documents');
   }
 
   async createDocumentFromEmptyState(_title = 'Test Document') {
-    await this.page.goto('/docs');
+    await this.page.goto('/documents');
 
     // If empty state is shown, click create document
     const createButton = this.page.getByRole('link', { name: 'Create Document' });
@@ -370,20 +370,20 @@ export class DocumentHelpers {
   }
 
   async expectEmptyState() {
-    await this.page.goto('/docs');
+    await this.page.goto('/documents');
     await this.page.waitForSelector('text=No documents found');
     await this.page.locator('text=No documents found').waitFor();
   }
 
   async expectDocumentsList() {
-    await this.page.goto('/docs');
+    await this.page.goto('/documents');
     const hasGrid = await this.page.locator('.grid').isVisible();
     const hasCount = await this.page.getByText(/\d+ documents? found/).isVisible();
     return hasGrid && hasCount;
   }
 
   async getDocumentCount(): Promise<number> {
-    await this.page.goto('/docs');
+    await this.page.goto('/documents');
     const countText = await this.page.getByText(/\d+ documents? found/).textContent();
     if (!countText) return 0;
     const match = countText.match(/(\d+)/);
@@ -391,23 +391,23 @@ export class DocumentHelpers {
   }
 
   async clickFirstDocument() {
-    await this.page.goto('/docs');
-    const firstDocLink = this.page.locator('[href^="/docs/"]').first();
+    await this.page.goto('/documents');
+    const firstDocLink = this.page.locator('[href^="/documents/"]').first();
     await firstDocLink.click();
   }
 
   async expectDocumentCard(title?: string) {
-    await this.page.goto('/docs');
+    await this.page.goto('/documents');
     if (title) {
       await this.page.locator(`text=${title}`).waitFor();
     } else {
       // Just check that there are document cards
-      await this.page.locator('[href^="/docs/"]').first().waitFor();
+      await this.page.locator('[href^="/documents/"]').first().waitFor();
     }
   }
 
   async filterDocumentsByType(type: string) {
-    await this.page.goto(`/docs?type=${type}`);
+    await this.page.goto(`/documents?type=${type}`);
   }
 
   async expectDocumentType(type: string) {
@@ -600,6 +600,6 @@ export class TestHelpers {
  *   await helpers.documents.createDocument('My Test Doc');
  *   
  *   // Assert success
- *   await helpers.assertions.expectURL(/\/docs\/[a-zA-Z0-9-]+/);
+ *   await helpers.assertions.expectURL(/\/documents\/[a-zA-Z0-9-]+/);
  * });
  */

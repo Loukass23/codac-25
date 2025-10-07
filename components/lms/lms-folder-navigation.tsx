@@ -1,16 +1,16 @@
 'use client';
 
 import {
+  dragAndDropFeature,
   hotkeysCoreFeature,
   renamingFeature,
   selectionFeature,
   syncDataLoaderFeature,
-  dragAndDropFeature,
 } from '@headless-tree/core';
 import { useTree } from '@headless-tree/react';
-import { Folder, FolderOpen, MoreVertical, Plus, FileText } from 'lucide-react';
+import { FileText, Folder, FolderOpen, MoreVertical, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { use, useState, Suspense } from 'react';
+import { Suspense, use, useState } from 'react';
 import { toast } from 'sonner';
 
 import { createFolder } from '@/actions/documents/create-folder';
@@ -31,8 +31,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -170,7 +170,7 @@ function TreeContent({
         toast.success('Folder deleted successfully');
         router.refresh();
         if (selectedFolderId === folderId) {
-          router.push('/docs');
+          router.push('/documents');
         }
       } else {
         toast.error('Failed to delete folder');
@@ -206,7 +206,7 @@ function TreeContent({
             onClick={() => {
               // Check if we're in LMS context by looking at current pathname
               const isLMSContext = window.location.pathname.startsWith('/lms');
-              const basePath = isLMSContext ? '/lms' : '/docs';
+              const basePath = isLMSContext ? '/lms' : '/documents';
               router.push(basePath);
             }}
           >
@@ -234,7 +234,7 @@ function TreeContent({
                         // Check if we're in LMS context by looking at current pathname
                         const isLMSContext =
                           window.location.pathname.startsWith('/lms');
-                        const basePath = isLMSContext ? '/lms' : '/docs';
+                        const basePath = isLMSContext ? '/lms' : '/documents';
                         router.push(
                           `${basePath}${queryString ? `?${queryString}` : ''}`
                         );
@@ -243,7 +243,7 @@ function TreeContent({
                         // Check if we're in LMS context by looking at current pathname
                         const isLMSContext =
                           window.location.pathname.startsWith('/lms');
-                        const basePath = isLMSContext ? '/lms' : '/docs';
+                        const basePath = isLMSContext ? '/lms' : '/documents';
 
                         if (itemData.slug) {
                           router.push(`${basePath}/${itemData.slug}`);

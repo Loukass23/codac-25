@@ -4,8 +4,6 @@ import { convertToCoreMessages, streamText } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { markdownJoinerTransform } from '@/lib/plate/markdown-joiner-transform';
-
 export async function POST(req: NextRequest) {
   const { apiKey: key, messages, system } = await req.json();
 
@@ -22,8 +20,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = streamText({
-      experimental_transform: markdownJoinerTransform,
-      maxTokens: 2048,
       messages: convertToCoreMessages(messages),
       model: openai('gpt-4o'),
       system: system,

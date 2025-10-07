@@ -11,18 +11,16 @@ export default async function LandingPage() {
   const user = await getCurrentUser();
   console.log('user', user);
   if (user) {
-    redirect('/home');
+    redirect('/dashboard');
   }
   return (
     <div className='relative flex h-screen w-full items-center justify-center overflow-hidden rounded-lg border bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900'>
-
       <Link
-        href="/auth/signin"
+        href='/auth/signin'
         className='relative z-10 flex items-center justify-center h-full w-full cursor-pointer hover:bg-white/5 transition-colors duration-300'
       >
         <AnimatedLandingContent />
       </Link>
-
 
       <RetroGrid
         angle={65}
@@ -31,7 +29,6 @@ export default async function LandingPage() {
         lightLineColor='#00ff41'
         darkLineColor='#00ff41'
       />
-
     </div>
   );
 }

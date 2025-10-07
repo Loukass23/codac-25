@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import { getCommentKey, getDraftCommentKey } from '@platejs/comment';
 import { CommentPlugin, useCommentId } from '@platejs/comment/react';
 import {
@@ -18,7 +16,7 @@ import {
   TrashIcon,
   XIcon,
 } from 'lucide-react';
-import { type Value, KEYS, NodeApi } from 'platejs';
+import { KEYS, NodeApi, type Value } from 'platejs';
 import type { CreatePlateEditorOptions } from 'platejs/react';
 import {
   Plate,
@@ -44,9 +42,13 @@ import { cn } from '@/lib/utils';
 import { Editor, EditorContainer } from './editor';
 
 // TODO: Implement discussion database plugin
-const discussionDatabasePlugin = null;
-const discussionDatabaseHelpers = null;
+import { discussionDatabasePlugin } from '@/components/editor/plugins/discussion-database-simple';
 
+// Helper wrapper to access plugin API
+const getDiscussionDatabaseHelpers = (editor: any) => {
+  if (!editor?.api?.discussionDatabase) return null;
+  return editor.api.discussionDatabase;
+};
 
 export interface TComment {
   id: string;
@@ -80,28 +82,30 @@ export function CommentDatabase(props: {
 
   const editor = useEditorRef();
   const userInfo = usePluginOption(
-    discussionDatabasePlugin,
-    'user',
+    discussionDatabasePlugin as any,
+    'user' as any,
     comment.userId
   );
   const currentUserId = usePluginOption(
-    discussionDatabasePlugin,
-    'currentUserId'
+    discussionDatabasePlugin as any,
+    'currentUserId' as any
   );
   const { tf } = useEditorPlugin(CommentPlugin);
 
   const resolveDiscussion = async (id: string) => {
     try {
-      const documentId = editor.getOption(
+      const documentId = (editor as any).getOption(
         discussionDatabasePlugin,
         'documentId'
       );
 
-      await discussionDatabaseHelpers.resolveDiscussion(
+      const helpers = getDiscussionDatabaseHelpers(editor);
+      if (!helpers) return;
+      await helpers.resolveDiscussion(
         id,
         documentId,
-        editor.setOption.bind(editor, discussionDatabasePlugin),
-        editor.getOption.bind(editor, discussionDatabasePlugin)
+        (editor.setOption as any).bind(editor, discussionDatabasePlugin),
+        (editor.getOption as any).bind(editor, discussionDatabasePlugin)
       );
       tf.comment.unsetMark({ id });
     } catch (error) {
@@ -111,10 +115,12 @@ export function CommentDatabase(props: {
 
   const removeDiscussion = async (id: string) => {
     try {
-      await discussionDatabaseHelpers.deleteComment(
+      const helpers = getDiscussionDatabaseHelpers(editor);
+      if (!helpers) return;
+      await helpers.deleteComment(
         comment.id,
-        editor.setOption.bind(editor, discussionDatabasePlugin),
-        editor.getOption.bind(editor, discussionDatabasePlugin)
+        (editor.setOption as any).bind(editor, discussionDatabasePlugin),
+        (editor.getOption as any).bind(editor, discussionDatabasePlugin)
       );
       tf.comment.unsetMark({ id });
     } catch (error) {
@@ -129,11 +135,13 @@ export function CommentDatabase(props: {
     isEdited: boolean;
   }) => {
     try {
-      await discussionDatabaseHelpers.updateComment(
+      const helpers = getDiscussionDatabaseHelpers(editor);
+      if (!helpers) return;
+      await helpers.updateComment(
         input.id,
         input.contentRich,
-        editor.setOption.bind(editor, discussionDatabasePlugin),
-        editor.getOption.bind(editor, discussionDatabasePlugin)
+        (editor.setOption as any).bind(editor, discussionDatabasePlugin),
+        (editor.getOption as any).bind(editor, discussionDatabasePlugin)
       );
     } catch (error) {
       console.error('Failed to update comment:', error);
@@ -323,10 +331,12 @@ function CommentMoreDropdown(props: {
       return alert('You are operating too quickly, please try again later.');
 
     try {
-      await discussionDatabaseHelpers.deleteComment(
+      const helpers = getDiscussionDatabaseHelpers(editor);
+      if (!helpers) return;
+      await helpers.deleteComment(
         comment.id,
-        editor.setOption.bind(editor, discussionDatabasePlugin),
-        editor.getOption.bind(editor, discussionDatabasePlugin)
+        (editor.setOption as any).bind(editor, discussionDatabasePlugin),
+        (editor.getOption as any).bind(editor, discussionDatabasePlugin)
       );
       onRemoveComment?.();
     } catch (error) {
@@ -415,7 +425,10 @@ export function CommentCreateFormDatabase({
   const commentId = useCommentId();
   const discussionId = discussionIdProp ?? commentId;
 
-  const userInfo = usePluginOption(discussionDatabasePlugin, 'currentUser');
+  const userInfo = usePluginOption(
+    discussionDatabasePlugin as any,
+    'currentUser'
+  );
   const [commentValue, setCommentValue] = React.useState<Value | undefined>();
   const commentContent = React.useMemo(
     () =>
@@ -440,11 +453,11 @@ export function CommentCreateFormDatabase({
     if (discussionId) {
       // Add reply to existing discussion
       try {
-        const documentId = editor.getOption(
+        const documentId = (editor as any).getOption(
           discussionDatabasePlugin,
           'documentId'
         );
-        const currentUserId = editor.getOption(
+        const currentUserId = (editor as any).getOption(
           discussionDatabasePlugin,
           'currentUserId'
         );
@@ -453,14 +466,16 @@ export function CommentCreateFormDatabase({
           'currentUser'
         );
 
-        await discussionDatabaseHelpers.addReply(
+        const helpers = getDiscussionDatabaseHelpers(editor);
+        if (!helpers) return;
+        await helpers.addReply(
           discussionId,
           commentValue,
           documentId,
           currentUserId,
           currentUser,
-          editor.setOption.bind(editor, discussionDatabasePlugin),
-          editor.getOption.bind(editor, discussionDatabasePlugin)
+          (editor.setOption as any).bind(editor, discussionDatabasePlugin),
+          (editor.getOption as any).bind(editor, discussionDatabasePlugin)
         );
       } catch (error) {
         console.error('Failed to add reply:', error);
@@ -481,11 +496,11 @@ export function CommentCreateFormDatabase({
 
     try {
       // Create new discussion
-      const documentId = editor.getOption(
+      const documentId = (editor as any).getOption(
         discussionDatabasePlugin,
         'documentId'
       );
-      const currentUserId = editor.getOption(
+      const currentUserId = (editor as any).getOption(
         discussionDatabasePlugin,
         'currentUserId'
       );
@@ -494,14 +509,16 @@ export function CommentCreateFormDatabase({
         'currentUser'
       );
 
-      const _discussionId = await discussionDatabaseHelpers.createDiscussion(
+      const helpers = getDiscussionDatabaseHelpers(editor);
+      if (!helpers) return;
+      const _discussionId = await helpers.createDiscussion(
         documentContent,
         commentValue,
         documentId,
         currentUserId,
         currentUser,
-        editor.setOption.bind(editor, discussionDatabasePlugin),
-        editor.getOption.bind(editor, discussionDatabasePlugin)
+        (editor.setOption as any).bind(editor, discussionDatabasePlugin),
+        (editor.getOption as any).bind(editor, discussionDatabasePlugin)
       );
 
       if (_discussionId) {

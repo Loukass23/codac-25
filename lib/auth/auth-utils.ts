@@ -11,6 +11,7 @@ export type AuthUser = {
   id: string;
   email: string | null;
   name: string | null;
+  username: string;
   role: UserRole;
   status: UserStatus;
   cohortId: string | null;

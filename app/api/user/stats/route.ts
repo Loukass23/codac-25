@@ -20,9 +20,7 @@ export async function GET() {
       select: {
         _count: {
           select: {
-            achievements: true,
-            posts: true,
-            comments: true,
+            projectComments: true,
           },
         },
         createdAt: true,
@@ -43,12 +41,10 @@ export async function GET() {
 
     const stats = {
       documentsCount: 0, // Documents removed
-      achievementsCount: user._count.achievements,
+      projectCommentsCount: user._count.projectComments,
       studyStreak: Math.min(daysSinceJoined, 30), // Cap at 30 days for demo
       monthlyStudyTime,
       favoritesCount: 0, // Favorites removed with documents
-      postsCount: user._count.posts,
-      commentsCount: user._count.comments,
     };
 
     return NextResponse.json(stats);

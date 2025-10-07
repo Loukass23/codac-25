@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-import { createJob } from "@/actions/job/create-job";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { createJob } from '@/actions/job/create-job';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -19,18 +19,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { jobSchema } from "@/lib/validation/job";
-
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { jobSchema } from '@/lib/validation/job';
 
 type JobFormValues = z.infer<typeof jobSchema>;
 
@@ -40,16 +39,16 @@ export function JobPostingForm() {
 
   const form = useForm<JobFormValues>({
     defaultValues: {
-      title: "",
-      description: "",
-      company: "",
-      location: "",
-      type: "FULL_TIME",
-      level: "ENTRY",
-      salary: "",
+      title: '',
+      description: '',
+      company: '',
+      location: '',
+      type: 'FULL_TIME',
+      level: 'ENTRY',
+      salary: '',
       remote: false,
-      applyUrl: "",
-      applyEmail: "",
+      applyUrl: '',
+      applyEmail: '',
     },
   });
 
@@ -58,41 +57,59 @@ export function JobPostingForm() {
       const result = await createJob(values);
 
       if (result.success) {
-        toast.success("Success!", {
-          description: "Your job has been posted.",
+        toast.success('Success!', {
+          description: 'Your job has been posted.',
         });
         router.refresh();
-        router.push("/career/jobs");
+        router.push('/career/jobs');
         return;
       }
 
       const { error } = result;
-      for (const key in error) {
-        if (key !== "_errors" && key !== "form") {
-          const field = key as keyof JobFormValues;
-          const message = error[field]?._errors[0];
-          if (message) {
-            form.setError(field, { type: "manual", message });
-          }
-        }
+
+      // Handle string errors
+      if (typeof error === 'string') {
+        toast.error('Error', { description: error });
+        return;
       }
 
-      if (error.form) {
-        toast.error("Error", { description: error.form });
-      } else {
-        toast.error("Error", {
-          description: "Please fix the errors in the form and try again.",
-        });
+      // Handle object errors with field validation
+      if (error && typeof error === 'object') {
+        for (const key in error) {
+          if (key !== '_errors' && key !== 'form') {
+            const field = key as keyof JobFormValues;
+            const fieldError = error[field as keyof typeof error];
+            if (
+              fieldError &&
+              typeof fieldError === 'object' &&
+              '_errors' in fieldError
+            ) {
+              const message = (fieldError as { _errors?: string[] })
+                ._errors?.[0];
+              if (message) {
+                form.setError(field, { type: 'manual', message });
+              }
+            }
+          }
+        }
+
+        if ('form' in error && typeof error.form === 'string') {
+          toast.error('Error', { description: error.form });
+        } else {
+          toast.error('Error', {
+            description: 'Please fix the errors in the form and try again.',
+          });
+        }
       }
     });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
         <FormField
           control={form.control}
-          name="title"
+          name='title'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Title</FormLabel>
@@ -105,14 +122,14 @@ export function JobPostingForm() {
         />
         <FormField
           control={form.control}
-          name="description"
+          name='description'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe the role, responsibilities, and requirements..."
-                  className="min-h-[150px]"
+                  placeholder='Describe the role, responsibilities, and requirements...'
+                  className='min-h-[150px]'
                   {...field}
                 />
               </FormControl>
@@ -120,10 +137,10 @@ export function JobPostingForm() {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <FormField
             control={form.control}
-            name="company"
+            name='company'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Company</FormLabel>
@@ -136,7 +153,7 @@ export function JobPostingForm() {
           />
           <FormField
             control={form.control}
-            name="location"
+            name='location'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Location</FormLabel>
@@ -148,10 +165,10 @@ export function JobPostingForm() {
             )}
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <FormField
             control={form.control}
-            name="type"
+            name='type'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Job Type</FormLabel>
@@ -161,15 +178,15 @@ export function JobPostingForm() {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a job type" />
+                      <SelectValue placeholder='Select a job type' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="FULL_TIME">Full-time</SelectItem>
-                    <SelectItem value="PART_TIME">Part-time</SelectItem>
-                    <SelectItem value="CONTRACT">Contract</SelectItem>
-                    <SelectItem value="INTERNSHIP">Internship</SelectItem>
-                    <SelectItem value="FREELANCE">Freelance</SelectItem>
+                    <SelectItem value='FULL_TIME'>Full-time</SelectItem>
+                    <SelectItem value='PART_TIME'>Part-time</SelectItem>
+                    <SelectItem value='CONTRACT'>Contract</SelectItem>
+                    <SelectItem value='INTERNSHIP'>Internship</SelectItem>
+                    <SelectItem value='FREELANCE'>Freelance</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -178,7 +195,7 @@ export function JobPostingForm() {
           />
           <FormField
             control={form.control}
-            name="level"
+            name='level'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Experience Level</FormLabel>
@@ -188,16 +205,16 @@ export function JobPostingForm() {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an experience level" />
+                      <SelectValue placeholder='Select an experience level' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="ENTRY">Entry-level</SelectItem>
-                    <SelectItem value="JUNIOR">Junior</SelectItem>
-                    <SelectItem value="MID">Mid-level</SelectItem>
-                    <SelectItem value="SENIOR">Senior-level</SelectItem>
-                    <SelectItem value="LEAD">Lead</SelectItem>
-                    <SelectItem value="EXECUTIVE">Executive</SelectItem>
+                    <SelectItem value='ENTRY'>Entry-level</SelectItem>
+                    <SelectItem value='JUNIOR'>Junior</SelectItem>
+                    <SelectItem value='MID'>Mid-level</SelectItem>
+                    <SelectItem value='SENIOR'>Senior-level</SelectItem>
+                    <SelectItem value='LEAD'>Lead</SelectItem>
+                    <SelectItem value='EXECUTIVE'>Executive</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -207,7 +224,7 @@ export function JobPostingForm() {
         </div>
         <FormField
           control={form.control}
-          name="salary"
+          name='salary'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Salary Range (Optional)</FormLabel>
@@ -220,31 +237,31 @@ export function JobPostingForm() {
         />
         <FormField
           control={form.control}
-          name="remote"
+          name='remote'
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
               <FormControl>
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <div className="space-y-1 leading-none">
+              <div className='space-y-1 leading-none'>
                 <FormLabel>Remote work allowed</FormLabel>
               </div>
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <FormField
             control={form.control}
-            name="applyUrl"
+            name='applyUrl'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Application URL</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="https://your-company.com/apply"
+                    placeholder='https://your-company.com/apply'
                     {...field}
                   />
                 </FormControl>
@@ -257,12 +274,12 @@ export function JobPostingForm() {
           />
           <FormField
             control={form.control}
-            name="applyEmail"
+            name='applyEmail'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Application Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="recruiting@your-company.com" {...field} />
+                  <Input placeholder='recruiting@your-company.com' {...field} />
                 </FormControl>
                 <FormDescription>
                   An email address for applications.
@@ -272,12 +289,12 @@ export function JobPostingForm() {
             )}
           />
         </div>
-        <div className="flex justify-end gap-4">
-          <Button variant="outline" asChild>
-            <Link href="/career/jobs">Cancel</Link>
+        <div className='flex justify-end gap-4'>
+          <Button variant='outline' asChild>
+            <Link href='/career/jobs'>Cancel</Link>
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type='submit' disabled={isPending}>
+            {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             Post Job
           </Button>
         </div>

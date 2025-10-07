@@ -29,38 +29,6 @@ enum UserStatus {
   GRADUATED
 }
 
-enum PostType {
-  DISCUSSION
-  QUESTION
-  SHOWCASE
-  JOB_POSTING
-  EVENT
-  ANNOUNCEMENT
-}
-
-enum MentorshipStatus {
-  PENDING
-  ACTIVE
-  COMPLETED
-  DECLINED
-}
-
-enum MentorSessionStatus {
-  PENDING
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-  DECLINED
-}
-
-enum AchievementType {
-  COURSE_COMPLETION
-  STREAK
-  PARTICIPATION
-  SKILL_MASTERY
-  COMMUNITY_CONTRIBUTION
-}
-
 enum ProjectStatus {
   PLANNING
   IN_PROGRESS
@@ -181,29 +149,29 @@ model VerificationToken {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  username      String   @unique 
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String? // For credentials authentication
-  bio           String? // User bio
-  avatar        String? // User avatar URL or base64 data
-  role          UserRole  @default(STUDENT)
-  status        UserStatus @default(ACTIVE)
-  cohortId      String?
-  cohort        Cohort?   @relation(fields: [cohortId], references: [id])
-  startDate     DateTime? // Course start date (for STUDENT users)
-  endDate       DateTime? // Course end date (replaces graduationDate for STUDENT users)
-  linkedinUrl   String?
-  githubUrl     String?
-  portfolioUrl  String?
-  currentJob    String?
+  id             String     @id @default(cuid())
+  name           String?
+  username       String     @unique
+  email          String?    @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String? // For credentials authentication
+  bio            String? // User bio
+  avatar         String? // User avatar URL or base64 data
+  role           UserRole   @default(STUDENT)
+  status         UserStatus @default(ACTIVE)
+  cohortId       String?
+  cohort         Cohort?    @relation(fields: [cohortId], references: [id])
+  startDate      DateTime? // Course start date (for STUDENT users)
+  endDate        DateTime? // Course end date (replaces graduationDate for STUDENT users)
+  linkedinUrl    String?
+  githubUrl      String?
+  portfolioUrl   String?
+  currentJob     String?
   currentCompany String?
-  location      String?
-  expertise     Json? // Array of expertise areas
-  yearsExp      Int? // Years of professional experience
+  location       String?
+  expertise      Json? // Array of expertise areas
+  yearsExp       Int? // Years of professional experience
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -213,39 +181,33 @@ model User {
   sessions Session[]
 
   // User Management Relations
-  achievements UserAchievement[]
-  quizResults  QuizResult[]
+  quizResults       QuizResult[]
   attendanceRecords Attendance[]
 
   // Community Relations
-  posts             CommunityPost[]
-  comments          Comment[]
   documentDiscussions DocumentDiscussion[]
-  documentComments  DocumentComment[]
-  likes             Like[]
-  mentorships       Mentorship[]    @relation("Mentor")
-  menteeMentorships Mentorship[]    @relation("Mentee")
+  documentComments    DocumentComment[]
 
   // Job Relations
   postedJobs      Job[]            @relation("PostedJobs")
   jobApplications JobApplication[] @relation("JobApplications")
 
   // Project Relations
-  projectProfile    ProjectProfile?
-  projectComments   ProjectComment[]
-  projectLikes      ProjectLike[]
+  projectProfile        ProjectProfile?
+  projectComments       ProjectComment[]
+  projectLikes          ProjectLike[]
   projectCollaborations ProjectCollaborator[]
 
   // Chat Relations
-  chatMessages      ChatMessage[]            @relation("UserChatMessages")
-  conversations     ConversationParticipant[] @relation("UserConversations")
+  chatMessages  ChatMessage[]             @relation("UserChatMessages")
+  conversations ConversationParticipant[] @relation("UserConversations")
 
   // Notification Relations
-  notifications            Notification[]
-  notificationPreferences  NotificationPreference?
+  notifications           Notification[]
+  notificationPreferences NotificationPreference?
 
   // Document Relations
-  documents Document[]
+  documents       Document[]
   documentFolders DocumentFolder[]
 
   @@index([email])
@@ -254,7 +216,6 @@ model User {
   @@index([cohortId])
   @@map("users")
 }
-
 
 model Cohort {
   id          String    @id @default(cuid())
@@ -282,31 +243,31 @@ model Cohort {
 // =============================================================================
 
 model DocumentFolder {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  color       String @default("#3B82F6") // Hex color for folder
+  color       String  @default("#3B82F6") // Hex color for folder
   icon        String? // Icon name (e.g., "folder", "folder-open", etc.)
-  
+
   // Hierarchy
-  parentId    String?
-  parent      DocumentFolder? @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  children    DocumentFolder[] @relation("FolderHierarchy")
-  
+  parentId String?
+  parent   DocumentFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children DocumentFolder[] @relation("FolderHierarchy")
+
   // Ownership
-  ownerId     String
-  owner       User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   // Documents in this folder
-  documents   Document[]
-  
+  documents Document[]
+
   // Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Ordering within parent folder
   sortOrder Int @default(0)
-  
+
   @@index([ownerId])
   @@index([parentId])
   @@index([ownerId, parentId])
@@ -314,49 +275,46 @@ model DocumentFolder {
 }
 
 model Document {
-  id          String @id @default(cuid())
-  content     Json @default("[]")   // Plate.js Value content
+  id          String  @id @default(cuid())
+  content     Json    @default("[]") // Plate.js Value content
   title       String?
   description String?
-  
+
   // Document metadata
-  version     Int    @default(1) // For versioning support
+  version     Int     @default(1) // For versioning support
   isPublished Boolean @default(false)
   isArchived  Boolean @default(false)
-  
+
   // Document type and context
   documentType String // 'project_summary', 'community_post', 'lesson_content', 'lms_content', etc.
-  
+
   // LMS-specific fields
-  navTitle    String? // Navigation title for LMS
-  metaTitle   String? // SEO meta title
+  navTitle        String? // Navigation title for LMS
+  metaTitle       String? // SEO meta title
   metaDescription String? // SEO meta description
-  access      String? // Access control: 'public', 'all', 'web', 'data', 'admin'
-  order       Int?    // Display order for LMS content
-  prev        String? // Previous content slug
-  next        String? // Next content slug
-  slug        String? // URL slug for LMS content
-  
+  access          String? // Access control: 'public', 'all', 'web', 'data', 'admin'
+  order           Int? // Display order for LMS content
+  prev            String? // Previous content slug
+  next            String? // Next content slug
+  slug            String? // URL slug for LMS content
+
   // Relations
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
+
   // Folder organization
   folderId String?
   folder   DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  
+
   // Polymorphic relations - can be linked to various entities
   projectId String? // If this document belongs to a project
-  
+
   // Document discussions
   documentDiscussions DocumentDiscussion[]
-  
-  // Community post relation
-  communityPost CommunityPost?
-  
+
   // Project relation
   project Project?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -372,19 +330,19 @@ model Document {
 }
 
 model DocumentDiscussion {
-  id        String @id @default(cuid())
-  isResolved Boolean @default(false)
+  id              String   @id @default(cuid())
+  isResolved      Boolean  @default(false)
   documentContent String? // The text content that was discussed
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
   // Relations
   documentId String
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  
+
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Comments in this discussion
   comments DocumentComment[]
 
@@ -394,16 +352,16 @@ model DocumentDiscussion {
 }
 
 model DocumentComment {
-  id        String @id @default(cuid())
-  contentRich Json   // Plate.js rich content (Value type) - matches TComment.contentRich
-  isEdited Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  id          String   @id @default(cuid())
+  contentRich Json // Plate.js rich content (Value type) - matches TComment.contentRich
+  isEdited    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   // Relations
   discussionId String
   discussion   DocumentDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
-  
+
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -418,199 +376,29 @@ model DocumentComment {
 }
 
 // =============================================================================
-// COMMUNITY FEATURES
-// =============================================================================
-
-model CommunityPost {
-  id          String   @id @default(cuid())
-  title       String
-  content     String?  // Plain text content (optional, can use document instead)
-  documentId  String?  @unique // Optional rich content document
-  document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
-  type        PostType @default(DISCUSSION)
-  isPublished Boolean  @default(true)
-  isPinned    Boolean  @default(false)
-
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  comments Comment[]
-  likes    Like[]
-  tags     PostTag[]
-
-  @@index([authorId])
-  @@index([type])
-  @@index([isPublished])
-  @@index([isPinned])
-  @@map("community_posts")
-}
-
-model Comment {
-  id      String @id @default(cuid())
-  content Json // Rich content
-
-  // Relations
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  // Polymorphic relations
-  postId String?
-  post   CommunityPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  parentId String?
-  parent   Comment?  @relation("CommentThread", fields: [parentId], references: [id])
-  replies  Comment[] @relation("CommentThread")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([authorId])
-  @@index([postId])
-  @@index([parentId])
-  @@map("comments")
-}
-
-model Like {
-  id String @id @default(cuid())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  postId String?
-  post   CommunityPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, postId])
-  @@index([userId])
-  @@index([postId])
-  @@map("likes")
-}
-
-model PostTag {
-  id    String @id @default(cuid())
-  name  String @unique
-  color String @default("#3B82F6")
-
-  posts CommunityPost[]
-
-  @@map("post_tags")
-}
-
-// =============================================================================
-// MENTORSHIP SYSTEM
-// =============================================================================
-
-model Mentorship {
-  id      String           @id @default(cuid())
-  status  MentorshipStatus @default(PENDING)
-  message String?
-
-  mentorId String
-  menteeId String
-  mentor   User   @relation("Mentor", fields: [mentorId], references: [id], onDelete: Cascade)
-  mentee   User   @relation("Mentee", fields: [menteeId], references: [id], onDelete: Cascade)
-
-  createdAt  DateTime  @default(now())
-  acceptedAt DateTime?
-  endedAt    DateTime?
-
-  // Add sessions relation
-  sessions MentorSession[]
-
-  @@unique([mentorId, menteeId])
-  @@index([mentorId])
-  @@index([menteeId])
-  @@index([status])
-  @@map("mentorships")
-}
-
-model MentorSession {
-  id           String              @id @default(cuid())
-  status       MentorSessionStatus @default(PENDING)
-  scheduledFor DateTime
-  completedAt  DateTime?
-  notes        String?
-  feedback     String?
-
-  // Relation to mentorship
-  mentorshipId String
-  mentorship   Mentorship @relation(fields: [mentorshipId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([mentorshipId])
-  @@index([status])
-  @@index([scheduledFor])
-  @@map("mentor_sessions")
-}
-
-// =============================================================================
-// GAMIFICATION & ACHIEVEMENTS
-// =============================================================================
-
-model Achievement {
-  id          String          @id @default(cuid())
-  title       String
-  description String
-  icon        String
-  type        AchievementType
-  condition   Json // Conditions to unlock
-  points      Int             @default(0)
-
-  createdAt DateTime @default(now())
-
-  // Relations
-  userAchievements UserAchievement[]
-
-  @@index([type])
-  @@map("achievements")
-}
-
-model UserAchievement {
-  id         String   @id @default(cuid())
-  unlockedAt DateTime @default(now())
-
-  userId        String
-  achievementId String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, achievementId])
-  @@index([userId])
-  @@index([achievementId])
-  @@map("user_achievements")
-}
-
-// =============================================================================
 // PROJECT PORTFOLIO SYSTEM
 // =============================================================================
 
 model ProjectProfile {
-  id          String  @id @default(cuid())
-  bio         String?
-  headline    String? // Professional headline/tagline
-  location    String?
-  website     String?
-  resume      String? // URL to resume/CV
-  theme       String  @default("default") // Project profile theme/template
-  isPublic    Boolean @default(true)
-  isActive    Boolean @default(true)
-  viewCount   Int     @default(0)
+  id        String  @id @default(cuid())
+  bio       String?
+  headline  String? // Professional headline/tagline
+  location  String?
+  website   String?
+  resume    String? // URL to resume/CV
+  theme     String  @default("default") // Project profile theme/template
+  isPublic  Boolean @default(true)
+  isActive  Boolean @default(true)
+  viewCount Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  userId   String @unique
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects Project[]
-  skills   ProjectSkill[]
+  userId      String         @unique
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects    Project[]
+  skills      ProjectSkill[]
   experiences Experience[]
 
   @@index([userId])
@@ -620,24 +408,25 @@ model ProjectProfile {
 }
 
 model Project {
-  id            String   @id @default(cuid())
-  title         String
-  description   String
-  shortDesc     String? // Brief description for cards
-  images        Json? // Array of image URLs
-  demoUrl       String? // Live demo URL
-  githubUrl     String? // Repository URL
-  techStack     Json // Array of technologies used
-  features      Json? // Array of key features
-  challenges    String? // Challenges faced during development
-  solutions     String? // Solutions implemented
-  status        ProjectStatus @default(COMPLETED)
-  startDate     DateTime?
-  endDate       DateTime?
-  isFeatured    Boolean @default(false)
-  isPublic      Boolean @default(true)
-  likes         Int     @default(0)
-  views         Int     @default(0)
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique // URL-friendly slug for routing
+  description String
+  shortDesc   String? // Brief description for cards
+  images      Json? // Array of image URLs
+  demoUrl     String? // Live demo URL
+  githubUrl   String? // Repository URL
+  techStack   Json // Array of technologies used
+  features    Json? // Array of key features
+  challenges  String? // Challenges faced during development
+  solutions   String? // Solutions implemented
+  status      ProjectStatus @default(COMPLETED)
+  startDate   DateTime?
+  endDate     DateTime?
+  isFeatured  Boolean       @default(false)
+  isPublic    Boolean       @default(true)
+  likes       Int           @default(0)
+  views       Int           @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -645,13 +434,13 @@ model Project {
   // Relations
   projectProfileId String
   projectProfile   ProjectProfile @relation(fields: [projectProfileId], references: [id], onDelete: Cascade)
-  
+
   // Document relation for rich content (Plate.js editor content)
-  documentId String? @unique
+  documentId String?   @unique
   document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
-  
-  comments    ProjectComment[]
-  projectLikes ProjectLike[]
+
+  comments      ProjectComment[]
+  projectLikes  ProjectLike[]
   collaborators ProjectCollaborator[]
 
   @@index([projectProfileId])
@@ -659,6 +448,7 @@ model Project {
   @@index([isFeatured])
   @@index([isPublic])
   @@index([documentId])
+  @@index([slug])
   @@map("projects")
 }
 
@@ -719,11 +509,11 @@ model ProjectCollaborator {
 }
 
 model Skill {
-  id          String @id @default(cuid())
-  name        String @unique
-  category    String // e.g., "Frontend", "Backend", "Database", "DevOps"
-  icon        String? // Icon name or URL
-  color       String @default("#3B82F6") // Display color
+  id       String  @id @default(cuid())
+  name     String  @unique
+  category String // e.g., "Frontend", "Backend", "Database", "DevOps"
+  icon     String? // Icon name or URL
+  color    String  @default("#3B82F6") // Display color
 
   createdAt DateTime @default(now())
 
@@ -924,7 +714,7 @@ model ChatMessage {
   updatedAt      DateTime @updatedAt
 
   // Relations
-  user User @relation("UserChatMessages", fields: [userId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserChatMessages", fields: [userId], references: [id], onDelete: Cascade)
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -972,25 +762,25 @@ model ConversationParticipant {
 // =============================================================================
 
 model Notification {
-  id        String   @id @default(cuid())
-  type      NotificationType
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  metadata  Json?    // Store additional context like messageId, conversationId, etc.
-  
+  id       String           @id @default(cuid())
+  type     NotificationType
+  title    String
+  message  String
+  isRead   Boolean          @default(false)
+  metadata Json? // Store additional context like messageId, conversationId, etc.
+
   // Recipient
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Optional: Link to specific entities
-  messageId       String?
-  conversationId  String?
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  messageId      String?
+  conversationId String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   readAt    DateTime?
-  
+
   @@index([userId, isRead])
   @@index([userId, createdAt])
   @@index([type])
@@ -1001,26 +791,26 @@ model NotificationPreference {
   id     String @id @default(cuid())
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Notification channels
-  inApp     Boolean @default(true)
-  email     Boolean @default(true)
-  push      Boolean @default(false)
-  
+  inApp Boolean @default(true)
+  email Boolean @default(true)
+  push  Boolean @default(false)
+
   // Notification types
   directMessages  Boolean @default(true)
   groupMessages   Boolean @default(true)
   channelMessages Boolean @default(true)
   mentions        Boolean @default(true)
-  
+
   // Timing preferences
   quietHoursStart String? // Format: "22:00"
   quietHoursEnd   String? // Format: "08:00"
   timezone        String? // User's timezone
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@unique([userId])
   @@map("notification_preferences")
 }

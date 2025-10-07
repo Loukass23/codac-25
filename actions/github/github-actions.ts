@@ -15,6 +15,8 @@ import {
   type GitHubRepository,
 } from '@/lib/github/api';
 import { logger } from '@/lib/logger';
+import { generateSlug, generateUniqueSlug } from '@/lib/utils';
+import { getProjectUrl } from '@/lib/utils/project-urls';
 import {
   handlePrismaError,
   type ServerActionResult,
@@ -102,7 +104,7 @@ export async function createProjectFromGitHub(
     endDate?: string;
     isPublic?: boolean;
   }
-): Promise<ServerActionResult<{ id: string; projectProfileId: string }>> {
+): Promise<ServerActionResult<{ id: string; projectProfileId: string; url: string }>> {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -147,10 +149,24 @@ export async function createProjectFromGitHub(
       });
     }
 
+    // Generate unique slug for the project
+    const projectTitle = additionalData?.title || repository.name;
+    const baseSlug = generateSlug(projectTitle);
+    const projectSlug = await generateUniqueSlug(
+      baseSlug,
+      async (slug) => {
+        const existingProject = await prisma.project.findUnique({
+          where: { slug }
+        });
+        return !!existingProject;
+      }
+    );
+
     // Create the project
     const project = await prisma.project.create({
       data: {
-        title: additionalData?.title || repository.name,
+        title: projectTitle,
+        slug: projectSlug,
         description:
           additionalData?.description ||
           repository.description ||
@@ -204,6 +220,7 @@ export async function createProjectFromGitHub(
       data: {
         id: project.id,
         projectProfileId: projectProfile.id,
+        url: getProjectUrl(user.username, projectSlug),
       },
     };
   } catch (error) {

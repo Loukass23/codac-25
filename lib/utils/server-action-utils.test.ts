@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 // Import actual implementation for testing
@@ -125,10 +125,9 @@ describe('Server Action Utils', () => {
         {
           code: 'invalid_type',
           expected: 'string',
-          received: 'number',
           path: ['name'],
           message: 'Expected string, received number',
-        },
+        } as any,
       ]);
       zodError.name = 'ZodError';
 

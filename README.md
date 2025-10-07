@@ -20,22 +20,25 @@ A comprehensive, production-ready learning management system built with Next.js 
 
 - **Unified Editor**: Plate.js-powered rich text editor with auto-save functionality
 - **Media Support**: Image, video, and file upload integration via Supabase Storage
-- **Collaborative Features**: Real-time editing with comments and suggestions
+- **Document Management**: Hierarchical folder structure for organizing content
 - **Export Options**: Multiple format exports including Markdown and DOCX
+- **AI-Powered Features**: AI integration for content generation and assistance
 
 ### 👥 **Community & Collaboration**
 
 - **Student Cohorts**: Organize learners into cohorts with dedicated spaces
-- **Mentorship Program**: Connect students with mentors and schedule sessions
-- **Discussion System**: Built-in commenting and discussion features
+- **Real-time Chat**: Built-in messaging system for direct and group conversations
+- **Project Comments**: Discussion features on student projects
 - **User Profiles**: Comprehensive user profiles with avatar management
+- **Attendance Tracking**: Monitor student attendance with interactive management
 
-### 💼 **Career Services**
+### 💼 **Career Services & Projects**
 
 - **Job Board**: Integrated job posting and application system
+- **Project Portfolios**: Showcase student projects with GitHub integration
 - **Career Tracking**: Monitor job applications and career progress
-- **Resume Builder**: Tools for creating and managing professional profiles
-- **Networking**: Connect with alumni and industry professionals
+- **GitHub Integration**: Connect GitHub accounts and import repositories
+- **Project Comments & Likes**: Community engagement on projects
 
 ### 🔐 **Security & Authentication**
 
@@ -165,24 +168,57 @@ pnpm export:docs      # Export documents to markdown
 ```
 codac-25/
 ├── app/                   # Next.js app router pages
+│   ├── (dashboard)/       # Protected dashboard routes
+│   │   ├── home/          # Dashboard homepage
+│   │   ├── attendance/    # Attendance management
+│   │   ├── chat/          # Messaging system
+│   │   ├── community/     # User profiles and community
+│   │   ├── docs/          # Document management
+│   │   ├── lms/           # Learning management system
+│   │   ├── projects/      # Project portfolios
+│   │   └── career/        # Job board and applications
 │   ├── auth/              # Authentication pages
-│   ├── docs/              # Document management
-│   ├── lms/               # Learning management system
-│   ├── community/         # Community features
-│   ├── career/            # Career center
 │   └── api/               # API routes
+├── actions/               # Server actions (Create, Update, Delete)
+│   ├── attendance/        # Attendance mutations
+│   ├── auth/              # Authentication actions
+│   ├── chat/              # Chat operations
+│   ├── documents/         # Document mutations
+│   ├── job/               # Job posting actions
+│   ├── projects/          # Project mutations
+│   └── user/              # User management
+├── data/                  # Data access layer (Read operations)
+│   ├── attendance/        # Attendance queries
+│   ├── chat/              # Chat queries
+│   ├── cohort/            # Cohort queries
+│   ├── documents/         # Document queries
+│   ├── projects/          # Project queries
+│   └── user/              # User queries
 ├── components/            # React components
-│   ├── ui/                # Reusable UI components
-│   ├── editor/            # Rich text editor components
+│   ├── ui/                # Base UI components (Shadcn/UI)
+│   ├── editor/            # Plate.js editor components
+│   ├── attendance/        # Attendance components
 │   ├── auth/              # Authentication components
-│   └── [feature]/         # Feature-specific components
+│   ├── chat/              # Chat and messaging
+│   ├── community/         # Community features
+│   ├── documents/         # Document management
+│   ├── projects/          # Project portfolio components
+│   ├── career/            # Job board components
+│   └── lms/               # LMS components
 ├── lib/                   # Utility libraries
-├── actions/               # Server actions
-├── data/                  # Data access layer
+│   ├── auth/              # Auth utilities and helpers
+│   ├── db/                # Database connection
+│   ├── validation/        # Zod schemas
+│   ├── plate/             # Plate.js configuration
+│   └── utils/             # Shared utilities
 ├── hooks/                 # Custom React hooks
 ├── types/                 # TypeScript type definitions
-├── tests/                 # Test utilities and configuration
+├── tests/                 # Test suites
+│   ├── integration/       # Integration tests
+│   └── e2e/               # End-to-end tests
 └── prisma/                # Database schema and migrations
+    ├── schema.prisma      # Database schema
+    └── seed/              # Seed data
 ```
 
 ### Authentication & Authorization
@@ -194,7 +230,13 @@ codac-25/
 ### Database Design
 
 - PostgreSQL with Prisma ORM for development
-- Comprehensive schema covering users, courses, documents, and community features
+- Comprehensive schema covering:
+  - User management with cohorts and roles
+  - Document system with folders and permissions
+  - Project portfolios with GitHub integration
+  - Job board and career tracking
+  - Real-time chat and conversations
+  - Attendance tracking system
 - Efficient queries with proper indexing and relations
 
 ## 🧪 Testing & Quality Assurance

@@ -7,6 +7,8 @@ import { type PrismaClientKnownRequestError } from '@prisma/client/runtime/libra
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { generateSlug, generateUniqueSlug } from '@/lib/utils';
+import { getProjectUrl } from '@/lib/utils/project-urls';
 import {
   handlePrismaError,
   type ServerActionResult,
@@ -15,7 +17,7 @@ import type { CreateProjectData } from '@/types/portfolio';
 
 export async function createProject(
   data: CreateProjectData
-): Promise<ServerActionResult<{ id: string; projectProfileId: string; documentId: string }>> {
+): Promise<ServerActionResult<{ id: string; projectProfileId: string; documentId: string; url: string }>> {
   try {
     // Get current user
     const user = await getCurrentUser();
@@ -46,6 +48,18 @@ export async function createProject(
     const formattedFeatures = Array.isArray(data.features) ? data.features : [];
     const formattedImages = Array.isArray(data.images) ? data.images : [];
 
+    // Generate unique slug for the project
+    const baseSlug = generateSlug(data.title);
+    const projectSlug = await generateUniqueSlug(
+      baseSlug,
+      async (slug) => {
+        const existingProject = await prisma.project.findUnique({
+          where: { slug }
+        });
+        return !!existingProject;
+      }
+    );
+
     // Log incoming data for debugging
     logger.debug('Creating project with data', {
       action: 'create_project',
@@ -54,6 +68,7 @@ export async function createProject(
         userId: user.id,
         projectProfileId: projectProfile.id,
         title: data.title,
+        slug: projectSlug,
         techStackType: typeof data.techStack,
         techStackLength: formattedTechStack.length,
       },
@@ -76,6 +91,7 @@ export async function createProject(
     const project = await prisma.project.create({
       data: {
         title: data.title,
+        slug: projectSlug,
         description: data.description,
         shortDesc: data.shortDesc,
         images: formattedImages,
@@ -122,6 +138,7 @@ export async function createProject(
         id: project.id,
         projectProfileId: projectProfile.id,
         documentId: document.id,
+        url: getProjectUrl(user.username, projectSlug),
       },
     };
   } catch (error) {

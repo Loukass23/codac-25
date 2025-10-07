@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { AuthHelpers, TestDataFactory } from '../utils/test-helpers';
 
 test.describe('User Registration E2E Tests', () => {
@@ -77,7 +77,7 @@ test.describe('User Registration E2E Tests', () => {
             // Now try to login with the new credentials
             await authHelpers.signIn(userData.email, userData.password);
 
-            // Should be logged in and redirected to dashboard/home
+            // Should be logged in and redirected to dashboard
             await authHelpers.waitForSignInComplete();
 
             // Verify we're no longer on signin page

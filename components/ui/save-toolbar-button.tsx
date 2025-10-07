@@ -1,6 +1,6 @@
 'use client';
 
-import { SaveIcon, CheckIcon, ClockIcon, AlertCircleIcon } from 'lucide-react';
+import { AlertCircleIcon, CheckIcon, ClockIcon, SaveIcon } from 'lucide-react';
 import { useEditorRef, usePluginOption } from 'platejs/react';
 import * as React from 'react';
 
@@ -26,7 +26,7 @@ export function SaveToolbarButton(
     setSaveState('saving');
 
     try {
-      const result = await editor.api.save.save();
+      const result = await (editor as any).api?.save?.save?.();
 
       if (result.success) {
         setSaveState('saved');
@@ -110,7 +110,7 @@ export function SaveStateMenu(
     setSaveState('saving');
 
     try {
-      const result = await editor.api.save.save();
+      const result = await (editor as any).api?.save?.save?.();
 
       if (result.success) {
         setSaveState('saved');

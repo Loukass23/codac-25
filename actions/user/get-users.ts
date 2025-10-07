@@ -83,8 +83,7 @@ export async function getUsers(data: GetUsersInput): Promise<GetUsersResult> {
         ...commonSelects.userPublic,
         _count: {
           select: {
-            posts: true,
-            comments: true,
+            projectComments: true,
           },
         },
       },

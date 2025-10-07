@@ -213,9 +213,7 @@ export type UserWithCounts = Prisma.UserGetPayload<{
   include: {
     _count: {
       select: {
-        posts: true;
-        comments: true;
-        achievements: true;
+        projectComments: true;
       };
     };
   };

@@ -12,7 +12,7 @@ import type {
 
 export type ProjectDTO = Project & {
   projectProfile: ProjectProfile & {
-    user: Pick<User, 'id' | 'name' | 'avatar'>;
+    user: Pick<User, 'id' | 'name' | 'username' | 'avatar'>;
   };
   document?: {
     id: string;
@@ -78,6 +78,7 @@ export async function getAllProjects(
               select: {
                 id: true,
                 name: true,
+                username: true,
                 avatar: true,
               },
             },
@@ -149,6 +150,7 @@ export async function getFeaturedProjects(
               select: {
                 id: true,
                 name: true,
+                username: true,
                 avatar: true,
               },
             },
@@ -210,6 +212,7 @@ export async function getUserProjects(
               select: {
                 id: true,
                 name: true,
+                username: true,
                 avatar: true,
               },
             },

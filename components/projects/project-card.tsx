@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ProjectDTO } from '@/data/projects/get-projects';
+import { getProjectUrl } from '@/lib/utils/project-urls';
 
 interface ProjectCardProps {
   project: ProjectDTO;
@@ -42,6 +43,11 @@ export function ProjectCard({
     project.images && Array.isArray(project.images) && project.images.length > 0
       ? String(project.images[0])
       : null;
+
+  const projectUrl = getProjectUrl(
+    project.projectProfile.user.username,
+    project.slug
+  );
 
   if (variant === 'list') {
     return (
@@ -65,10 +71,7 @@ export function ProjectCard({
             <div className='flex items-start justify-between mb-2'>
               <div className='flex-1 min-w-0 pr-4'>
                 <h3 className='font-semibold text-lg leading-tight mb-1'>
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className='hover:underline'
-                  >
+                  <Link href={projectUrl} className='hover:underline'>
                     {project.title}
                   </Link>
                 </h3>
@@ -89,7 +92,7 @@ export function ProjectCard({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align='end'>
                     <DropdownMenuItem asChild>
-                      <Link href={`/projects/${project.id}`}>
+                      <Link href={projectUrl}>
                         <Edit className='h-4 w-4 mr-2' />
                         Edit Project
                       </Link>
@@ -208,10 +211,7 @@ export function ProjectCard({
         <div className='flex items-start justify-between'>
           <div className='space-y-1 flex-1'>
             <h3 className='font-semibold leading-tight line-clamp-2'>
-              <Link
-                href={`/projects/${project.id}`}
-                className='hover:underline'
-              >
+              <Link href={projectUrl} className='hover:underline'>
                 {project.title}
               </Link>
             </h3>
@@ -228,7 +228,7 @@ export function ProjectCard({
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
                 <DropdownMenuItem asChild>
-                  <Link href={`/projects/${project.id}`}>
+                  <Link href={projectUrl}>
                     <Edit className='h-4 w-4 mr-2' />
                     Edit Project
                   </Link>

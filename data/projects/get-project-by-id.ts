@@ -1,8 +1,9 @@
 'use server';
 
+import { Document, Project } from '@prisma/client';
+
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { Document, Project } from '@prisma/client';
 
 export type ProjectWithDocument = Project & {
   document: Document;
@@ -10,7 +11,7 @@ export type ProjectWithDocument = Project & {
 
 export async function getProjectById(
   projectId: string
-): Promise<Project | null> {
+): Promise<any | null> {
   try {
     const project = await prisma.project.findUnique({
       where: { id: projectId },
@@ -21,6 +22,7 @@ export async function getProjectById(
               select: {
                 id: true,
                 name: true,
+                username: true,
                 avatar: true,
                 githubUrl: true,
                 linkedinUrl: true,

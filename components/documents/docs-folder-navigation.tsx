@@ -17,7 +17,7 @@ import {
   FolderOpen,
   GripVertical,
   MoreVertical,
-  Plus
+  Plus,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
@@ -98,7 +98,8 @@ export function DocsFolderNavigation({
     }
 
     const draggedItem = active.data.current?.['item'] as FolderTreeItem;
-    const targetFolderId = over.data.current?.['type'] === 'folder' ? (over.id as string) : null;
+    const targetFolderId =
+      over.data.current?.['type'] === 'folder' ? (over.id as string) : null;
 
     if (!draggedItem) {
       return;
@@ -125,7 +126,7 @@ export function DocsFolderNavigation({
     if (newExpanded.has(folderId)) {
       newExpanded.delete(folderId);
       // When collapsing a folder, remove search param to show all documents
-      const basePath = '/docs';
+      const basePath = '/documents';
       router.push(basePath);
     } else {
       // Clear all other expanded folders (only one folder open at a time)
@@ -138,10 +139,8 @@ export function DocsFolderNavigation({
       }
       const queryString = params.toString();
 
-      const basePath = '/docs';
-      router.push(
-        `${basePath}${queryString ? `?${queryString}` : ''}`
-      );
+      const basePath = '/documents';
+      router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
     }
     setExpandedFolders(newExpanded);
   };
@@ -186,7 +185,7 @@ export function DocsFolderNavigation({
         toast.success('Folder deleted successfully');
         router.refresh();
         if (selectedFolderId === folderId) {
-          router.push('/docs');
+          router.push('/documents');
         }
       } else {
         toast.error('Failed to delete folder');
@@ -216,20 +215,29 @@ export function DocsFolderNavigation({
   };
 
   // Draggable item component
-  const DraggableItem = ({ item, level, children }: { item: FolderTreeItem; level: number; children: React.ReactNode }) => {
-    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-      id: item.id,
-      data: {
-        type: item.type,
-        item,
-      },
-      disabled: !isMounted,
-    });
+  const DraggableItem = ({
+    item,
+    level,
+    children,
+  }: {
+    item: FolderTreeItem;
+    level: number;
+    children: React.ReactNode;
+  }) => {
+    const { attributes, listeners, setNodeRef, transform, isDragging } =
+      useDraggable({
+        id: item.id,
+        data: {
+          type: item.type,
+          item,
+        },
+        disabled: !isMounted,
+      });
 
     const style = transform
       ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
+          transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        }
       : undefined;
 
     // For folders, create a grip zone; for documents, make the whole item draggable
@@ -238,16 +246,11 @@ export function DocsFolderNavigation({
         <div
           ref={setNodeRef}
           style={style}
-          className={cn(
-            isDragging && 'opacity-50',
-            level > 0 && 'ml-4'
-          )}
+          className={cn(isDragging && 'opacity-50', level > 0 && 'ml-4')}
           {...(isMounted ? attributes : {})}
         >
-          <div className="flex items-center">
-            <div className="flex-1">
-              {children}
-            </div>
+          <div className='flex items-center'>
+            <div className='flex-1'>{children}</div>
             {/* Grip zone for folders */}
             <div
               className={cn(
@@ -255,9 +258,9 @@ export function DocsFolderNavigation({
                 isDragging && 'cursor-grabbing'
               )}
               {...(isMounted ? listeners : {})}
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             >
-              <GripVertical className="h-3 w-3 text-muted-foreground" />
+              <GripVertical className='h-3 w-3 text-muted-foreground' />
             </div>
           </div>
         </div>
@@ -269,10 +272,7 @@ export function DocsFolderNavigation({
       <div
         ref={setNodeRef}
         style={style}
-        className={cn(
-          isDragging && 'opacity-50',
-          level > 0 && 'ml-4'
-        )}
+        className={cn(isDragging && 'opacity-50', level > 0 && 'ml-4')}
         {...(isMounted ? attributes : {})}
         {...(isMounted ? listeners : {})}
       >
@@ -282,7 +282,13 @@ export function DocsFolderNavigation({
   };
 
   // Droppable folder component
-  const DroppableFolder = ({ folderId, children }: { folderId: string; children: React.ReactNode }) => {
+  const DroppableFolder = ({
+    folderId,
+    children,
+  }: {
+    folderId: string;
+    children: React.ReactNode;
+  }) => {
     const { isOver, setNodeRef } = useDroppable({
       id: folderId,
       data: {
@@ -295,7 +301,9 @@ export function DocsFolderNavigation({
       <div
         ref={setNodeRef}
         className={cn(
-          isOver && isMounted && 'bg-primary/10 border-primary/20 border-2 border-dashed rounded-md'
+          isOver &&
+            isMounted &&
+            'bg-primary/10 border-primary/20 border-2 border-dashed rounded-md'
         )}
       >
         {children}
@@ -326,9 +334,8 @@ export function DocsFolderNavigation({
             toggleFolder(itemId);
           } else {
             // Handle document click
-            const isLMSContext =
-              window.location.pathname.startsWith('/lms');
-            const basePath = isLMSContext ? '/lms' : '/docs';
+            const isLMSContext = window.location.pathname.startsWith('/lms');
+            const basePath = isLMSContext ? '/lms' : '/documents';
             router.push(`${basePath}/${itemId}`);
           }
         }}
@@ -339,7 +346,7 @@ export function DocsFolderNavigation({
             variant='ghost'
             size='sm'
             className='h-4 w-4 p-0'
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
             }}
           >
@@ -386,11 +393,7 @@ export function DocsFolderNavigation({
               className='h-6 text-xs'
             />
           ) : (
-            <span
-              className='text-xs font-medium truncate'
-            >
-              {item.name}
-            </span>
+            <span className='text-xs font-medium truncate'>{item.name}</span>
           )}
         </div>
 
@@ -402,7 +405,6 @@ export function DocsFolderNavigation({
               {item.documentCount}
             </Badge>
           )}
-
 
         {/* Actions dropdown */}
         <DropdownMenu>
@@ -426,7 +428,7 @@ export function DocsFolderNavigation({
                     const queryString = params.toString();
                     const isLMSContext =
                       window.location.pathname.startsWith('/lms');
-                    const basePath = isLMSContext ? '/lms' : '/docs';
+                    const basePath = isLMSContext ? '/lms' : '/documents';
                     router.push(
                       `${basePath}${queryString ? `?${queryString}` : ''}`
                     );
@@ -464,8 +466,9 @@ export function DocsFolderNavigation({
               <>
                 <DropdownMenuItem
                   onClick={() => {
-                    const isLMSContext = window.location.pathname.startsWith('/lms');
-                    const basePath = isLMSContext ? '/lms' : '/docs';
+                    const isLMSContext =
+                      window.location.pathname.startsWith('/lms');
+                    const basePath = isLMSContext ? '/lms' : '/documents';
                     router.push(`${basePath}/${itemId}`);
                   }}
                 >
@@ -493,15 +496,15 @@ export function DocsFolderNavigation({
             </DraggableItem>
           )
         ) : (
-          <div className={cn(level > 0 && 'ml-4')}>
-            {itemContent}
-          </div>
+          <div className={cn(level > 0 && 'ml-4')}>{itemContent}</div>
         )}
 
         {/* Render children if folder is expanded */}
         {isFolder && isExpanded && item.children && (
           <div>
-            {item.children.map((childId: string) => renderTreeItem(childId, level + 1))}
+            {item.children.map((childId: string) =>
+              renderTreeItem(childId, level + 1)
+            )}
           </div>
         )}
       </div>
@@ -536,21 +539,23 @@ export function DocsFolderNavigation({
                 selectedFolderId === null && 'bg-primary/10 text-primary'
               )}
               onClick={() => {
-                const isLMSContext = window.location.pathname.startsWith('/lms');
-                const basePath = isLMSContext ? '/lms' : '/docs';
+                const isLMSContext =
+                  window.location.pathname.startsWith('/lms');
+                const basePath = isLMSContext ? '/lms' : '/documents';
                 router.push(basePath);
               }}
             >
               <FileText className='h-4 w-4' />
-              <span className='text-xs font-medium text-left'>All Documents</span>
-
+              <span className='text-xs font-medium text-left'>
+                All Documents
+              </span>
             </div>
 
             {/* Tree items */}
             {treeData.rootIds.length > 0 ? (
               treeData.rootIds.map(itemId => renderTreeItem(itemId))
             ) : (
-              <div className="p-4 text-center text-muted-foreground text-sm">
+              <div className='p-4 text-center text-muted-foreground text-sm'>
                 No folders found. Create your first folder to get started.
               </div>
             )}
@@ -642,20 +647,23 @@ export function DocsFolderNavigation({
                 selectedFolderId === null && 'bg-primary/10 text-primary'
               )}
               onClick={() => {
-                const isLMSContext = window.location.pathname.startsWith('/lms');
-                const basePath = isLMSContext ? '/lms' : '/docs';
+                const isLMSContext =
+                  window.location.pathname.startsWith('/lms');
+                const basePath = isLMSContext ? '/lms' : '/documents';
                 router.push(basePath);
               }}
             >
               <FileText className='h-4 w-4' />
-              <span className='text-xs font-medium text-left'>All Documents</span>
+              <span className='text-xs font-medium text-left'>
+                All Documents
+              </span>
             </div>
 
             {/* Tree items */}
             {treeData.rootIds.length > 0 ? (
               treeData.rootIds.map(itemId => renderTreeItem(itemId))
             ) : (
-              <div className="p-4 text-center text-muted-foreground text-sm">
+              <div className='p-4 text-center text-muted-foreground text-sm'>
                 No folders found. Create your first folder to get started.
               </div>
             )}
@@ -715,9 +723,12 @@ export function DocsFolderNavigation({
 
         <DragOverlay>
           {draggedItem ? (
-            <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background border shadow-lg">
+            <div className='flex items-center gap-2 px-2 py-1.5 rounded-md bg-background border shadow-lg'>
               {draggedItem.type === 'folder' ? (
-                <Folder className='h-4 w-4' style={{ color: draggedItem.color }} />
+                <Folder
+                  className='h-4 w-4'
+                  style={{ color: draggedItem.color }}
+                />
               ) : (
                 <FileText className='h-4 w-4 text-muted-foreground' />
               )}

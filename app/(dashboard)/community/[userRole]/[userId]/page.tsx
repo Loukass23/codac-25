@@ -9,7 +9,6 @@ import {
   Linkedin,
   Mail,
   MessageSquare,
-  Trophy,
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -248,21 +247,19 @@ export default async function UserDetailsPage({
                     <MessageSquare className='h-5 w-5 text-purple-500' />
                   </div>
                   <div className='text-2xl font-bold'>
-                    {user._count.posts + user._count.comments}
+                    {user._count.projectComments}
                   </div>
-                  <div className='text-sm text-muted-foreground'>Posts</div>
+                  <div className='text-sm text-muted-foreground'>Comments</div>
                 </div>
 
                 <div className='text-center'>
                   <div className='flex items-center justify-center mb-2'>
-                    <Trophy className='h-5 w-5 text-yellow-500' />
+                    <MessageSquare className='h-5 w-5 text-blue-500' />
                   </div>
                   <div className='text-2xl font-bold'>
-                    {user._count.achievements}
+                    {user._count.projectComments}
                   </div>
-                  <div className='text-sm text-muted-foreground'>
-                    Achievements
-                  </div>
+                  <div className='text-sm text-muted-foreground'>Comments</div>
                 </div>
               </div>
             </CardContent>

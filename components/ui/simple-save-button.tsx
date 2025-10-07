@@ -41,7 +41,7 @@ export function SimpleSaveButton({
     setSaveState('saving');
 
     try {
-      const result = await editor.api.save.save();
+      const result = await (editor as any).api?.save?.save?.();
 
       if (result.success) {
         setSaveState('saved');

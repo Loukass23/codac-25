@@ -7,8 +7,8 @@ import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbList,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
@@ -22,7 +22,7 @@ interface BreadcrumbConfig {
 
 const ROUTE_CONFIG: BreadcrumbConfig = {
   '/': { label: 'Home', href: '/' },
-  '/home': { label: 'Dashboard', href: '/home' },
+  '/dashboard': { label: 'Dashboard', href: '/dashboard' },
   '/lms': { label: 'Learning', href: '/lms' },
   '/lms/[id]': { label: 'Course', href: '/lms/[id]' },
   '/lms/[id]/edit': { label: 'Edit Course', href: '/lms/[id]/edit' },
@@ -36,15 +36,21 @@ const ROUTE_CONFIG: BreadcrumbConfig = {
   '/projects': { label: 'Projects', href: '/projects' },
   '/projects/my': { label: 'My Projects', href: '/projects/my' },
   '/projects/create': { label: 'Create Project', href: '/projects/create' },
-  '/project/[id]': { label: 'Project', href: '/project/[id]' },
-  '/project/[id]/edit': { label: 'Edit Project', href: '/project/[id]/edit' },
+  '/projects/[username]/[projectSlug]': {
+    label: 'Project',
+    href: '/projects/[username]/[projectSlug]',
+  },
+  '/projects/[username]/[projectSlug]/edit': {
+    label: 'Edit Project',
+    href: '/projects/[username]/[projectSlug]/edit',
+  },
   '/career': { label: 'Career Services', href: '/career' },
   '/career/jobs': { label: 'Jobs', href: '/career/jobs' },
   '/mentorship': { label: 'Mentorship', href: '/mentorship' },
   '/profile': { label: 'Profile', href: '/profile' },
   '/profile/settings': { label: 'Settings', href: '/profile/settings' },
-  '/docs': { label: 'Documents', href: '/docs' },
-  '/docs/[docId]': { label: 'Document', href: '/docs/[docId]' },
+  '/documents': { label: 'Documents', href: '/documents' },
+  '/documents/[docId]': { label: 'Document', href: '/documents/[docId]' },
 };
 
 export function AppBreadcrumb() {

@@ -5,12 +5,7 @@
  * Run with: npx tsx scripts/check-github-config.ts
  */
 
-import { config } from 'dotenv';
-import { resolve } from 'path';
-
-// Load environment variables
-config({ path: resolve(process.cwd(), '.env.local') });
-config({ path: resolve(process.cwd(), '.env') });
+// Environment variables are automatically loaded by Next.js
 
 console.log('🔍 Checking GitHub OAuth Configuration...\n');
 

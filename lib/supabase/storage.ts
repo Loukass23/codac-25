@@ -18,7 +18,6 @@ export interface UploadOptions {
 // Default bucket names
 export const STORAGE_BUCKETS = {
     EDITOR: 'editor-uploads',
-    DUCKS: 'duck-uploads',
     LMS: 'lms-uploads',
     GENERAL: 'uploads'
 } as const;

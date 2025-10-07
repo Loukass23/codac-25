@@ -137,6 +137,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               id: true,
               email: true,
               name: true,
+              username: true,
               // Exclude image to prevent large JWT cookies
               password: true,
               role: true,
@@ -164,6 +165,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             id: user.id,
             email: user.email,
             name: user.name,
+            username: user.username,
             role: user.role,
             status: user.status,
             cohortId: user.cohortId,
@@ -214,47 +216,76 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
     async session({ session, token }) {
+      // If token is marked as invalid (user doesn't exist in DB), invalidate session
+      if (token?.invalid) {
+        logger.warn("Invalid token detected in session callback, clearing session", {
+          metadata: { userId: token.sub }
+        })
+        // Return null to invalidate the session
+        return null as any
+      }
+
       // Add user data from token to session with proper typing
       if (token && session.user) {
         session.user.id = token.sub as string
+        session.user.username = token.username
         session.user.role = token.role
         session.user.status = token.status
-        // cohortId and avatar will be fetched from database when needed
+        session.user.avatar = token.avatar
+        session.user.emailVerified = token.emailVerified ?? null
+        // cohortId will be fetched from database when needed
         // This keeps the JWT token small to prevent HTTP 431 errors
       }
 
       return session
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // For credentials provider, user data is already complete
       if (user) {
         // Store only essential data to keep JWT small
+        token.username = user.username
         token.role = user.role
         token.status = user.status
-        // Remove cohortId and avatar from JWT to reduce size
-        // These will be fetched from database when needed
+        token.avatar = user.avatar
+        token.emailVerified = user.emailVerified
+        // Remove cohortId from JWT to reduce size
+        // This will be fetched from database when needed
+        // Clear invalid flag if it was set
+        token.invalid = false
       }
-      // For existing tokens, fetch from database if needed
-      else if (token.sub && !token.role) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.sub },
-            select: { role: true, status: true },
-          })
+      // For existing tokens, verify user still exists in database
+      else if (token.sub) {
+        // Only check database periodically to avoid performance issues
+        // Check on every request if token is already marked invalid
+        // Otherwise, check if username is missing or on update trigger
+        const shouldVerifyUser = token.invalid || !token.username || trigger === 'update'
 
-          if (dbUser) {
-            token.role = dbUser.role
-            token.status = dbUser.status
-          } else {
-            // Set defaults
-            token.role = "STUDENT" as UserRole
-            token.status = "ACTIVE" as UserStatus
+        if (shouldVerifyUser) {
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: token.sub },
+              select: { username: true, role: true, status: true, avatar: true, emailVerified: true },
+            })
+
+            if (dbUser) {
+              token.username = dbUser.username
+              token.role = dbUser.role
+              token.status = dbUser.status
+              token.avatar = dbUser.avatar
+              token.emailVerified = dbUser.emailVerified
+              token.invalid = false
+            } else {
+              // User no longer exists in database - mark token as invalid
+              logger.warn("JWT token exists but user not found in database", {
+                metadata: { userId: token.sub }
+              })
+              token.invalid = true
+            }
+          } catch (error) {
+            logger.error("Error fetching user data in JWT callback", error instanceof Error ? error : new Error(String(error)))
+            // Mark token as invalid on error
+            token.invalid = true
           }
-        } catch (error) {
-          logger.error("Error fetching user data in JWT callback", error instanceof Error ? error : new Error(String(error)))
-          // Set defaults on error
-          token.role = "STUDENT" as UserRole
-          token.status = "ACTIVE" as UserStatus
         }
       }
 

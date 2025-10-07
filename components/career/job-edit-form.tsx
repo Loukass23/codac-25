@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-import { Job } from "@/actions/job/get-jobs";
-import { updateJob } from "@/actions/job/update-job";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Job } from '@/actions/job/get-jobs';
+import { updateJob } from '@/actions/job/update-job';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -19,17 +19,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { jobSchema } from "@/lib/validation/job";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { jobSchema } from '@/lib/validation/job';
 
 type JobFormValues = z.infer<typeof jobSchema>;
 
@@ -44,15 +44,15 @@ export function JobEditForm({ job }: JobEditFormProps) {
   const form = useForm<JobFormValues>({
     defaultValues: {
       title: job.title,
-      description: job.description ?? "",
+      description: job.description ?? '',
       company: job.company,
-      location: job.location ?? "",
+      location: job.location ?? '',
       type: job.type,
       level: job.level,
-      salary: job.salary ?? "",
+      salary: job.salary ?? '',
       remote: job.remote,
-      applyUrl: job.applyUrl ?? "",
-      applyEmail: job.applyEmail ?? "",
+      applyUrl: job.applyUrl ?? '',
+      applyEmail: job.applyEmail ?? '',
     },
   });
 
@@ -61,46 +61,64 @@ export function JobEditForm({ job }: JobEditFormProps) {
       const result = await updateJob(job.id, values);
 
       if (result.success) {
-        toast.success("Success!", {
-          description: "The job posting has been updated.",
+        toast.success('Success!', {
+          description: 'The job posting has been updated.',
         });
-        router.push("/career/jobs");
+        router.push('/career/jobs');
         return;
       }
 
       const { error } = result;
-      for (const key in error) {
-        if (key !== "_errors" && key !== "form") {
-          const field = key as keyof JobFormValues;
-          const message = error[field]?._errors[0];
-          if (message) {
-            form.setError(field, { type: "manual", message });
-          }
-        }
+
+      // Handle string errors
+      if (typeof error === 'string') {
+        toast.error('Error', { description: error });
+        return;
       }
 
-      if (error.form) {
-        toast.error("Error", { description: error.form });
-      } else {
-        toast.error("Error", {
-          description: "Please fix the errors in the form and try again.",
-        });
+      // Handle object errors with field validation
+      if (error && typeof error === 'object') {
+        for (const key in error) {
+          if (key !== '_errors' && key !== 'form') {
+            const field = key as keyof JobFormValues;
+            const fieldError = error[field as keyof typeof error];
+            if (
+              fieldError &&
+              typeof fieldError === 'object' &&
+              '_errors' in fieldError
+            ) {
+              const message = (fieldError as { _errors?: string[] })
+                ._errors?.[0];
+              if (message) {
+                form.setError(field, { type: 'manual', message });
+              }
+            }
+          }
+        }
+
+        if ('form' in error && typeof error.form === 'string') {
+          toast.error('Error', { description: error.form });
+        } else {
+          toast.error('Error', {
+            description: 'Please fix the errors in the form and try again.',
+          });
+        }
       }
     });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <FormField
             control={form.control}
-            name="title"
+            name='title'
             render={({ field }) => (
-              <FormItem className="md:col-span-2">
+              <FormItem className='md:col-span-2'>
                 <FormLabel>Job Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. Software Engineer" {...field} />
+                  <Input placeholder='e.g. Software Engineer' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -109,12 +127,12 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="company"
+            name='company'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Company</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. Coda" {...field} />
+                  <Input placeholder='e.g. Coda' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,12 +141,12 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="location"
+            name='location'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Location</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. Berlin, Germany" {...field} />
+                  <Input placeholder='e.g. Berlin, Germany' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -137,7 +155,7 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="type"
+            name='type'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Job Type</FormLabel>
@@ -147,14 +165,14 @@ export function JobEditForm({ job }: JobEditFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a job type" />
+                      <SelectValue placeholder='Select a job type' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="FULL_TIME">Full-time</SelectItem>
-                    <SelectItem value="PART_TIME">Part-time</SelectItem>
-                    <SelectItem value="INTERNSHIP">Internship</SelectItem>
-                    <SelectItem value="CONTRACT">Contract</SelectItem>
+                    <SelectItem value='FULL_TIME'>Full-time</SelectItem>
+                    <SelectItem value='PART_TIME'>Part-time</SelectItem>
+                    <SelectItem value='INTERNSHIP'>Internship</SelectItem>
+                    <SelectItem value='CONTRACT'>Contract</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -164,7 +182,7 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="level"
+            name='level'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Experience Level</FormLabel>
@@ -174,13 +192,13 @@ export function JobEditForm({ job }: JobEditFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an experience level" />
+                      <SelectValue placeholder='Select an experience level' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="ENTRY">Entry-level</SelectItem>
-                    <SelectItem value="MID">Mid-level</SelectItem>
-                    <SelectItem value="SENIOR">Senior-level</SelectItem>
+                    <SelectItem value='ENTRY'>Entry-level</SelectItem>
+                    <SelectItem value='MID'>Mid-level</SelectItem>
+                    <SelectItem value='SENIOR'>Senior-level</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -190,12 +208,12 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="salary"
+            name='salary'
             render={({ field }) => (
-              <FormItem className="md:col-span-2">
+              <FormItem className='md:col-span-2'>
                 <FormLabel>Salary Range (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. €60,000 - €80,000" {...field} />
+                  <Input placeholder='e.g. €60,000 - €80,000' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -204,14 +222,14 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="description"
+            name='description'
             render={({ field }) => (
-              <FormItem className="md:col-span-2">
+              <FormItem className='md:col-span-2'>
                 <FormLabel>Job Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Provide a detailed job description..."
-                    className="min-h-[200px]"
+                    placeholder='Provide a detailed job description...'
+                    className='min-h-[200px]'
                     {...field}
                   />
                 </FormControl>
@@ -222,16 +240,16 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="remote"
+            name='remote'
             render={({ field }) => (
-              <FormItem className="md:col-span-2 flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className='md:col-span-2 flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
                 <FormControl>
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
+                <div className='space-y-1 leading-none'>
                   <FormLabel>Remote work</FormLabel>
                 </div>
               </FormItem>
@@ -240,13 +258,13 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="applyUrl"
+            name='applyUrl'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Apply URL</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="https://your-company.com/apply"
+                    placeholder='https://your-company.com/apply'
                     {...field}
                   />
                 </FormControl>
@@ -260,12 +278,12 @@ export function JobEditForm({ job }: JobEditFormProps) {
 
           <FormField
             control={form.control}
-            name="applyEmail"
+            name='applyEmail'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Apply Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="hr@your-company.com" {...field} />
+                  <Input placeholder='hr@your-company.com' {...field} />
                 </FormControl>
                 <FormDescription>
                   An email address for applications.
@@ -276,17 +294,17 @@ export function JobEditForm({ job }: JobEditFormProps) {
           />
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className='flex justify-end gap-4'>
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             onClick={() => router.back()}
             disabled={isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type='submit' disabled={isPending}>
+            {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             Update Job
           </Button>
         </div>

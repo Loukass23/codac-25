@@ -112,7 +112,6 @@ export function ProfileEditModal({
             {/* Avatar Section */}
             <div className='flex flex-col items-center space-y-4'>
               <AvatarUpload
-                userId={user.id}
                 currentAvatar={avatarUrl}
                 userName={user.name || ''}
                 size='lg'

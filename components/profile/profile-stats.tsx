@@ -14,25 +14,11 @@ type ProfileStatsProps = {
 export function ProfileStats({ user }: ProfileStatsProps) {
   const stats = [
     {
-      label: 'Comments',
-      value: user._count.comments,
+      label: 'Project Comments',
+      value: user._count.projectComments,
       icon: MessageSquare,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
-    },
-    {
-      label: 'Posts',
-      value: user._count.posts,
-      icon: MessageSquare,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
-    },
-    {
-      label: 'Achievements',
-      value: user._count.achievements,
-      icon: Trophy,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100',
     },
   ];
 

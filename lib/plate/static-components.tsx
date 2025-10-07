@@ -21,6 +21,7 @@ import { ParagraphElementStatic } from '@/components/ui/paragraph-node-static';
 import { TableElementStatic } from '@/components/ui/table-node-static';
 import { TocElementStatic } from '@/components/ui/toc-node-static';
 import { ToggleElementStatic } from '@/components/ui/toggle-node-static';
+import { NodeComponents } from 'platejs';
 
 // Map plugin keys to their static rendering components
 export const staticComponents = {
@@ -92,4 +93,4 @@ export const staticComponents = {
     <mark>{children}</mark>
   ),
   kbd: ({ children }: { children: React.ReactNode }) => <kbd>{children}</kbd>,
-} as const;
+} as NodeComponents;

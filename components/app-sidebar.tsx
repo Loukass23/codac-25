@@ -1,18 +1,18 @@
 'use client';
 
 import {
-  Users,
+  Book,
   Briefcase,
   Code2,
-  LayoutDashboard,
   GraduationCap,
+  LayoutDashboard,
   MessageCircle,
   User2,
-  Book,
+  Users,
 } from 'lucide-react';
-import Link from 'next/link';
 import type { User } from 'next-auth';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import * as React from 'react';
 
 import {
@@ -76,7 +76,7 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
       items: [
         {
           title: 'Dashboard',
-          url: '/home',
+          url: '/dashboard',
         },
         {
           title: 'Showcase',
@@ -131,8 +131,8 @@ const buildNavigationData = (role?: string): NavigationGroup[] => {
 
 const navSecondaryItems = [
   {
-    title: 'Docs',
-    url: '/docs',
+    title: 'Documents',
+    url: '/documents',
     icon: Book,
   },
   {

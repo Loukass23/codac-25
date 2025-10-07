@@ -1,7 +1,6 @@
 'use client';
 
 import { ChevronDown, Settings } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { AppBreadcrumb } from '@/components/app-breadcrumb';
@@ -21,14 +20,13 @@ import {
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 
+import { UserProfile } from '../lib/auth/auth-utils';
+
 interface AppHeaderProps {
-  showSidebarTrigger?: boolean;
+  userProfile: UserProfile | null;
 }
 
-export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
-  const { data: session } = useSession();
-  const user = session?.user;
-  console.log(user);
+export function AppHeader({ userProfile }: AppHeaderProps) {
   return (
     <header
       className={cn(
@@ -38,16 +36,16 @@ export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
       <div className='container mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4'>
         {/* Left side */}
         <div className='flex items-center gap-2'>
-          {showSidebarTrigger && <SidebarTrigger className='-ml-1' />}
+          <SidebarTrigger className='-ml-1' />
           <AppBreadcrumb />
         </div>
 
         {/* Right side */}
         <div className='flex items-center gap-4'>
           <ThemePicker variant='dropdown' align='end' />
-          {user && <NotificationDropdown />}
+          {userProfile && <NotificationDropdown />}
 
-          {user && (
+          {userProfile && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -56,8 +54,8 @@ export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
                 >
                   <Avatar className='h-7 w-7'>
                     <AvatarImage
-                      src={user.image ?? user.avatar ?? ''}
-                      alt={user.name ?? 'codac member'}
+                      src={userProfile.avatar ?? ''}
+                      alt={userProfile.name ?? 'codac member'}
                     />
                     <AvatarFallback className='text-xs'>
                       <CodacLeftAngleBracket size='sm' animated />
@@ -70,19 +68,19 @@ export function AppHeader({ showSidebarTrigger = true }: AppHeaderProps) {
               <DropdownMenuContent className='w-56' align='end' forceMount>
                 <DropdownMenuLabel>
                   <div className='flex flex-col space-y-1'>
-                    {user.name && (
+                    {userProfile.name && (
                       <p className='text-sm font-medium leading-none'>
-                        {user.name}
+                        {userProfile.name}
                       </p>
                     )}
-                    {user.email && (
+                    {userProfile.email && (
                       <p className='text-xs leading-none text-muted-foreground'>
-                        {user.email}
+                        {userProfile.email}
                       </p>
                     )}
-                    {user.role && (
+                    {userProfile.role && (
                       <p className='text-xs text-muted-foreground capitalize'>
-                        {user.role.toLowerCase()}
+                        {userProfile.role.toLowerCase()}
                       </p>
                     )}
                   </div>

@@ -25,7 +25,7 @@ const paddingClasses = {
 export function PageContainer({
   children,
   className,
-  size = 'lg',
+  size = 'xl',
   padding = 'md',
 }: PageContainerProps) {
   return (

@@ -1,7 +1,6 @@
 'use client';
 import { Value, normalizeNodeId } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
-import * as React from 'react';
 
 import { EditorKit } from '@/components/editor/editor-kit';
 import { SettingsDialog } from '@/components/editor/settings-dialog';
@@ -46,7 +45,7 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'Explore the documentation' }],
         type: 'a',
-        url: '/docs',
+        url: '/documents',
       },
       { text: ' to discover more.' },
     ],
@@ -74,7 +73,7 @@ const value = normalizeNodeId([
           },
         ],
         type: 'a',
-        url: '/docs/suggestion',
+        url: '/documents/suggestion',
       },
       {
         suggestion: true,
@@ -113,7 +112,7 @@ const value = normalizeNodeId([
           { comment: true, comment_discussion1: true, text: 'comments' },
         ],
         type: 'a',
-        url: '/docs/comment',
+        url: '/documents/comment',
       },
       {
         comment: true,
@@ -161,7 +160,7 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'AI SDK' }],
         type: 'a',
-        url: '/docs/ai',
+        url: '/documents/ai',
       },
       { text: '. Press ' },
       { kbd: true, text: '⌘+J' },
@@ -198,25 +197,25 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'headings' }],
         type: 'a',
-        url: '/docs/heading',
+        url: '/documents/heading',
       },
       { text: ', ' },
       {
         children: [{ text: 'lists' }],
         type: 'a',
-        url: '/docs/list',
+        url: '/documents/list',
       },
       { text: ', and ' },
       {
         children: [{ text: 'quotes' }],
         type: 'a',
-        url: '/docs/blockquote',
+        url: '/documents/blockquote',
       },
       { text: '. Apply ' },
       {
         children: [{ text: 'marks' }],
         type: 'a',
-        url: '/docs/basic-marks',
+        url: '/documents/basic-marks',
       },
       { text: ' like ' },
       { bold: true, text: 'bold' },
@@ -232,13 +231,13 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'autoformatting' }],
         type: 'a',
-        url: '/docs/autoformat',
+        url: '/documents/autoformat',
       },
       { text: ' for ' },
       {
         children: [{ text: 'Markdown' }],
         type: 'a',
-        url: '/docs/markdown',
+        url: '/documents/markdown',
       },
       { text: '-like shortcuts (e.g., ' },
       { kbd: true, text: '* ' },
@@ -279,13 +278,13 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'links' }],
         type: 'a',
-        url: '/docs/link',
+        url: '/documents/link',
       },
       { text: ', ' },
       {
         children: [{ text: '@mention' }],
         type: 'a',
-        url: '/docs/mention',
+        url: '/documents/mention',
       },
       { text: ' users like ' },
       { children: [{ text: '' }], type: 'mention', value: 'Alice' },
@@ -293,13 +292,13 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'emojis' }],
         type: 'a',
-        url: '/docs/emoji',
+        url: '/documents/emoji',
       },
       { text: ' ✨. Use the ' },
       {
         children: [{ text: 'slash command' }],
         type: 'a',
-        url: '/docs/slash-command',
+        url: '/documents/slash-command',
       },
       { text: ' (/) for quick access to elements.' },
     ],
@@ -531,7 +530,7 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'Media uploads' }],
         type: 'a',
-        url: '/docs/media',
+        url: '/documents/media',
       },
       {
         text: ' and ',
@@ -539,7 +538,7 @@ const value = normalizeNodeId([
       {
         children: [{ text: 'drag & drop' }],
         type: 'a',
-        url: '/docs/dnd',
+        url: '/documents/dnd',
       },
       {
         text: ' for a smooth experience.',

@@ -42,8 +42,7 @@ export async function deleteUser(
         status: true,
         _count: {
           select: {
-            posts: true,
-            comments: true,
+            projectComments: true,
           },
         },
       },

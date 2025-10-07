@@ -28,6 +28,7 @@ export interface DocumentWithAuthor {
     isArchived: boolean;
     projectId: string | null;
     folderId: string | null;
+    slug: string | null;
     createdAt: Date;
     updatedAt: Date;
     author: {

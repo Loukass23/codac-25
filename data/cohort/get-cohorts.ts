@@ -27,9 +27,7 @@ export type CohortWithStudents = Prisma.CohortGetPayload<{
         createdAt: true;
         _count: {
           select: {
-            posts: true;
-            comments: true;
-            achievements: true;
+            projectComments: true;
           };
         };
       };
@@ -78,9 +76,7 @@ export async function getCohorts(): Promise<GetCohortsResult> {
             createdAt: true,
             _count: {
               select: {
-                posts: true,
-                comments: true,
-                achievements: true,
+                projectComments: true,
               },
             },
           },

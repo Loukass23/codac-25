@@ -135,11 +135,28 @@ export async function seedProjects() {
           },
         });
 
+        // Generate slug from title
+        const baseSlug = projectData.title
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim();
+
+        // Ensure slug is unique by appending username and/or number if needed
+        let slug = `${user.username}-${baseSlug}`;
+        let counter = 1;
+        while (await prisma.project.findUnique({ where: { slug } })) {
+          slug = `${user.username}-${baseSlug}-${counter}`;
+          counter++;
+        }
+
         return prisma.project.create({
           data: {
             title: projectData.title,
             description: projectData.description,
             shortDesc: projectData.shortDesc,
+            slug,
             techStack: projectData.techStack,
             features: projectData.features,
             challenges: projectData.challenges,

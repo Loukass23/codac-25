@@ -1,16 +1,15 @@
 'use client';
 
-
 import {
-  type FloatingToolbarState,
   flip,
   offset,
   useFloatingToolbar,
   useFloatingToolbarState,
+  type FloatingToolbarState,
 } from '@platejs/floating';
-import { useComposedRef } from '@udecode/cn';
 import { KEYS } from 'platejs';
 import {
+  useComposedRef,
   useEditorId,
   useEventEditorValue,
   usePluginOption,

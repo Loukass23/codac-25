@@ -1,5 +1,5 @@
-import { createSlateEditor } from 'platejs';
 import type { Value } from 'platejs';
+import { createSlateEditor } from 'platejs';
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit';
 
@@ -91,7 +91,7 @@ export function hasInteractiveFeatures(content: Value): boolean {
 
             // Recursively check children
             if ('children' in node && Array.isArray(node.children)) {
-                return hasInteractiveFeatures(node.children);
+                return hasInteractiveFeatures(node.children as any);
             }
         }
         return false;
@@ -117,7 +117,7 @@ export function createOptimalStaticEditor(value: Value) {
     });
 
     return createSlateEditor({
-        plugins: isComplex ? BaseEditorKit : createMinimalStaticEditor(value).plugins,
+        plugins: (isComplex ? BaseEditorKit : createMinimalStaticEditor(value).plugins) as any,
         value: sanitizedContent,
     });
 }

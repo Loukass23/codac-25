@@ -6,6 +6,7 @@ import {
   Linkedin,
   MessageSquare,
   Trophy,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -160,16 +161,13 @@ export function StudentCard({
           <div className='flex items-center gap-2 text-sm'>
             <MessageSquare className='h-4 w-4 text-muted-foreground' />
             <span className='text-muted-foreground'>
-              {student._count.posts + student._count.comments} post
-              {student._count.posts + student._count.comments !== 1 ? 's' : ''}
+              {student._count.projectComments} comment
+              {student._count.projectComments !== 1 ? 's' : ''}
             </span>
           </div>
           <div className='flex items-center gap-2 text-sm'>
-            <Trophy className='h-4 w-4 text-muted-foreground' />
-            <span className='text-muted-foreground'>
-              {student._count.achievements || 0} achievement
-              {(student._count.achievements || 0) !== 1 ? 's' : ''}
-            </span>
+            <Users className='h-4 w-4 text-muted-foreground' />
+            <span className='text-muted-foreground'>Member</span>
           </div>
         </div>
 

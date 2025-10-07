@@ -1,14 +1,12 @@
 'use client';
 
-
 import type {
   DropdownMenuItemProps,
   DropdownMenuProps,
 } from '@radix-ui/react-dropdown-menu';
-import { useComposedRef } from '@udecode/cn';
 import debounce from 'lodash/debounce.js';
 import { EraserIcon, PlusIcon } from 'lucide-react';
-import { useEditorRef, useEditorSelector } from 'platejs/react';
+import { useComposedRef, useEditorRef, useEditorSelector } from 'platejs/react';
 import React from 'react';
 
 import { buttonVariants } from '@/components/ui/button';
@@ -38,13 +36,10 @@ export function FontColorToolbarButton({
 } & DropdownMenuProps) {
   const editor = useEditorRef();
 
-  const selectionDefined = useEditorSelector(
-    (editor) => !!editor.selection,
-    []
-  );
+  const selectionDefined = useEditorSelector(editor => !!editor.selection, []);
 
   const color = useEditorSelector(
-    (editor) => editor.api.mark(nodeType) as string,
+    editor => editor.api.mark(nodeType) as string,
     [nodeType]
   );
 
@@ -102,7 +97,7 @@ export function FontColorToolbarButton({
   return (
     <DropdownMenu
       open={open}
-      onOpenChange={(value) => {
+      onOpenChange={value => {
         setOpen(value);
       }}
       modal={false}
@@ -113,7 +108,7 @@ export function FontColorToolbarButton({
         </ToolbarButton>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent align='start'>
         <ColorPicker
           color={selectedColor || color}
           clearColor={clearColor}
@@ -146,27 +141,27 @@ function PureColorPicker({
 }) {
   return (
     <div className={cn('flex flex-col', className)} {...props}>
-      <ToolbarMenuGroup label="Custom Colors">
+      <ToolbarMenuGroup label='Custom Colors'>
         <ColorCustom
           color={color}
-          className="px-2"
+          className='px-2'
           colors={colors}
           customColors={customColors}
           updateColor={updateColor}
           updateCustomColor={updateCustomColor}
         />
       </ToolbarMenuGroup>
-      <ToolbarMenuGroup label="Default Colors">
+      <ToolbarMenuGroup label='Default Colors'>
         <ColorDropdownMenuItems
           color={color}
-          className="px-2"
+          className='px-2'
           colors={colors}
           updateColor={updateColor}
         />
       </ToolbarMenuGroup>
       {color && (
         <ToolbarMenuGroup>
-          <DropdownMenuItem className="p-2" onClick={clearColor}>
+          <DropdownMenuItem className='p-2' onClick={clearColor}>
             <EraserIcon />
             <span>Clear</span>
           </DropdownMenuItem>
@@ -205,8 +200,8 @@ function ColorCustom({
   React.useEffect(() => {
     if (
       !color ||
-      customColors.some((c) => c.value === color) ||
-      colors.some((c) => c.value === color)
+      customColors.some(c => c.value === color) ||
+      colors.some(c => c.value === color)
     ) {
       return;
     }
@@ -244,7 +239,7 @@ function ColorCustom({
       >
         <ColorInput
           value={value}
-          onChange={(e) => {
+          onChange={e => {
             setValue(e.target.value);
             updateCustomColorDebounced(e.target.value);
           }}
@@ -257,11 +252,11 @@ function ColorCustom({
               }),
               'absolute top-1 right-2 bottom-2 flex size-8 items-center justify-center rounded-full'
             )}
-            onSelect={(e) => {
+            onSelect={e => {
               e.preventDefault();
             }}
           >
-            <span className="sr-only">Custom</span>
+            <span className='sr-only'>Custom</span>
             <PlusIcon />
           </DropdownMenuItem>
         </ColorInput>
@@ -279,8 +274,8 @@ function ColorInput({
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   return (
-    <div className="flex flex-col items-center">
-      {React.Children.map(children, (child) => {
+    <div className='flex flex-col items-center'>
+      {React.Children.map(children, child => {
         if (!child) return child;
 
         return React.cloneElement(
@@ -297,7 +292,7 @@ function ColorInput({
         ref={useComposedRef(props.ref, inputRef)}
         className={cn('size-0 overflow-hidden border-0 p-0', className)}
         value={value}
-        type="color"
+        type='color'
       />
     </div>
   );
@@ -337,7 +332,7 @@ function ColorDropdownMenuItem({
         className
       )}
       style={{ backgroundColor: value }}
-      onSelect={(e) => {
+      onSelect={e => {
         e.preventDefault();
         updateColor(value);
       }}
@@ -348,7 +343,7 @@ function ColorDropdownMenuItem({
   return name ? (
     <Tooltip>
       <TooltipTrigger>{content}</TooltipTrigger>
-      <TooltipContent className="mb-1 capitalize">{name}</TooltipContent>
+      <TooltipContent className='mb-1 capitalize'>{name}</TooltipContent>
     </Tooltip>
   ) : (
     content

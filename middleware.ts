@@ -50,7 +50,8 @@ export async function middleware(req: NextRequest) {
     secret: authSecret
   });
 
-  const isLoggedIn = !!token;
+  // If token exists but is marked as invalid (user doesn't exist in DB), treat as not logged in
+  const isLoggedIn = !!token && !token.invalid;
 
   // Redirect authenticated users away from auth pages to dashboard
   if (isAuthPage && isLoggedIn) {

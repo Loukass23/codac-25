@@ -7,6 +7,8 @@ import { revalidatePath } from 'next/cache';
 import { getCurrentUser } from '@/lib/auth/auth-utils';
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { generateSlug, generateUniqueSlug } from '@/lib/utils';
+import { getProjectUrl } from '@/lib/utils/project-urls';
 import {
   handlePrismaError,
   type ServerActionResult,
@@ -16,7 +18,7 @@ import type { CreateProjectData } from '@/types/portfolio';
 export async function updateProject(
   projectId: string,
   data: CreateProjectData
-): Promise<ServerActionResult<{ id: string; updated: boolean }>> {
+): Promise<ServerActionResult<{ id: string; updated: boolean; url: string }>> {
   try {
     // Get current user
     const user = await getCurrentUser();
@@ -51,11 +53,30 @@ export async function updateProject(
       };
     }
 
+    // Generate new slug if title has changed
+    let newSlug = project.slug;
+    if (data.title !== project.title) {
+      const baseSlug = generateSlug(data.title);
+      newSlug = await generateUniqueSlug(
+        baseSlug,
+        async (slug) => {
+          const existingProject = await prisma.project.findFirst({
+            where: {
+              slug,
+              id: { not: projectId } // Exclude current project
+            }
+          });
+          return !!existingProject;
+        }
+      );
+    }
+
     // Update the project
     await prisma.project.update({
       where: { id: projectId },
       data: {
         title: data.title,
+        slug: newSlug,
         description: data.description,
         shortDesc: data.shortDesc,
         images: data.images || [],
@@ -106,7 +127,11 @@ export async function updateProject(
 
     return {
       success: true,
-      data: { id: projectId, updated: true },
+      data: {
+        id: projectId,
+        updated: true,
+        url: getProjectUrl(user.username, newSlug),
+      },
     };
   } catch (error) {
     const handledError =
