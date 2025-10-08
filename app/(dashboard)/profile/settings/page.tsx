@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/card';
 import { getUser } from '@/data/user/get-user';
 import { requireServerAuth } from '@/lib/auth/auth-server';
+import { PageContainer } from '../../../../components/layout/page-container';
 
 export const metadata = {
   title: 'Profile Settings | Codac',
@@ -32,7 +33,7 @@ export default async function ProfileSettingsPage() {
   const fullUser = result.data;
 
   return (
-    <div className='container mx-auto px-4 py-8 max-w-4xl'>
+    <PageContainer>
       <div className='space-y-8'>
         {/* Header */}
         <div className='flex items-center gap-4'>
@@ -112,6 +113,6 @@ export default async function ProfileSettingsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

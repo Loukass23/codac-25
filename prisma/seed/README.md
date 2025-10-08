@@ -1,336 +1,295 @@
-# CODAC Seed Data System
+# CODAC Seeding System
 
-A comprehensive and modular seeding system for the CODAC platform with independent seeders for different data types.
+This directory contains all the data and scripts needed to seed the CODAC database with test data or production data.
 
-## 📂 Structure
+## 📁 Directory Structure
 
 ```
 prisma/seed/
-├── data/                           # JSON data files
-│   ├── attack-on-titan-cohorts.json  # Attack on Titan themed cohorts
-│   ├── attack-on-titan-users.json    # Attack on Titan themed users
-│   ├── black-owls-cohort.json        # Black Owls cohort data
-│   ├── black-owls-users.json         # Black Owls users with enrollments
-│   ├── courses.json                   # Course definitions
-│   ├── jobs.json                      # Job postings
-│   └── quizzes.json                   # Quiz questions and answers
-├── seeders/                        # Independent seeding modules
-│   ├── attack-on-titan.ts             # Attack on Titan seeder
-│   ├── black-owls.ts                  # Black Owls seeder
-│   ├── lms-content.ts                 # LMS content importer
-│   ├── quizzes.ts                     # Quiz seeder
-│   └── jobs.ts                        # Job seeder
-├── seed.ts                         # Main unified seed script
-└── README.md                       # This documentation
+├── seed.ts                 # Main seeding script with interactive menu
+├── seeders/                # Individual seeder modules
+│   ├── production.ts      # Production data (real cohorts & users)
+│   ├── attack-on-titan.ts # Development data (themed demo users)
+│   ├── chat.ts           # Chat conversations & messages
+│   ├── documents.ts      # Demo documents with rich content
+│   ├── jobs.ts          # Job postings
+│   └── projects.ts      # Demo project showcases
+├── dev/                  # Development/Demo seed data
+│   ├── attack-on-titan-cohorts.json
+│   ├── attack-on-titan-users.json
+│   ├── chat-data.json
+│   ├── demo-documents.json
+│   ├── demo-projects.json
+│   ├── jobs.json
+│   └── images/          # Development images
+└── prod/                # Production seed data
+    ├── cohorts.json     # Real CODAC cohorts (Yellow Leopards, Grey Mambas, etc.)
+    ├── users.json       # Real CODAC users
+    └── images/          # Production images
+        ├── cohorts/     # Cohort images
+        └── users/       # User avatars
 ```
 
 ## 🚀 Quick Start
 
 ### Interactive Mode
 
-```bash
-# Start interactive seeding menu
-pnpm db:seed
-```
-
-### Command Line Usage
+Run the seeder in interactive mode to choose what to seed:
 
 ```bash
-# Seed all data
-pnpm db:seed:all
-
-# Clean all data
-pnpm db:seed:clean
-
-# Seed specific data types
-pnpm db:seed:attack-on-titan
-pnpm db:seed:black-owls
-pnpm db:seed:lms
-pnpm db:seed:quizzes
-pnpm db:seed:jobs
-
-# Reset database completely
-pnpm db:reset
+pnpm tsx prisma/seed/seed.ts
 ```
 
-## 📋 Available Seeders
+This will display a menu with options:
 
-### 1. Attack on Titan Theme (`attack-on-titan`)
+1. Production Data - Real cohorts and users from CODAC history
+2. Attack on Titan Theme (Dev) - Demo users and cohorts
+3. Job Postings - Sample job board data
+4. Demo Projects - Project showcase examples
+5. Demo Documents - Rich text documents with comments
+6. Chat Data - Conversation and message history
 
-- **Description**: Users and cohorts with Attack on Titan anime theme
-- **Data**: 16 users including students, mentors, admins, and alumni
-- **Cohorts**: 5 military divisions (Scouts, Garrison, Military Police, etc.)
-- **Features**:
-  - Themed user profiles with character backgrounds
-  - Military division cohorts
-  - Admin and alumni users
-  - Default password: `password123`
+### Command Line Mode
 
-### 2. Black Owls Cohort (`black-owls`)
-
-- **Description**: Black Owls cohort with detailed progress tracking
-- **Data**: 8 students with course enrollments and progress
-- **Features**:
-  - Real course enrollments with progress percentages
-  - Lesson progress tracking
-  - Web development and data science tracks
-  - Realistic student portfolios
-
-### 3. LMS Content (`lms-content`)
-
-- **Description**: Import LMS content from markdown files
-- **Source**: `/content` directory (if exists)
-- **Features**:
-  - Automatic course/project/lesson creation
-  - Markdown to PlateJS conversion
-  - Frontmatter support
-  - Asset handling (placeholder)
-
-### 4. Quiz Data (`quizzes`)
-
-- **Description**: Comprehensive quiz questions and answers
-- **Data**: 500+ questions across multiple topics and difficulties
-- **Topics**: JavaScript, HTML, CSS, React, TypeScript, etc.
-- **Difficulties**: Beginner, Medium, Advanced
-- **Features**:
-  - Full quiz replacement or incremental addition
-  - Multiple choice questions with explanations
-
-### 5. Job Postings (`jobs`)
-
-- **Description**: Sample job postings for career board
-- **Data**: 6 diverse job postings
-- **Features**:
-  - Various job types (Frontend, Backend, Data Science, etc.)
-  - Salary ranges and requirements
-  - Remote and on-site positions
-
-## 🛠️ Technical Details
-
-### Independent Seeders
-
-Each seeder module exports:
-
-- `seed*()` - Main seeding function
-- `clean*()` - Cleanup function
-- Proper error handling with typed errors
-- Comprehensive logging
-
-### Data Organization
-
-- **JSON Files**: Structured data in `/data` folder
-- **Validation**: TypeScript interfaces for data validation
-- **Consistency**: Standardized data formats across seeders
-- **Maintenance**: Easy to update and maintain
-
-### Error Handling
-
-- Graceful error handling with detailed logging
-- Rollback capabilities for failed operations
-- Comprehensive error messages
-- TypeScript error type safety
-
-## 📊 Usage Examples
-
-### Interactive Menu
+Seed all **development** data at once:
 
 ```bash
-$ pnpm db:seed
-
-🌱 CODAC Seed Data Manager
-═══════════════════════════════════════
-
-Available seeding options:
-1. Attack on Titan Theme
-   Users and cohorts with Attack on Titan theme
-2. Black Owls Cohort
-   Black Owls cohort with users and course progressions
-3. LMS Content
-   Import LMS content from markdown files
-4. Quiz Data
-   Import quiz questions and answers
-5. Quiz Data (Incremental)
-   Import quiz questions incrementally (preserves existing)
-6. Job Postings
-   Import job postings data
-
-Special commands:
-a. Seed ALL data
-c. Clean ALL data
-x. Exit
-
-Enter your choice (number, letter, or comma-separated numbers):
->
+pnpm tsx prisma/seed/seed.ts all   # Seeds Attack on Titan + all features (NOT production)
 ```
 
-### Command Line Examples
+Seed specific options:
 
 ```bash
-# Seed multiple specific datasets
-tsx prisma/seed/seed.ts 1,4,6
-
-# Seed everything
-tsx prisma/seed/seed.ts all
-
-# Clean everything
-tsx prisma/seed/seed.ts clean
-
-# Seed only Attack on Titan
-tsx prisma/seed/seed.ts 1
+pnpm tsx prisma/seed/seed.ts 1      # Production data only
+pnpm tsx prisma/seed/seed.ts 2      # Attack on Titan (dev) only
+pnpm tsx prisma/seed/seed.ts 1,3,4  # Production + Jobs + Projects
 ```
 
-## 🔧 Development
+Clean all **development** data:
 
-### Adding New Seeders
-
-1. Create data file in `/data` folder
-2. Create seeder module in `/seeders` folder
-3. Add to `seedOptions` in `seed.ts`
-4. Add npm script to `package.json`
-
-### Data File Format
-
-```json
-{
-  "name": "Example Data",
-  "description": "Description of the data",
-  "items": [
-    {
-      "field1": "value1",
-      "field2": "value2"
-    }
-  ]
-}
+```bash
+pnpm tsx prisma/seed/seed.ts clean  # Cleans dev data (keeps production safe)
 ```
 
-### Seeder Module Template
+> **⚠️ Important**: The `all` command seeds **development data only** (Attack on Titan theme). Production data must be seeded explicitly using option 1.
+
+## 📊 Data Types
+
+### Production Data (`prisma/seed/prod/`)
+
+Real data from CODAC's history for production-like testing:
+
+- **35+ cohorts** from Yellow Leopards (2020) to Magenta Capybaras (2026)
+- **Real users** with actual cohort assignments
+- **Start and end dates** for each cohort
+- **User images** from Google Cloud Storage or local files
+- **Cohort images** with actual branding
+
+**Key Features:**
+
+- All cohorts include `startDate` and `endDate`
+- Users are properly assigned to cohorts via `cohortLegacyId`
+- Preserves historical data structure
+- Default password: `password123` for all users
+
+### Development Data (`prisma/seed/dev/`)
+
+Themed demo data for development and testing:
+
+- **Attack on Titan themed** users and cohorts
+- **Demo documents** with rich Plate.js content
+- **Sample projects** with various tech stacks
+- **Chat conversations** with realistic message flows
+- **Job postings** from various companies
+
+## 🔧 Creating a New Seeder
+
+1. Create a new file in `prisma/seed/seeders/`:
 
 ```typescript
-import { PrismaClient } from "@prisma/client";
-import { logger } from "../../../lib/logger";
+// prisma/seed/seeders/my-feature.ts
+import { PrismaClient } from '@prisma/client';
+import { logger } from '../../../lib/logger';
 
 const prisma = new PrismaClient();
 
-export async function seedExample() {
+export async function seedMyFeature() {
   try {
-    logger.info("🌱 Starting example seed...");
+    logger.info('🌱 Starting my feature seed...');
 
-    // Load data
-    const data = JSON.parse(/* ... */);
+    // Your seeding logic here
+    await prisma.myModel.createMany({
+      data: [
+        /* ... */
+      ],
+    });
 
-    // Clean existing data
-    await prisma.example.deleteMany();
-
-    // Create new data
-    await prisma.example.createMany({ data });
-
-    logger.info("✅ Example seed completed successfully!");
+    logger.info('✅ My feature seed completed!');
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error : new Error(String(error));
-    logger.error("❌ Example seed failed:", errorMessage);
-    throw errorMessage;
+    logger.error('❌ My feature seed failed:', error);
+    throw error;
   }
 }
 
-export async function cleanExample() {
+export async function cleanMyFeature() {
   try {
-    logger.info("🧹 Cleaning example data...");
-    await prisma.example.deleteMany();
-    logger.info("✅ Example data cleaned successfully!");
+    logger.info('🧹 Cleaning my feature data...');
+    await prisma.myModel.deleteMany();
+    logger.info('✅ My feature data cleaned!');
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error : new Error(String(error));
-    logger.error("❌ Failed to clean example data:", errorMessage);
-    throw errorMessage;
+    logger.error('❌ Failed to clean my feature data:', error);
+    throw error;
   }
 }
 ```
 
-## 📝 Package.json Scripts
+2. Add it to `seed.ts`:
 
-```json
-{
-  "scripts": {
-    "db:seed": "tsx prisma/seed/seed.ts",
-    "db:seed:all": "tsx prisma/seed/seed.ts all",
-    "db:seed:clean": "tsx prisma/seed/seed.ts clean",
-    "db:seed:attack-on-titan": "tsx prisma/seed/seed.ts 1",
-    "db:seed:black-owls": "tsx prisma/seed/seed.ts 2",
-    "db:seed:lms": "tsx prisma/seed/seed.ts 3",
-    "db:seed:quizzes": "tsx prisma/seed/seed.ts 4",
-    "db:seed:jobs": "tsx prisma/seed/seed.ts 6",
-    "db:reset": "prisma db push --force-reset && pnpm db:seed:all"
-  }
-}
+```typescript
+import { seedMyFeature, cleanMyFeature } from './seeders/my-feature';
+
+const seedOptions: SeedOption[] = [
+  // ... existing options
+  {
+    id: 'my-feature',
+    name: 'My Feature',
+    description: 'Seeds data for my feature',
+    action: seedMyFeature,
+    cleanAction: cleanMyFeature,
+  },
+];
 ```
+
+## 🖼️ Working with Images
+
+The seeding system supports base64 encoding of images for easy storage and deployment.
+
+### Encoding Images
+
+Use the `encodeSeedImageToBase64` helper:
+
+```typescript
+import { encodeSeedImageToBase64 } from '../../../lib/imaging/encode-image-to-base64';
+
+// For dev data (default basePath is 'prisma/seed/dev/')
+const devImage = await encodeSeedImageToBase64('images/user-avatar.jpg');
+
+// For production data
+const prodImage = await encodeSeedImageToBase64(
+  'images/cohorts/black-owls.jpg',
+  'prisma/seed/prod/'
+);
+```
+
+### Supported Formats
+
+- JPEG/JPG
+- PNG
+- GIF
+- WebP
+- SVG
+
+## 🗄️ Database Schema
+
+The seeders work with the following main models:
+
+- `User` - Student, Alumni, Mentor, or Admin users
+- `Cohort` - Training cohorts with start/end dates
+- `Project` - Student project showcases
+- `Document` - Rich text documents (Plate.js)
+- `Job` - Job board postings
+- `Conversation` & `ChatMessage` - Chat system
+- `Attendance` - Student attendance tracking
+
+## ⚠️ Important Notes
+
+1. **Production vs Development**:
+   - **"Seed all"** uses DEV data (Attack on Titan theme) - safe for development
+   - **Production data** must be seeded explicitly (option 1) - use with caution
+   - This prevents accidentally overwriting production data
+
+2. **Order Matters**: Seed in the correct order to respect foreign key relationships:
+   - Users/Cohorts first (Production OR Attack on Titan)
+   - Then content (Projects, Documents, Jobs)
+   - Finally, Chat data
+
+3. **Clean Before Seeding**: The seeders automatically clean their own data before inserting new data.
+
+4. **Default Credentials**:
+   - Production: `lucas@codeacademyberlin.com` / `password123`
+   - Development: `admin@codac.academy` / `password123`
+
+5. **Image Paths**:
+   - Dev images: `prisma/seed/dev/images/`
+   - Prod images: `prisma/seed/prod/images/cohorts/` and `images/users/`
+
+6. **Missing Properties**: The `endDate` property is now included in all cohort seeds.
+
+## 🔍 Troubleshooting
+
+### "Image file not found"
+
+- Check that images exist in the correct directory
+- Verify the path in your JSON data matches the file location
+- The seeder will log warnings but continue if images are missing
+
+### "No users found in database"
+
+- Some seeders (like chat) require users to exist first
+- Run production or attack-on-titan seeder before chat/documents/projects
+
+### "Foreign key constraint failed"
+
+- Ensure you're seeding in the correct order
+- Clean all data and try again with the "seed all" option
+
+### Linting Errors
+
+- Run `pnpm lint` to check for TypeScript issues
+- Common issue: Missing `endDate` in cohort creation (now fixed)
+
+## 📝 Schema Changes
+
+If you modify the Prisma schema:
+
+1. Run `pnpm prisma generate` to update the client
+2. Update relevant seeders to include new fields
+3. Test with `pnpm tsx prisma/seed/seed.ts clean` then seed again
 
 ## 🎯 Best Practices
 
-1. **Always backup** before running `db:reset`
-2. **Test individual seeders** before running `all`
-3. **Use incremental mode** for quizzes to preserve existing data
-4. **Check logs** for detailed error information
-5. **Run `db:seed:clean`** before switching between themes
+1. **Keep JSON files clean** - Use consistent formatting and valid JSON
+2. **Include all required fields** - Check schema for required vs optional fields
+3. **Use meaningful data** - Make demo data realistic and useful for testing
+4. **Document your changes** - Update this README when adding new seeders
+5. **Test thoroughly** - Test both seeding and cleaning operations
+6. **Handle errors gracefully** - Log useful error messages
 
-## 🔐 Default Login Credentials
+## 📚 Related Files
 
-After seeding, you can login with:
+- `lib/imaging/encode-image-to-base64.ts` - Image encoding utilities
+- `lib/logger.ts` - Logging configuration
+- `prisma/schema.prisma` - Database schema
+- `.cursorrules` - Coding standards and patterns
 
-- **Email**: `admin@codac.academy`
-- **Password**: `password123`
+## 🔗 Useful Commands
 
-Or any user from the Attack on Titan theme:
+```bash
+# Generate Prisma client after schema changes
+pnpm prisma generate
 
-- **Email**: `eren.yeager@codac.academy`
-- **Password**: `password123`
+# Reset database and run migrations
+pnpm prisma migrate reset
 
-## 🆘 Troubleshooting
+# View database in Prisma Studio
+pnpm prisma studio
 
-### Common Issues
+# Run seeder in interactive mode
+pnpm tsx prisma/seed/seed.ts
 
-1. **Database connection errors**
+# Seed production data only
+pnpm tsx prisma/seed/seed.ts 1
 
-   - Ensure database is running
-   - Check connection string in `.env`
-
-2. **TypeScript compilation errors**
-
-   - Run `pnpm db:generate` first
-   - Check for missing dependencies
-
-3. **Data validation errors**
-
-   - Verify JSON data format
-   - Check required fields in schemas
-
-4. **Memory issues with large datasets**
-   - Use incremental seeding for large data
-   - Consider batch processing
-
-### Getting Help
-
-1. Check logs for detailed error messages
-2. Use `tsx prisma/seed/seed.ts --help` for usage info
-3. Review data files for format issues
-4. Ensure all dependencies are installed
-
-## 📈 Performance
-
-- **Optimized batch inserts** for large datasets
-- **Parallel processing** where possible
-- **Incremental updates** for existing data
-- **Memory-efficient** data processing
-- **Progress tracking** for long operations
-
-## 🔄 Migration Notes
-
-This new system replaces the old scattered seeding scripts:
-
-- ✅ `scripts/seed-demo-data.ts` → `seeders/black-owls.ts`
-- ✅ `scripts/seed-black-owls.ts` → `seeders/black-owls.ts`
-- ✅ `scripts/seed-users-cohors-attack-on-titan.ts` → `seeders/attack-on-titan.ts`
-- ✅ `scripts/import-lms-content.ts` → `seeders/lms-content.ts`
-- ✅ `scripts/upload-all-quizzes.ts` → `seeders/quizzes.ts`
-
-All old scripts and data files have been removed and replaced with the new modular system.
+# Clean and reseed everything
+pnpm tsx prisma/seed/seed.ts clean && pnpm tsx prisma/seed/seed.ts all
+```

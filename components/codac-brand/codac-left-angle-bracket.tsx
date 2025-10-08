@@ -28,34 +28,37 @@ export const CodacLeftAngleBracket: React.FC<CodacLeftAngleBracketProps> = ({
 }) => {
   const SvgComponent = (
     <svg
-      viewBox="0 0 340 680"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      viewBox='0 0 335 670'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
       className={cn(sizeConfig[size], className)}
     >
-      <g id="left-angle-bracket" className={animated ? 'animate-diamond-pulse' : ''}>
+      <g
+        id='left-angle-bracket'
+        className={animated ? 'animate-diamond-pulse' : ''}
+      >
         <path
-          d="M352.461 8L185 342.461L352.461 676.923L18 342.461L352.461 8Z"
-          fill="url(#left-angle-gradient)"
+          d='M334.461 0L167 334.461L334.461 668.923L0 334.461L334.461 0Z'
+          fill='url(#left-angle-gradient)'
         />
         <path
-          d="M352.461 8L185 342.461L352.461 676.923M352.461 8L18 342.461L352.461 676.923"
-          stroke="currentColor"
-          strokeWidth="15"
-          strokeLinejoin="round"
+          d='M334.461 0L167 334.461L334.461 668.923M334.461 0L0 334.461L334.461 668.923'
+          stroke='currentColor'
+          strokeWidth='15'
+          strokeLinejoin='round'
         />
       </g>
       <defs>
         <linearGradient
-          id="left-angle-gradient"
-          x1="310.5"
-          y1="673.5"
-          x2="328"
-          y2="70.5"
-          gradientUnits="userSpaceOnUse"
+          id='left-angle-gradient'
+          x1='167'
+          y1='668.923'
+          x2='167'
+          y2='0'
+          gradientUnits='userSpaceOnUse'
         >
-          <stop stopColor="#E77096" />
-          <stop offset="1" stopColor="#52EACE" />
+          <stop stopColor='#E77096' />
+          <stop offset='1' stopColor='#52EACE' />
         </linearGradient>
       </defs>
     </svg>
@@ -66,7 +69,7 @@ export const CodacLeftAngleBracket: React.FC<CodacLeftAngleBracketProps> = ({
       <motion.div
         initial={{ opacity: 0, x: -100 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
       >
         {SvgComponent}
       </motion.div>

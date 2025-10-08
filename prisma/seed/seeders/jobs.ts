@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { JobType, PrismaClient, JobLevel } from '@prisma/client';
+import { JobLevel, JobType, PrismaClient } from '@prisma/client';
 
 import { logger } from '../../../lib/logger';
 
@@ -28,7 +28,7 @@ export async function seedJobs() {
 
         // Load job data from JSON file
         const jobsData: JobData[] = JSON.parse(
-            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/data/jobs.json'), 'utf-8')
+            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/dev/jobs.json'), 'utf-8')
         );
 
         logger.info(`📋 Found ${jobsData.length} jobs to seed`);
@@ -91,7 +91,7 @@ export async function seedJobsWithPoster(posterEmail: string) {
 
         // Load job data from JSON file
         const jobsData: JobData[] = JSON.parse(
-            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/data/jobs.json'), 'utf-8')
+            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/dev/jobs.json'), 'utf-8')
         );
 
         logger.info(`📋 Found ${jobsData.length} jobs to seed`);

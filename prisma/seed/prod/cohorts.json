@@ -1,0 +1,316 @@
+[
+  {
+    "legacyId": "5fb4dc075055ab64e463cf1b",
+    "name": "Yellow Leopards",
+    "slug": "yellow-leopards",
+    "startDate": "2020-11-02T00:00:00.000Z",
+    "endDate": "2021-03-26T00:00:00.000Z",
+    "description": "Yellow Leopards (aka Yellowpards)",
+    "image": "images/cohorts/5fb4dc075055ab64e463cf1b.jpg"
+  },
+  {
+    "legacyId": "5fc403e1b0a02b637804d377",
+    "name": "Grey Mambas",
+    "slug": "grey-mambas",
+    "startDate": "2020-11-23T00:00:00.000Z",
+    "endDate": "2021-04-16T00:00:00.000Z",
+    "description": "Grey Mambas (aka Mambas)",
+    "image": "images/cohorts/5fc403e1b0a02b637804d377.jpg"
+  },
+  {
+    "legacyId": "5fc41e5ab0a02b63780f45ee",
+    "name": "Staff",
+    "slug": "staff",
+    "startDate": "2020-08-01T00:00:00.000Z",
+    "description": "Staff (aka CXOs)",
+    "image": "images/cohorts/5fc41e5ab0a02b63780f45ee.jpg"
+  },
+  {
+    "legacyId": "600e9df9a49e05d9741a0bc7",
+    "name": "Pink Eichhörnchen",
+    "slug": "pink-eichhrnchen",
+    "startDate": "2021-01-25T00:00:00.000Z",
+    "endDate": "2021-06-18T00:00:00.000Z",
+    "description": "Pink Eichhörnchen (aka Pinkies)",
+    "image": "images/cohorts/600e9df9a49e05d9741a0bc7.jpg"
+  },
+  {
+    "legacyId": "604f33cea28d4e8987a88c74",
+    "name": "White Flamingo",
+    "slug": "white-flamingo",
+    "startDate": "2021-03-15T00:00:00.000Z",
+    "endDate": "2021-08-06T00:00:00.000Z",
+    "description": "White Flamingo (aka Flamingos)",
+    "image": "images/cohorts/604f33cea28d4e8987a88c74.png"
+  },
+  {
+    "legacyId": "607d56af9372f480a7b7a2d6",
+    "name": "Pistachio Parrots",
+    "slug": "pistachio-parrots",
+    "startDate": "2021-04-19T00:00:00.000Z",
+    "endDate": "2021-09-10T00:00:00.000Z",
+    "description": "Pistachio Parrots (aka Parrots)",
+    "image": "images/cohorts/607d56af9372f480a7b7a2d6.jpg"
+  },
+  {
+    "legacyId": "60d039342ebe579c5a5c91d0",
+    "name": "Blue Puffer Fishes",
+    "slug": "blue-puffer-fishes",
+    "startDate": "2021-06-21T00:00:00.000Z",
+    "endDate": "2021-11-12T00:00:00.000Z",
+    "description": "Blue Puffer Fishes (aka Puffies)",
+    "image": "images/cohorts/60d039342ebe579c5a5c91d0.jpg"
+  },
+  {
+    "legacyId": "613efe58f2edaffe94194c43",
+    "name": "Green Wombats",
+    "slug": "green-wombats",
+    "startDate": "2021-09-13T00:00:00.000Z",
+    "endDate": "2022-02-04T00:00:00.000Z",
+    "description": "Green Wombats",
+    "image": "images/cohorts/613efe58f2edaffe94194c43.jpg"
+  },
+  {
+    "legacyId": "615abf15737fe40c05c872f4",
+    "name": "Indigo Honey Badgers",
+    "slug": "indigo-honey-badgers",
+    "startDate": "2021-10-04T00:00:00.000Z",
+    "endDate": "2022-02-25T00:00:00.000Z",
+    "description": "Indigo Honey Badgers",
+    "image": "images/cohorts/615abf15737fe40c05c872f4.jpg"
+  },
+  {
+    "legacyId": "61ee724c94c8100fd49eafa1",
+    "name": "Wine Red Cheetahs",
+    "slug": "wine-red-cheetahs",
+    "startDate": "2022-01-24T00:00:00.000Z",
+    "endDate": "2022-06-17T00:00:00.000Z",
+    "description": "Wine Red Cheetahs",
+    "image": "images/cohorts/61ee724c94c8100fd49eafa1.jpg"
+  },
+  {
+    "legacyId": "623498b456575b335a2a49bb",
+    "name": "Rose Gold Quokkas",
+    "slug": "rose-gold-quokkas",
+    "startDate": "2022-03-21T00:00:00.000Z",
+    "endDate": "2022-08-12T00:00:00.000Z",
+    "description": "Rose Gold Quokkas",
+    "image": "images/cohorts/623498b456575b335a2a49bb.png"
+  },
+  {
+    "legacyId": "6290d1c33723ab61dcc0017d",
+    "name": "Ginger Suricatas",
+    "slug": "ginger-suricatas",
+    "startDate": "2022-05-30T00:00:00.000Z",
+    "endDate": "2022-10-21T00:00:00.000Z",
+    "description": "Ginger Suricatas (aka Gingies)",
+    "image": "images/cohorts/6290d1c33723ab61dcc0017d.png"
+  },
+  {
+    "legacyId": "62c836b2f7ed4190f4431f8d",
+    "name": "Neon Narwhals",
+    "slug": "neon-narwhals",
+    "startDate": "2022-07-11T00:00:00.000Z",
+    "endDate": "2022-12-02T00:00:00.000Z",
+    "description": "Neon Narwhals",
+    "image": "images/cohorts/62c836b2f7ed4190f4431f8d.png"
+  },
+  {
+    "legacyId": "62f61cb5199a9a58260a6825",
+    "name": "Orange Pumas",
+    "slug": "orange-pumas",
+    "startDate": "2022-08-15T00:00:00.000Z",
+    "endDate": "2023-01-13T00:00:00.000Z",
+    "description": "Orange Pumas",
+    "image": "images/cohorts/62f61cb5199a9a58260a6825.jpg"
+  },
+  {
+    "legacyId": "631eddb726779a0caa94cba6",
+    "name": "Mint-Green Octopuses",
+    "slug": "mint-green-octopuses",
+    "startDate": "2022-09-12T00:00:00.000Z",
+    "endDate": "2023-02-10T00:00:00.000Z",
+    "description": "Mint-Green Octopuses",
+    "image": "images/cohorts/631eddb726779a0caa94cba6.jpg"
+  },
+  {
+    "legacyId": "636e643451f2fa36938aa1e8",
+    "name": "Bronze Elephants",
+    "slug": "bronze-elephants",
+    "startDate": "2022-11-14T00:00:00.000Z",
+    "endDate": "2023-04-28T00:00:00.000Z",
+    "description": "Bronze Elephants",
+    "image": "images/cohorts/636e643451f2fa36938aa1e8.jpg"
+  },
+  {
+    "legacyId": "63d65eac0f6dda079da32dd9",
+    "name": "Cobalt Kangaroos",
+    "slug": "cobalt-kangaroos",
+    "startDate": "2023-01-30T00:00:00.000Z",
+    "endDate": "2023-07-14T00:00:00.000Z",
+    "description": "Cobalt Kangaroos",
+    "image": "images/cohorts/63d65eac0f6dda079da32dd9.png"
+  },
+  {
+    "legacyId": "63fccf6512bf7a9947f1b48c",
+    "name": "Purple Phoenixes",
+    "slug": "purple-phoenixes",
+    "startDate": "2023-03-13T00:00:00.000Z",
+    "endDate": "2023-08-18T00:00:00.000Z",
+    "description": "Purple Phoenixes",
+    "image": "images/cohorts/63fccf6512bf7a9947f1b48c.png"
+  },
+  {
+    "legacyId": "6464dab582267b9110398786",
+    "name": "Coral Honey Badgers",
+    "slug": "coral-honey-badgers",
+    "startDate": "2023-05-22T00:00:00.000Z",
+    "endDate": "2023-10-20T00:00:00.000Z",
+    "description": "Coral Honey Badgers (aka HBadgers The Return)",
+    "image": "images/cohorts/6464dab582267b9110398786.png"
+  },
+  {
+    "legacyId": "64b940b2bf8f51a133b0ac3c",
+    "name": "Orange Pigs",
+    "slug": "orange-pigs",
+    "startDate": "2023-07-24T00:00:00.000Z",
+    "endDate": "2023-12-22T00:00:00.000Z",
+    "description": "Orange Pigs (aka Piggies)",
+    "image": "images/cohorts/64b940b2bf8f51a133b0ac3c.png"
+  },
+  {
+    "legacyId": "64f1f089968510b69f408ec4",
+    "name": "Salmon Pink Treehoppers",
+    "slug": "salmon-pink-treehoppers",
+    "startDate": "2023-09-04T00:00:00.000Z",
+    "endDate": "2024-02-16T00:00:00.000Z",
+    "description": "Salmon Pink Treehoppers",
+    "image": "images/cohorts/64f1f089968510b69f408ec4.jpeg"
+  },
+  {
+    "legacyId": "653e414fe9e6fd5560198f94",
+    "name": "Petrol Raccoons",
+    "slug": "petrol-raccoons",
+    "startDate": "2023-10-30T00:00:00.000Z",
+    "endDate": "2024-04-12T00:00:00.000Z",
+    "description": "Petrol Raccoons",
+    "image": "images/cohorts/653e414fe9e6fd5560198f94.png"
+  },
+  {
+    "legacyId": "656d9bb52ca3665a3b1fea91",
+    "name": "Blue Ants",
+    "slug": "blue-ants",
+    "startDate": "2023-12-04T00:00:00.000Z",
+    "endDate": "2024-05-24T00:00:00.000Z",
+    "description": "Blue Ants",
+    "image": "images/cohorts/656d9bb52ca3665a3b1fea91.png"
+  },
+  {
+    "legacyId": "65b63ec05c8df694a0f9ae37",
+    "name": "Rainbow Chameleons",
+    "slug": "rainbow-chameleons",
+    "startDate": "2024-01-29T00:00:00.000Z",
+    "endDate": "2024-07-05T00:00:00.000Z",
+    "description": "Rainbow Chameleons",
+    "image": "images/cohorts/65b63ec05c8df694a0f9ae37.jpg"
+  },
+  {
+    "legacyId": "65f7f561d3a72bc6c004291c",
+    "name": "Turquoise Pandas",
+    "slug": "turquoise-pandas",
+    "startDate": "2024-03-18T00:00:00.000Z",
+    "endDate": "2024-08-23T00:00:00.000Z",
+    "description": "Turquoise Pandas",
+    "image": "images/cohorts/65f7f561d3a72bc6c004291c.png"
+  },
+  {
+    "legacyId": "664e2a258264deb636da8f30",
+    "name": "Ultraviolet Eagles",
+    "slug": "ultraviolet-eagles",
+    "startDate": "2024-05-27T00:00:00.000Z",
+    "endDate": "2024-10-25T00:00:00.000Z",
+    "description": "Ultraviolet Eagles",
+    "image": "images/cohorts/664e2a258264deb636da8f30.png"
+  },
+  {
+    "legacyId": "6694c939c05af228f663bff8",
+    "name": "Purple Cats",
+    "slug": "purple-cats",
+    "startDate": "2024-07-15T00:00:00.000Z",
+    "endDate": "2024-12-13T00:00:00.000Z",
+    "description": "Purple Cats",
+    "image": "images/cohorts/6694c939c05af228f663bff8.jpg"
+  },
+  {
+    "legacyId": "66bdfe3940102ec9f789157e",
+    "name": "Silver Tarantulas",
+    "slug": "silver-tarantulas",
+    "startDate": "2024-08-19T00:00:00.000Z",
+    "endDate": "2025-01-31T00:00:00.000Z",
+    "description": "Silver Tarantulas",
+    "image": "images/cohorts/66bdfe3940102ec9f789157e.jpg"
+  },
+  {
+    "legacyId": "66ed44e137255c2f1e505d2b",
+    "name": "Blue Dackel",
+    "slug": "blue-dackel",
+    "startDate": "2024-09-23T00:00:00.000Z",
+    "endDate": "2025-03-07T00:00:00.000Z",
+    "description": "Blue Dackel",
+    "image": "images/cohorts/66ed44e137255c2f1e505d2b.jpg"
+  },
+  {
+    "legacyId": "67372bf22b0c1998b2440b56",
+    "name": "Purple Llamas",
+    "slug": "purple-llamas",
+    "startDate": "2024-11-18T00:00:00.000Z",
+    "endDate": "2025-05-02T00:00:00.000Z",
+    "description": "Purple Llamas",
+    "image": "images/cohorts/67372bf22b0c1998b2440b56.jpg"
+  },
+  {
+    "legacyId": "67921c40f645884b53b6caf3",
+    "name": "Black Owls",
+    "slug": "black-owls",
+    "startDate": "2025-01-27T00:00:00.000Z",
+    "endDate": "2025-07-04T00:00:00.000Z",
+    "description": "Black Owls",
+    "image": "images/cohorts/67921c40f645884b53b6caf3.jpg"
+  },
+  {
+    "legacyId": "67dd736cb2c7f52dbfde54b4",
+    "name": "Turquoise Axolotl",
+    "slug": "turquoise-axolotl",
+    "startDate": "2025-03-24T00:00:00.000Z",
+    "endDate": "2025-08-29T00:00:00.000Z",
+    "description": "Turquoise Axolotl",
+    "image": "images/cohorts/67dd736cb2c7f52dbfde54b4.png"
+  },
+  {
+    "legacyId": "67f907b4e496aa10c4361b55",
+    "name": "Green Dragonflies",
+    "slug": "green-dragonflies",
+    "startDate": "2025-04-14T00:00:00.000Z",
+    "endDate": "2025-09-19T00:00:00.000Z",
+    "description": "Green Dragonflies",
+    "image": "images/cohorts/67f907b4e496aa10c4361b55.jpeg"
+  },
+  {
+    "legacyId": "684c6765f79162ea029a4295",
+    "name": "Silver Foxes",
+    "slug": "silver-foxes",
+    "startDate": "2025-06-16T00:00:00.000Z",
+    "endDate": "2025-11-14T00:00:00.000Z",
+    "description": "Silver Foxes",
+    "image": "images/cohorts/684c6765f79162ea029a4295.jpg"
+  },
+  {
+    "legacyId": "687cc7b6a8120b4fbf0b7bcc",
+    "name": "Magenta Capybaras",
+    "slug": "magenta-capybaras",
+    "startDate": "2025-08-18T00:00:00.000Z",
+    "endDate": "2026-03-13T00:00:00.000Z",
+    "description": "Magenta Capybaras",
+    "image": "images/cohorts/687cc7b6a8120b4fbf0b7bcc.png"
+  }
+]

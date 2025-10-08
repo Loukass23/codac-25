@@ -39,7 +39,7 @@ export async function seedDocuments() {
         // Load demo documents data
         const documentsData: DemoDocument[] = JSON.parse(
             fs.readFileSync(
-                path.join(process.cwd(), 'prisma/seed/data/demo-documents.json'),
+                path.join(process.cwd(), 'prisma/seed/dev/demo-documents.json'),
                 'utf-8'
             )
         );

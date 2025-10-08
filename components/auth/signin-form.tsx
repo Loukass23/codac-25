@@ -1,15 +1,14 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { signIn, useSession } from "next-auth/react"
-import { useState, useEffect } from "react"
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { CodacLogo } from "@/components/codac-brand/codac-logo"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { Icons } from "@/components/ui/icons"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/ui/icons';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface SignInFormProps {
   callbackUrl?: string;
@@ -17,26 +16,12 @@ interface SignInFormProps {
 
 function getErrorMessage(error: string | undefined): string {
   switch (error) {
-    case "OAuthSignin":
-      return "Error in constructing an authorization URL.";
-    case "OAuthCallback":
-      return "Error in handling the response from an OAuth provider.";
-    case "OAuthCreateAccount":
-      return "Could not create OAuth account.";
-    case "EmailCreateAccount":
-      return "Could not create email account.";
-    case "Callback":
-      return "Error in the OAuth callback handler route.";
-    case "OAuthAccountNotLinked":
-      return "Email on the account is already linked, but not with this OAuth account.";
-    case "EmailSignin":
-      return "Check your email address.";
-    case "CredentialsSignin":
-      return "Sign in failed. Check the details you provided are correct.";
-    case "SessionRequired":
-      return "Please sign in to access this page.";
+    case 'CredentialsSignin':
+      return 'Sign in failed. Check the details you provided are correct.';
+    case 'SessionRequired':
+      return 'Please sign in to access this page.';
     default:
-      return "An error occurred during sign in.";
+      return 'An error occurred during sign in.';
   }
 }
 
@@ -48,21 +33,19 @@ export function SignInForm({
   const searchParams = useSearchParams();
 
   // Form state
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isCredentialsLoading, setIsCredentialsLoading] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const [isGitHubLoading, setIsGitHubLoading] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isCredentialsLoading, setIsCredentialsLoading] = useState(false);
 
   // Get parameters from URL
   const callbackUrl =
-    initialCallbackUrl || searchParams.get("callbackUrl") || "/";
-  const urlError = searchParams.get("error");
+    initialCallbackUrl || searchParams.get('callbackUrl') || '/';
+  const urlError = searchParams.get('error');
   const [error, setError] = useState<string | undefined>(urlError || undefined);
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (status === "authenticated" && session) {
+    if (status === 'authenticated' && session) {
       router.replace(callbackUrl);
     }
   }, [session, status, router, callbackUrl]);
@@ -80,7 +63,7 @@ export function SignInForm({
     e.preventDefault();
 
     if (!email || !password) {
-      setError("Email and password are required");
+      setError('Email and password are required');
       return;
     }
 
@@ -88,7 +71,7 @@ export function SignInForm({
     setError(undefined);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
@@ -100,142 +83,77 @@ export function SignInForm({
         router.push(callbackUrl);
       }
     } catch {
-      setError("An error occurred during sign in.");
+      setError('An error occurred during sign in.');
     } finally {
       setIsCredentialsLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsGoogleLoading(true);
-    setError(undefined);
-
-    try {
-      await signIn("google", { callbackUrl });
-    } catch {
-      setError("An error occurred during Google sign in.");
-    } finally {
-      setIsGoogleLoading(false);
-    }
-  };
-
-  const handleGitHubSignIn = async () => {
-    setIsGitHubLoading(true);
-    setError(undefined);
-
-    try {
-      await signIn("github", { callbackUrl });
-    } catch {
-      setError("An error occurred during GitHub sign in.");
-    } finally {
-      setIsGitHubLoading(false);
-    }
-  };
-
-  const isAnyLoading = isCredentialsLoading || isGoogleLoading || isGitHubLoading;
-
   // Show loading while checking authentication status
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
-      <div className="flex justify-center items-center py-8">
-        <Icons.spinner className="h-6 w-6 animate-spin" />
+      <div className='flex justify-center items-center py-8'>
+        <Icons.spinner className='h-6 w-6 animate-spin' />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-
+    <div className='space-y-6'>
+      <Alert
+        variant='default'
+        className='border-blue-500 bg-blue-50 dark:bg-blue-950'
+      >
+        <AlertDescription className='text-sm text-blue-900 dark:text-blue-100'>
+          Beta access is currently limited to existing users only.
+        </AlertDescription>
+      </Alert>
 
       {error && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            {getErrorMessage(error)}
-          </AlertDescription>
+        <Alert variant='destructive'>
+          <AlertDescription>{getErrorMessage(error)}</AlertDescription>
         </Alert>
       )}
 
       {/* Credentials Form */}
-      <form onSubmit={handleCredentialsSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+      <form onSubmit={handleCredentialsSubmit} className='space-y-4'>
+        <div className='space-y-2'>
+          <Label htmlFor='email'>Email</Label>
           <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your email address"
+            id='email'
+            name='email'
+            type='email'
+            placeholder='Enter your email address'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             required
-            disabled={isAnyLoading}
+            disabled={isCredentialsLoading}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+        <div className='space-y-2'>
+          <Label htmlFor='password'>Password</Label>
           <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Enter your password"
+            id='password'
+            name='password'
+            type='password'
+            placeholder='Enter your password'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
-            disabled={isAnyLoading}
+            disabled={isCredentialsLoading}
           />
         </div>
-        <Button type="submit" className="w-full" disabled={isAnyLoading}>
-          {isCredentialsLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+        <Button
+          type='submit'
+          className='w-full'
+          disabled={isCredentialsLoading}
+        >
+          {isCredentialsLoading && (
+            <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
+          )}
           Sign In
         </Button>
       </form>
-
-      <div className="relative flex justify-center text-xs uppercase">
-        <span className="bg-card px-2 text-muted-foreground">
-          Or continue with
-        </span>
-      </div>
-
-      {/* OAuth Buttons */}
-      <div className="space-y-3">
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleSignIn}
-          disabled={isAnyLoading}
-        >
-          {isGoogleLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          <Icons.google className="mr-2 h-4 w-4" />
-          Google
-        </Button>
-
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleGitHubSignIn}
-          disabled={isAnyLoading}
-        >
-          {isGitHubLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          <Icons.gitHub className="mr-2 h-4 w-4" />
-          GitHub
-        </Button>
-
-      </div>
-
-      <div className="text-center text-sm">
-        <span className="text-muted-foreground">Don&apos;t have an account? </span>
-        <Button
-          variant="link"
-          className="p-0 h-auto font-normal"
-          onClick={() =>
-            router.push(
-              `/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`
-            )
-          }
-          disabled={isAnyLoading}
-        >
-          Sign up here
-        </Button>
-      </div>
     </div>
   );
 }

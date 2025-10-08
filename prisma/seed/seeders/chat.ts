@@ -1,6 +1,6 @@
+import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
-import { PrismaClient } from '@prisma/client';
 import { logger } from '../../../lib/logger';
 
 const prisma = new PrismaClient();
@@ -20,7 +20,7 @@ export async function seedChatData() {
         logger.info('🗨️ Starting chat data seeding...');
 
         // Check if chat data file exists
-        const chatDataPath = path.join(process.cwd(), 'prisma/seed/data/chat-data.json');
+        const chatDataPath = path.join(process.cwd(), 'prisma/seed/dev/chat-data.json');
 
         if (!fs.existsSync(chatDataPath)) {
             logger.warn('⚠️ Chat data file not found. Run the export script first or seed will be skipped.');

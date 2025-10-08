@@ -1,0 +1,27 @@
+<svg viewBox="0 0 335 670" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="left-angle-bracket">
+    <path
+      d="M334.461 0L167 334.461L334.461 668.923L0 334.461L334.461 0Z"
+      fill="url(#left-angle-gradient)"
+    />
+    <path
+      d="M334.461 0L167 334.461L334.461 668.923M334.461 0L0 334.461L334.461 668.923"
+      stroke="currentColor"
+      strokeWidth="15"
+      strokeLinejoin="round"
+    />
+  </g>
+  <defs>
+    <linearGradient
+      id="left-angle-gradient"
+      x1="167"
+      y1="668.923"
+      x2="167"
+      y2="0"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stopColor="#E77096" />
+      <stop offset="1" stopColor="#52EACE" />
+    </linearGradient>
+  </defs>
+</svg>

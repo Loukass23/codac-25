@@ -52,16 +52,18 @@ export async function encodeImageToBase64(imagePath: string): Promise<string> {
 }
 
 /**
- * Encodes an image file from the seed data images folder
- * @param filename - Name of the image file in prisma/seed/data/images/
+ * Encodes an image file from the seed data folder
+ * @param filename - Path to the image file relative to basePath
+ * @param basePath - Base path for seed data (defaults to 'prisma/seed/dev/')
  * @returns Promise<string> - Base64 data URI string
  */
 export async function encodeSeedImageToBase64(
-  filename: string
+  filename: string,
+  basePath: string = 'prisma/seed/dev/'
 ): Promise<string> {
   const imagePath = path.join(
     process.cwd(),
-    'prisma/seed/data/images',
+    basePath,
     filename
   );
   return await encodeImageToBase64(imagePath);

@@ -36,7 +36,7 @@ export async function seedProjects() {
     // Load demo projects data
     const projectsData: DemoProject[] = JSON.parse(
       fs.readFileSync(
-        path.join(process.cwd(), 'prisma/seed/data/demo-projects.json'),
+        path.join(process.cwd(), 'prisma/seed/dev/demo-projects.json'),
         'utf-8'
       )
     );

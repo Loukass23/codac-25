@@ -28,34 +28,38 @@ export const CodacRightAngleBracket: React.FC<CodacRightAngleBracketProps> = ({
 }) => {
   const SvgComponent = (
     <svg
-      viewBox="350 0 500 675"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      viewBox='0 0 335 670'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
       className={cn(sizeConfig[size], className)}
     >
-      <g id="right-angle-bracket" className={animated ? 'animate-diamond-pulse' : ''} style={{ animationDelay: '1s' }}>
+      <g
+        id='right-angle-bracket'
+        className={animated ? 'animate-diamond-pulse' : ''}
+        style={{ animationDelay: '1s' }}
+      >
         <path
-          d="M392.461 676.923L559.923 342.461L392.461 8L726.923 342.461L392.461 676.923Z"
-          fill="url(#right-angle-gradient)"
+          d='M0 668.923L167.462 334.461L0 0L334.462 334.461L0 668.923Z'
+          fill='url(#right-angle-gradient)'
         />
         <path
-          d="M392.461 8L559.923 342.461L392.461 676.923M392.461 8L726.923 342.461L392.461 676.923"
-          stroke="currentColor"
-          strokeWidth="15"
-          strokeLinejoin="round"
+          d='M0 0L167.462 334.461L0 668.923M0 0L334.462 334.461L0 668.923'
+          stroke='currentColor'
+          strokeWidth='15'
+          strokeLinejoin='round'
         />
       </g>
       <defs>
         <linearGradient
-          id="right-angle-gradient"
-          x1="250.5"
-          y1="673.5"
-          x2="268"
-          y2="70.5"
-          gradientUnits="userSpaceOnUse"
+          id='right-angle-gradient'
+          x1='167.231'
+          y1='668.923'
+          x2='167.231'
+          y2='0'
+          gradientUnits='userSpaceOnUse'
         >
-          <stop stopColor="#E77096" />
-          <stop offset="1" stopColor="#52EACE" />
+          <stop stopColor='#E77096' />
+          <stop offset='1' stopColor='#52EACE' />
         </linearGradient>
       </defs>
     </svg>
@@ -66,7 +70,7 @@ export const CodacRightAngleBracket: React.FC<CodacRightAngleBracketProps> = ({
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
       >
         {SvgComponent}
       </motion.div>

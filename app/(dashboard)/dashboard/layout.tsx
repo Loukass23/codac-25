@@ -5,6 +5,8 @@ type DashboardLayoutProps = {
   stats: React.ReactNode;
   projectTrends: React.ReactNode;
   activityChart: React.ReactNode;
+  cohortDistribution: React.ReactNode;
+  cohortTimeline: React.ReactNode;
   myProjects: React.ReactNode;
   featured: React.ReactNode;
   techStack: React.ReactNode;
@@ -16,6 +18,8 @@ export default function DashboardLayout({
   stats,
   projectTrends,
   activityChart,
+  cohortDistribution,
+  cohortTimeline,
   myProjects,
   featured,
   techStack,
@@ -30,6 +34,12 @@ export default function DashboardLayout({
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {projectTrends}
         {activityChart}
+      </div>
+
+      {/* Community & Cohorts Section */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        {cohortDistribution}
+        {cohortTimeline}
       </div>
 
       {/* Projects Section */}

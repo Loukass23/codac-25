@@ -12,48 +12,51 @@ import {
 } from 'recharts';
 
 import type { TechStackData } from '@/data/projects/get-project-trends';
+import { useChartColors } from '@/hooks/use-chart-colors';
 
 type TechStackChartProps = {
   data: TechStackData[];
 };
 
-const COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(var(--primary) / 0.7)',
-  'hsl(var(--chart-1) / 0.7)',
-  'hsl(var(--chart-2) / 0.7)',
-  'hsl(var(--chart-3) / 0.7)',
-];
-
 export function TechStackChart({ data }: TechStackChartProps) {
+  const colors = useChartColors();
+
+  const chartColors = [
+    colors.chart1,
+    colors.chart2,
+    colors.chart3,
+    colors.chart4,
+    colors.chart5,
+    `${colors.chart1} / 0.7`,
+    `${colors.chart2} / 0.7`,
+    `${colors.chart3} / 0.7`,
+    `${colors.chart4} / 0.7`,
+    `${colors.chart5} / 0.7`,
+  ];
+
   return (
     <ResponsiveContainer width='100%' height={300}>
       <BarChart data={data} layout='vertical'>
-        <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
+        <CartesianGrid strokeDasharray='3 3' stroke={colors.border} />
         <XAxis
           type='number'
-          className='text-xs text-muted-foreground'
-          tick={{ fill: 'hsl(var(--muted-foreground))' }}
+          className='text-xs'
+          tick={{ fill: colors.mutedForeground }}
         />
         <YAxis
           dataKey='name'
           type='category'
           width={100}
-          className='text-xs text-muted-foreground'
-          tick={{ fill: 'hsl(var(--muted-foreground))' }}
+          className='text-xs'
+          tick={{ fill: colors.mutedForeground }}
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: 'hsl(var(--background))',
-            border: '1px solid hsl(var(--border))',
+            backgroundColor: colors.background,
+            border: `1px solid ${colors.border}`,
             borderRadius: '6px',
           }}
-          labelStyle={{ color: 'hsl(var(--foreground))' }}
+          labelStyle={{ color: colors.foreground }}
           formatter={(value: number, name: string, props: any) => [
             `${value} projects (${props.payload.percentage}%)`,
             'Usage',
@@ -61,7 +64,10 @@ export function TechStackChart({ data }: TechStackChartProps) {
         />
         <Bar dataKey='count' radius={[0, 4, 4, 0]}>
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell
+              key={`cell-${index}`}
+              fill={chartColors[index % chartColors.length]}
+            />
           ))}
         </Bar>
       </BarChart>

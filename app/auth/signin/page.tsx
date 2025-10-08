@@ -19,16 +19,16 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const params = await searchParams;
 
   return (
-    <Card className='w-full p-4' >
+    <Card className='w-full p-4'>
       <CardHeader className='space-y-1'>
-        <div className="flex justify-center mb-4">
-          <CodacLogo size="lg" useGradient />
+        <div className='flex justify-center mb-4'>
+          <CodacLogo size='lg' useGradient />
         </div>
         <CardTitle className='text-2xl font-bold text-center'>
           welcome to codac
         </CardTitle>
         <CardDescription className='text-center'>
-          Share your learning journey with the community
+          Sign in to your account
         </CardDescription>
       </CardHeader>
       <CardContent>

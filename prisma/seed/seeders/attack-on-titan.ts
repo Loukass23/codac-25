@@ -46,10 +46,10 @@ export async function seedAttackOnTitan() {
 
         // Load data from JSON files
         const cohortsData: AttackOnTitanCohort[] = JSON.parse(
-            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/data/attack-on-titan-cohorts.json'), 'utf-8')
+            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/dev/attack-on-titan-cohorts.json'), 'utf-8')
         );
         const usersData: AttackOnTitanUser[] = JSON.parse(
-            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/data/attack-on-titan-users.json'), 'utf-8')
+            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/dev/attack-on-titan-users.json'), 'utf-8')
         );
 
         // Clean existing data
@@ -72,12 +72,13 @@ export async function seedAttackOnTitan() {
         logger.info('🏫 Creating Attack on Titan cohorts...');
         const cohorts = await Promise.all(
             cohortsData.map(async (cohortData) => {
-                const cohortImageBase64 = await encodeSeedImageToBase64(cohortData.image);
+                const cohortImageBase64 = await encodeSeedImageToBase64(cohortData.image, 'prisma/seed/dev/');
                 return prisma.cohort.create({
                     data: {
                         name: cohortData.name,
                         slug: cohortData.slug,
                         startDate: new Date(cohortData.startDate),
+                        endDate: new Date(cohortData.endDate),
                         description: cohortData.description,
                         image: cohortImageBase64,
                     },
@@ -90,7 +91,7 @@ export async function seedAttackOnTitan() {
         const users = await Promise.all(
             usersData.map(async (userData) => {
                 const cohort = cohorts.find(c => c.slug === userData.cohort);
-                const userImageBase64 = await encodeSeedImageToBase64(userData.image);
+                const userImageBase64 = await encodeSeedImageToBase64(userData.image, 'prisma/seed/dev/');
                 return prisma.user.create({
                     data: {
                         name: userData.name,
@@ -156,7 +157,7 @@ export async function cleanAttackOnTitan() {
         });
 
         const cohortsData: AttackOnTitanCohort[] = JSON.parse(
-            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/data/attack-on-titan-cohorts.json'), 'utf-8')
+            fs.readFileSync(path.join(process.cwd(), 'prisma/seed/dev/attack-on-titan-cohorts.json'), 'utf-8')
         );
         await prisma.cohort.deleteMany({
             where: {

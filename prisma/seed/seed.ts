@@ -7,12 +7,12 @@ import { PrismaClient } from '@prisma/client';
 import { logger } from '../../lib/logger';
 
 // Import all seeder modules
-import { seedAttackOnTitan, cleanAttackOnTitan } from './seeders/attack-on-titan';
-import { seedChatData, cleanChatData } from './seeders/chat';
-import { seedDocuments, cleanDocuments } from './seeders/documents';
-import { seedJobs, cleanJobs } from './seeders/jobs';
-// import { seedLMSContent, cleanLMSContent } from './seeders/lms-content';
-import { seedProjects, cleanProjects } from './seeders/projects';
+import { cleanAttackOnTitan, seedAttackOnTitan } from './seeders/attack-on-titan';
+import { cleanChatData, seedChatData } from './seeders/chat';
+import { cleanDocuments, seedDocuments } from './seeders/documents';
+import { cleanJobs, seedJobs } from './seeders/jobs';
+import { cleanProduction, seedProduction } from './seeders/production';
+import { cleanProjects, seedProjects } from './seeders/projects';
 
 const prisma = new PrismaClient();
 
@@ -26,19 +26,19 @@ interface SeedOption {
 
 const seedOptions: SeedOption[] = [
     {
+        id: 'production',
+        name: 'Production Data',
+        description: 'Real cohorts and users from CODAC history (prisma/seed/prod/)',
+        action: seedProduction,
+        cleanAction: cleanProduction,
+    },
+    {
         id: 'attack-on-titan',
-        name: 'Attack on Titan Theme',
-        description: 'Users and cohorts with Attack on Titan theme',
+        name: 'Attack on Titan Theme (Dev)',
+        description: 'Demo users and cohorts with Attack on Titan theme (prisma/seed/dev/)',
         action: seedAttackOnTitan,
         cleanAction: cleanAttackOnTitan,
     },
-    // {
-    //     id: 'lms-content',
-    //     name: 'LMS Content',
-    //     description: 'Import LMS content from markdown files',
-    //     action: seedLMSContent,
-    //     cleanAction: cleanLMSContent,
-    // },
     {
         id: 'jobs',
         name: 'Job Postings',
@@ -90,8 +90,8 @@ async function seedAll() {
     logger.info('🌱 Starting complete database seeding...');
 
     try {
-        // Seed in order: courses -> users -> content -> chats -> jobs -> projects -> documents -> folders
-        // await seedLMSContent();
+        // Seed in order: users/cohorts -> content -> chats -> jobs -> projects -> documents
+        // Note: Uses dev data (Attack on Titan theme), not production data
         await seedAttackOnTitan();
         await seedChatData();
         await seedJobs();
@@ -103,20 +103,16 @@ async function seedAll() {
         console.log('\n🎉 All data seeded successfully!');
         console.log('═══════════════════════════════════════');
         console.log('📊 Summary:');
-        console.log('  • Attack on Titan themed users and cohorts');
-        console.log('  • Black Owls cohort with progress tracking');
-        console.log('  • LMS content from markdown files');
-        console.log('  • Group chat conversations per cohort');
-
+        console.log('  • Attack on Titan themed cohorts and users');
+        console.log('  • Chat conversations and messages');
         console.log('  • Job postings');
         console.log('  • Demo project showcases');
         console.log('  • Demo documents with rich content and comments');
-        console.log('  • Nested folder structure for document organization');
-        console.log('  • Chat conversations and messages');
         console.log('\n🔐 Default login credentials:');
         console.log('  • Email: admin@codac.academy');
         console.log('  • Password: password123');
         console.log('\n📱 You can now start the application!');
+        console.log('\n💡 Tip: To seed production data, run: pnpm tsx prisma/seed/seed.ts 1');
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error : new Error(String(error));
@@ -134,11 +130,13 @@ async function cleanAll() {
         await cleanProjects();
         await cleanJobs();
         await cleanChatData();
-        // await cleanLMSContent();
         await cleanAttackOnTitan();
+        // Note: Production data is NOT cleaned by "clean all"
+        // To clean production data, run: pnpm tsx prisma/seed/seed.ts clean-prod
 
         logger.info('✅ Complete cleanup finished successfully!');
         console.log('\n🧹 All data cleaned successfully!');
+        console.log('💡 Note: Production data was not cleaned. To clean it, use option 1 in the menu.');
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error : new Error(String(error));
@@ -278,19 +276,23 @@ function showHelp() {
 
 Usage:
   tsx prisma/seed/seed.ts                    # Interactive mode
-  tsx prisma/seed/seed.ts all                # Seed all data
-  tsx prisma/seed/seed.ts clean              # Clean all data
-  tsx prisma/seed/seed.ts 1                  # Seed Attack on Titan theme
-  tsx prisma/seed/seed.ts 1,2,3              # Seed multiple options
+  tsx prisma/seed/seed.ts all                # Seed all DEV data (Attack on Titan theme)
+  tsx prisma/seed/seed.ts clean              # Clean all DEV data
+  tsx prisma/seed/seed.ts 1                  # Seed production data
+  tsx prisma/seed/seed.ts 2                  # Seed Attack on Titan theme
+  tsx prisma/seed/seed.ts 1,3,4              # Seed multiple options
   tsx prisma/seed/seed.ts --help             # Show this help
 
 Available options:
 ${seedOptions.map((opt, i) => `  ${i + 1}. ${opt.name} - ${opt.description}`).join('\n')}
 
 Examples:
-  tsx prisma/seed/seed.ts all                # Seed everything
-  tsx prisma/seed/seed.ts 1,3                # Seed Attack on Titan + Demo Projects
-  tsx prisma/seed/seed.ts 2                  # Seed only Job Postings
+  tsx prisma/seed/seed.ts all                # Seed all dev data (Attack on Titan + features)
+  tsx prisma/seed/seed.ts 1                  # Seed ONLY production data
+  tsx prisma/seed/seed.ts 2,3,4              # Seed Attack on Titan + Jobs + Projects
+  tsx prisma/seed/seed.ts clean              # Clean dev data (keeps production safe)
+
+Note: Production data (option 1) is NOT included in "all" and must be seeded explicitly.
 `);
 }
 
@@ -305,4 +307,5 @@ if (require.main === module) {
     main();
 }
 
-export { seedAll, cleanAll, seedOptions };
+export { cleanAll, seedAll, seedOptions };
+
